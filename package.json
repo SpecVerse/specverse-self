@@ -1,0 +1,13 @@
+{
+  "name": "specverse-self",
+  "version": "1.0.0",
+  "description": "SpecVerse self-specification realized - the language specifying and implementing itself",
+  "scripts": {
+    "validate": "specverse validate specs/main.specly",
+    "infer": "specverse infer specs/main.specly -o specs/main-inferred.specly --deployment --verbose",
+    "realize:views": "specverse realize views specs/main-inferred.specly -o generated/main-ai-optimized.json",
+    "realize:all": "specverse realize all specs/main-inferred.specly -o generated/code -m manifests/implementation.yaml",
+    "realize": "npm run infer && npm run realize:all",
+    "dev": "cd generated/code && npm run dev"
+  }
+}

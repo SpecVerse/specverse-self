@@ -1,0 +1,483 @@
+// Generated Prisma schema from SpecVerse specification
+// This is your Prisma schema file
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Specification {
+  id             String @id @default(uuid())
+  filename       String @unique @db.VarChar(255)
+  specVersion    String @db.VarChar(255)
+  components     Component[] @relation("Specification_components")
+  deployments    Deployment[] @relation("Specification_deployments")
+  manifests      Manifest[] @relation("Specification_manifests")
+}
+
+model Component {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  version        String @db.VarChar(255)
+  description    String? @db.VarChar(255)
+  tags           String? @db.VarChar(255)
+  specification_id String
+  specification  Specification @relation("Specification_components", fields: [specification_id], references: [id])
+  imports        Import[] @relation("Component_imports")
+  exports        Export[] @relation("Component_exports")
+  models         Model[] @relation("Component_models")
+  controllers    Controller[] @relation("Component_controllers")
+  services       Service[] @relation("Component_services")
+  events         Event[] @relation("Component_events")
+  views          View[] @relation("Component_views")
+}
+
+model Import {
+  id             String @id @default(uuid())
+  from           String @db.VarChar(255)
+  file           String? @db.VarChar(255)
+  package        String? @db.VarChar(255)
+  namespace      String? @db.VarChar(255)
+  version        String? @db.VarChar(255)
+  select         String? @db.VarChar(255)
+  component_id   String
+  component      Component @relation("Component_imports", fields: [component_id], references: [id])
+}
+
+model Export {
+  id             String @id @default(uuid())
+  capabilities   String? @db.VarChar(255)
+  component_id   String
+  component      Component @relation("Component_exports", fields: [component_id], references: [id])
+}
+
+model Model {
+  id             String @id @default(uuid())
+  createdAt      DateTime
+  updatedAt      DateTime
+  createdBy      String? @db.VarChar(255)
+  updatedBy      String? @db.VarChar(255)
+  name           String @unique @db.VarChar(255)
+  description    String? @db.VarChar(255)
+  extends        String? @db.VarChar(255)
+  component_id   String
+  component      Component @relation("Component_models", fields: [component_id], references: [id])
+  attributes     Attribute[] @relation("Model_attributes")
+  relationships  Relationship[] @relation("Model_relationships")
+  lifecycles     Lifecycle[] @relation("Model_lifecycles")
+  behaviors      Operation[] @relation("Model_behaviors")
+  profiles       Profile[] @relation("Model_profiles")
+  controllers    Controller[] @relation("Controller_model")
+  services       Service[] @relation("Service_model")
+}
+
+model Attribute {
+  id             String @id @default(uuid())
+  name           String @db.VarChar(255)
+  attrType       String @db.VarChar(255)
+  required       Boolean?
+  unique         Boolean?
+  searchable     Boolean?
+  verified       Boolean?
+  defaultValue   String? @db.VarChar(255)
+  auto           String? @db.VarChar(255)
+  model_id       String
+  model          Model @relation("Model_attributes", fields: [model_id], references: [id])
+  operation_id   String
+  operation      Operation @relation("Operation_parameters", fields: [operation_id], references: [id])
+  event_id       String
+  event          Event @relation("Event_attributes", fields: [event_id], references: [id])
+}
+
+model Relationship {
+  id             String @id @default(uuid())
+  name           String @db.VarChar(255)
+  relType        String @db.VarChar(255)
+  target         String @db.VarChar(255)
+  eager          Boolean?
+  cascade        String? @db.VarChar(255)
+  model_id       String
+  model          Model @relation("Model_relationships", fields: [model_id], references: [id])
+}
+
+model Lifecycle {
+  id             String @id @default(uuid())
+  name           String @db.VarChar(255)
+  flow           String @db.VarChar(255)
+  model_id       String
+  model          Model @relation("Model_lifecycles", fields: [model_id], references: [id])
+  states         LifecycleState[] @relation("Lifecycle_states")
+  transitions    LifecycleTransition[] @relation("Lifecycle_transitions")
+}
+
+model LifecycleState {
+  id             String @id @default(uuid())
+  name           String @db.VarChar(255)
+  isInitial      Boolean?
+  isTerminal     Boolean?
+  lifecycle_id   String
+  lifecycle      Lifecycle @relation("Lifecycle_states", fields: [lifecycle_id], references: [id])
+}
+
+model LifecycleTransition {
+  id             String @id @default(uuid())
+  name           String @db.VarChar(255)
+  fromState      String @db.VarChar(255)
+  toState        String @db.VarChar(255)
+  action         String? @db.VarChar(255)
+  lifecycle_id   String
+  lifecycle      Lifecycle @relation("Lifecycle_transitions", fields: [lifecycle_id], references: [id])
+}
+
+model Profile {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  description    String? @db.VarChar(255)
+  model_id       String
+  model          Model @relation("Model_profiles", fields: [model_id], references: [id])
+}
+
+model Primitive {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  baseType       String @db.VarChar(255)
+  description    String? @db.VarChar(255)
+  pattern        String? @db.VarChar(255)
+  isTypeAlias    Boolean?
+}
+
+model Operation {
+  id             String @id @default(uuid())
+  name           String @db.VarChar(255)
+  description    String? @db.VarChar(255)
+  returns        String? @db.VarChar(255)
+  requires       String? @db.VarChar(255)
+  ensures        String? @db.VarChar(255)
+  parameters     Attribute[] @relation("Operation_parameters")
+  publishes      Event[] @relation("Operation_publishes")
+  steps          Step[] @relation("Operation_steps")
+  model_id       String
+  model          Model @relation("Model_behaviors", fields: [model_id], references: [id])
+  step_id        String @unique
+  step           Step @relation("Step_expandedOperation", fields: [step_id], references: [id])
+  cured_operations_id String
+  curedOperationsController Controller @relation("Controller_curedOperations", fields: [cured_operations_id], references: [id])
+  actions_id     String
+  actionsController Controller @relation("Controller_actions", fields: [actions_id], references: [id])
+  service_id     String
+  service        Service @relation("Service_operations", fields: [service_id], references: [id])
+}
+
+model Step {
+  id             String @id @default(uuid())
+  ordinal        Int
+  instruction    String? @db.VarChar(255)
+  operation_id   String
+  operation      Operation @relation("Operation_steps", fields: [operation_id], references: [id])
+  expandedOperation Operation? @relation("Step_expandedOperation")
+}
+
+model Controller {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  pattern        String @db.VarChar(255)
+  parentModel    String? @db.VarChar(255)
+  hasAssociationOps Boolean?
+  component_id   String
+  component      Component @relation("Component_controllers", fields: [component_id], references: [id])
+  model_id       String
+  model          Model @relation("Controller_model", fields: [model_id], references: [id])
+  curedOperations Operation[] @relation("Controller_curedOperations")
+  actions        Operation[] @relation("Controller_actions")
+  subscriptions  Event[] @relation("Controller_subscriptions")
+}
+
+model Service {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  pattern        String @db.VarChar(255)
+  component_id   String
+  component      Component @relation("Component_services", fields: [component_id], references: [id])
+  model_id       String
+  model          Model @relation("Service_model", fields: [model_id], references: [id])
+  operations     Operation[] @relation("Service_operations")
+  subscriptions  Event[] @relation("Service_subscriptions")
+}
+
+model Event {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  description    String? @db.VarChar(255)
+  pattern        String @db.VarChar(255)
+  modelName      String @db.VarChar(255)
+  version        Int
+  component_id   String
+  component      Component @relation("Component_events", fields: [component_id], references: [id])
+  attributes     Attribute[] @relation("Event_attributes")
+  previousVersions EventVersion[] @relation("Event_previousVersions")
+  operation_id   String
+  operation      Operation @relation("Operation_publishes", fields: [operation_id], references: [id])
+  controller_id  String
+  controller     Controller @relation("Controller_subscriptions", fields: [controller_id], references: [id])
+  service_id     String
+  service        Service @relation("Service_subscriptions", fields: [service_id], references: [id])
+  view_id        String
+  view           View @relation("View_subscriptions", fields: [view_id], references: [id])
+}
+
+model EventVersion {
+  id             String @id @default(uuid())
+  version        Int
+  compatibility  String @db.VarChar(255)
+  deprecated     Boolean?
+  deprecationMessage String? @db.VarChar(255)
+  event_id       String
+  event          Event @relation("Event_previousVersions", fields: [event_id], references: [id])
+}
+
+model View {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  viewType       String @db.VarChar(255)
+  primaryModel   String @db.VarChar(255)
+  tags           String? @db.VarChar(255)
+  export         Boolean?
+  hasProfileSupport Boolean?
+  component_id   String
+  component      Component @relation("Component_views", fields: [component_id], references: [id])
+  layout         Layout? @relation("View_layout")
+  uiComponents   UIComponent[] @relation("View_uiComponents")
+  subscriptions  Event[] @relation("View_subscriptions")
+}
+
+model Layout {
+  id             String @id @default(uuid())
+  layoutType     String @db.VarChar(255)
+  view_id        String @unique
+  view           View @relation("View_layout", fields: [view_id], references: [id])
+}
+
+model UIComponent {
+  id             String @id @default(uuid())
+  componentType  String @db.VarChar(255)
+  name           String @db.VarChar(255)
+  view_id        String
+  view           View @relation("View_uiComponents", fields: [view_id], references: [id])
+}
+
+model Deployment {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  environment    String @db.VarChar(255)
+  specification_id String
+  specification  Specification @relation("Specification_deployments", fields: [specification_id], references: [id])
+  instances      DeploymentInstance[] @relation("Deployment_instances")
+  channels       CommunicationChannel[] @relation("Deployment_channels")
+}
+
+model DeploymentInstance {
+  id             String @id @default(uuid())
+  name           String @db.VarChar(255)
+  category       String @db.VarChar(255)
+  scale          Int?
+  deployment_id  String
+  deployment     Deployment @relation("Deployment_instances", fields: [deployment_id], references: [id])
+}
+
+model CommunicationChannel {
+  id             String @id @default(uuid())
+  name           String @db.VarChar(255)
+  channelType    String @db.VarChar(255)
+  deployment_id  String
+  deployment     Deployment @relation("Deployment_channels", fields: [deployment_id], references: [id])
+}
+
+model Manifest {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  specVersion    String @db.VarChar(255)
+  specification_id String
+  specification  Specification @relation("Specification_manifests", fields: [specification_id], references: [id])
+  instanceFactories InstanceFactory[] @relation("Manifest_instanceFactories")
+  capabilityMappings CapabilityMapping[] @relation("Manifest_capabilityMappings")
+}
+
+model InstanceFactory {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  version        String @db.VarChar(255)
+  category       String @db.VarChar(255)
+  technology     String @db.VarChar(255)
+  manifest_id    String
+  manifest       Manifest @relation("Manifest_instanceFactories", fields: [manifest_id], references: [id])
+  capabilityMappings CapabilityMapping[] @relation("CapabilityMapping_instanceFactory")
+}
+
+model CapabilityMapping {
+  id             String @id @default(uuid())
+  capability     String @db.VarChar(255)
+  factoryName    String @db.VarChar(255)
+  manifest_id    String
+  manifest       Manifest @relation("Manifest_capabilityMappings", fields: [manifest_id], references: [id])
+  instance_factory_id String
+  instanceFactory InstanceFactory @relation("CapabilityMapping_instanceFactory", fields: [instance_factory_id], references: [id])
+}
+
+model EntityModule {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  moduleType     String @db.VarChar(255)
+  version        String @db.VarChar(255)
+  hasFacetSchema Boolean?
+  hasFacetConventions Boolean?
+  hasFacetInference Boolean?
+  hasFacetBehaviour Boolean?
+  hasFacetGenerators Boolean?
+  hasFacetDiagrams Boolean?
+  hasFacetDocs   Boolean?
+  hasFacetTests  Boolean?
+  behaviourSpecs BehaviourSpec[] @relation("BehaviourSpec_module")
+  schemaFragments SchemaFragment[] @relation("SchemaFragment_module")
+  codeTemplates  CodeTemplate[] @relation("CodeTemplate_entityModule")
+}
+
+model EntityRegistry {
+  id             String @id @default(uuid())
+  moduleCount    Int?
+  usesKahnsAlgorithm Boolean?
+}
+
+model ConventionGrammar {
+  id             String @id @default(uuid())
+  domain         String @db.VarChar(255)
+  entityType     String @unique @db.VarChar(255)
+  conventionCount Int?
+  conventionPatterns ConventionPattern[] @relation("ConventionPattern_grammar")
+}
+
+model ConventionPattern {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  pattern        String @db.VarChar(255)
+  expandsTo      String @db.VarChar(255)
+  description    String? @db.VarChar(255)
+  templateName   String @db.VarChar(255)
+  templateBody   String @db.VarChar(255)
+  convention_grammar_id String
+  grammar        ConventionGrammar @relation("ConventionPattern_grammar", fields: [convention_grammar_id], references: [id])
+}
+
+model InferenceRule {
+  id             String @id @default(uuid())
+  ruleId         String @unique @db.VarChar(255)
+  description    String @db.VarChar(255)
+  pattern        String @db.VarChar(255)
+  priority       Int
+  category       String @db.VarChar(255)
+  conditionExpression String? @db.VarChar(255)
+  isActive       Boolean?
+  ruleTemplates  RuleTemplate[] @relation("RuleTemplate_rule")
+}
+
+model RuleTemplate {
+  id             String @id @default(uuid())
+  templateType   String @db.VarChar(255)
+  content        String @db.VarChar(255)
+  inference_rule_id String
+  rule           InferenceRule @relation("RuleTemplate_rule", fields: [inference_rule_id], references: [id])
+}
+
+model BehaviourSpec {
+  id             String @id @default(uuid())
+  entityType     String @db.VarChar(255)
+  invariantCount Int?
+  ruleCount      Int?
+  verificationStatus String? @db.VarChar(255)
+  entity_module_id String
+  module         EntityModule @relation("BehaviourSpec_module", fields: [entity_module_id], references: [id])
+  invariants     Invariant[] @relation("Invariant_spec")
+}
+
+model Invariant {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  description    String @db.VarChar(255)
+  quintExpression String @db.VarChar(255)
+  category       String @db.VarChar(255)
+  behaviour_spec_id String
+  spec           BehaviourSpec @relation("Invariant_spec", fields: [behaviour_spec_id], references: [id])
+}
+
+model SchemaFragment {
+  id             String @id @default(uuid())
+  schemaId       String @unique @db.VarChar(255)
+  description    String? @db.VarChar(255)
+  defsCount      Int
+  fragmentType   String @db.VarChar(255)
+  entity_module_id String
+  module         EntityModule @relation("SchemaFragment_module", fields: [entity_module_id], references: [id])
+}
+
+model DiagramPlugin {
+  id             String @id @default(uuid())
+  diagramType    String @unique @db.VarChar(255)
+  description    String? @db.VarChar(255)
+}
+
+model CodeTemplate {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  templateType   String @db.VarChar(255)
+  technology     String @db.VarChar(255)
+  basePath       String @db.VarChar(255)
+  entity_module_id String
+  entityModule   EntityModule @relation("CodeTemplate_entityModule", fields: [entity_module_id], references: [id])
+}
+
+model MCPServer {
+  id             String @id @default(uuid())
+  name           String @db.VarChar(255)
+  mode           String @db.VarChar(255)
+  resources      MCPResource[] @relation("MCPServer_resources")
+  tools          MCPTool[] @relation("MCPServer_tools")
+}
+
+model MCPResource {
+  id             String @id @default(uuid())
+  uri            String @unique @db.VarChar(255)
+  name           String @db.VarChar(255)
+  description    String? @db.VarChar(255)
+  mimeType       String @db.VarChar(255)
+  m_c_p_server_id String
+  server         MCPServer @relation("MCPServer_resources", fields: [m_c_p_server_id], references: [id])
+}
+
+model MCPTool {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  description    String @db.VarChar(255)
+  isEntityModuleTool Boolean?
+  m_c_p_server_id String
+  server         MCPServer @relation("MCPServer_tools", fields: [m_c_p_server_id], references: [id])
+}
+
+model AIOrchestrator {
+  id             String @id @default(uuid())
+  name           String @db.VarChar(255)
+  providerType   String @db.VarChar(255)
+  workflows      AIWorkflow[] @relation("AIOrchestrator_workflows")
+}
+
+model AIWorkflow {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  description    String? @db.VarChar(255)
+  stepCount      Int?
+  a_i_orchestrator_id String
+  orchestrator   AIOrchestrator @relation("AIOrchestrator_workflows", fields: [a_i_orchestrator_id], references: [id])
+}

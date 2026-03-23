@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.DS_Store
+*.env
+generated/code/node_modules/
+generated/code/backend/node_modules/
+generated/code/frontend/node_modules/
