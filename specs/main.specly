@@ -525,14 +525,64 @@ components:
       - "deprecated patterns never generated"
 
   # ═══════════════════════════════════════════════════════════════════
-  # 3. AI SUPPORT — MCP server, orchestrator, prompts
+  # 3. DEVELOPER TOOLS — VSCode extension, MCP server
   # ═══════════════════════════════════════════════════════════════════
 
-  AISupport:
+  ToolsSupport:
     version: "3.5.2"
-    description: "MCP server for AI assistant integration, AI orchestrator for multi-step workflows"
+    description: "Developer tools: VSCode extension for editing .specly files, MCP server for AI assistant integration"
 
     models:
+
+      VSCodeExtension:
+        description: "A VSCode extension package — defines languages, grammars, commands, themes, and validation"
+        attributes:
+          id: UUID required unique
+          name: String required unique
+          displayName: String required
+          publisher: String required default="specverse"
+          version: String required
+          description: String
+          categories: String
+          activationEvents: String
+        relationships:
+          languages: hasMany ExtensionLanguage
+          commands: hasMany ExtensionCommand
+          themes: hasMany ExtensionTheme
+
+      ExtensionLanguage:
+        description: "A language contribution — file extension, grammar, configuration"
+        attributes:
+          id: UUID required unique
+          languageId: String required
+          extensions: String required
+          configuration: String
+          grammarScopeName: String required
+          grammarPath: String required
+        relationships:
+          extension: belongsTo VSCodeExtension
+
+      ExtensionCommand:
+        description: "A command registered in VSCode — maps to CLI commands or editor actions"
+        attributes:
+          id: UUID required unique
+          command: String required unique
+          title: String required
+          category: String default="SpecVerse"
+          enablement: String
+          keybinding: String
+        relationships:
+          extension: belongsTo VSCodeExtension
+
+      ExtensionTheme:
+        description: "A color theme for .specly syntax highlighting"
+        attributes:
+          id: UUID required unique
+          label: String required
+          uiTheme: String required default="vs-dark"
+          path: String required
+        relationships:
+          extension: belongsTo VSCodeExtension
 
       MCPServer:
         description: "Model Context Protocol server exposing SpecVerse capabilities to AI assistants"
@@ -564,6 +614,20 @@ components:
           isEntityModuleTool: Boolean default=false
         relationships:
           server: belongsTo MCPServer
+
+    constraints:
+      - "extension commands must map to valid CLI commands"
+      - "MCP tools must correspond to engine capabilities"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # 4. AI SUPPORT — orchestrator, prompts, workflows
+  # ═══════════════════════════════════════════════════════════════════
+
+  AISupport:
+    version: "3.5.2"
+    description: "AI orchestrator for multi-step workflows and prompt management"
+
+    models:
 
       AIOrchestrator:
         description: "Coordinates multi-step AI workflows: analyse, create, infer, materialise, realize"
