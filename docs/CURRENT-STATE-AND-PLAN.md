@@ -1,6 +1,6 @@
 # SpecVerse: Current State and Implementation Plan
 
-**Date**: 23 March 2026
+**Date**: 24 March 2026 (updated)
 **Purpose**: Honest, structured assessment of where we are, what's missing, and the plan to reach the goal: **specverse-self replaces specverse-lang as the production release of SpecVerse.**
 
 ---
@@ -8,6 +8,69 @@
 ## The Goal
 
 specverse-self IS specverse. The complete toolchain — CLI, engines, VSCode extension, MCP server, templates, examples, tests — generated from the self-specification. Not a demo. The actual release.
+
+---
+
+## Phase 1 Complete: Source Consolidation (17-24 March 2026)
+
+### What Happened
+
+specverse-lang was a monolith containing everything: parser, inference engine, entities, generators, realize engine, diagram engine, CLI, AI, registry, migration, and tools. Over one week (57 commits in specverse-lang, 20 in specverse-engines), we:
+
+1. **Extracted 7 engine packages** to specverse-engines (types, entities, parser, inference, realize, generators, ai)
+2. **Built a cross-package test framework** with `resolvePackage()`, `testEntityModule()`, `testEngine()`
+3. **Removed all duplicate source code** from specverse-lang — it now depends entirely on @specverse/engine-* packages
+4. **Fixed pre-existing bugs** found during the audit:
+   - Inference rule files with wrong format (missing `ruleFileType`)
+   - VSCode extension CLI discovery (missing exports)
+   - `new Function()` ESM hacks replaced with `import.meta.url`
+   - `file://` URL stripping with `.slice(7)` replaced with `fileURLToPath()`
+   - Duplicated pluralization extracted to shared `@specverse/types` utility
+   - 65-line hardcoded AI catalog fallback replaced with actionable warning
+   - 8 unnecessary `@ts-ignore` directives removed
+   - Brittle path resolution consolidated
+
+### By the Numbers
+
+| Metric | Before | After |
+|--------|--------|-------|
+| specverse-lang src/ | 269 .ts files, 92,127 lines | 69 .ts files, 27,136 lines |
+| specverse-engines | (did not exist) | 318 .ts files, 74,194 lines |
+| Tests (combined) | 1,752 (all in specverse-lang) | 1,685 (619 + 1,066), zero failures |
+| Lines removed from specverse-lang | — | -74,489 |
+
+### specverse-lang is now the CLI orchestrator
+
+| Directory | Files | Lines | Purpose |
+|-----------|------:|------:|---------|
+| src/cli/ | 13 | 7,673 | CLI commands and session management |
+| src/ai/ | 11 | 1,735 | AI integration (not yet in engine packages) |
+| src/registry/ | 21 | 7,655 | Package registry |
+| src/migration/ | 3 | 1,248 | Version migration |
+| src/utils/ | 4 | 1,199 | Path resolution, config loading |
+
+### specverse-engines: 7 independent packages
+
+| Package | Files | Lines |
+|---------|------:|------:|
+| @specverse/types | 6 | 793 |
+| @specverse/engine-entities | 86 | 9,510 |
+| @specverse/engine-parser | 38 | 10,645 |
+| @specverse/engine-inference | 29 | 13,038 |
+| @specverse/engine-realize | 119 | 24,994 |
+| @specverse/engine-generators | 29 | 13,449 |
+| @specverse/engine-ai | 11 | 1,765 |
+
+### The Self-Hosting Comparison
+
+| | specverse-self | specverse-lang |
+|---|---:|---:|
+| **Input** | 817-line spec | hand-written |
+| **CLI** | 783 lines (generated) | 7,673 lines (hand-written) |
+| **src/ TypeScript** | 23,406 lines (200 files) | 26,472 lines (69 files) |
+| **Total generated output** | 180,122 lines (396 files) | — |
+
+The generated CLI is 10x smaller and does the same core job — because the engines do the work. 817 lines of spec produces 180,122 lines of code (220x expansion).
 
 ---
 
@@ -37,13 +100,13 @@ specverse-self IS specverse. The complete toolchain — CLI, engines, VSCode ext
 
 | Engine | Package | Builds | Engine Adapter | Tests | Fully Wired | Notes |
 |--------|---------|--------|----------------|-------|-------------|-------|
-| types | @specverse/types | yes | n/a | n/a | yes | AST + engine interfaces |
-| entities | @specverse/engine-entities | yes | EngineRegistry | 571/664 (86%) | yes | 93 failures: stale imports |
+| types | @specverse/types | yes | n/a | n/a | yes | AST + engine interfaces + shared utils |
+| entities | @specverse/engine-entities | yes | EngineRegistry | 1,066/1,066 | yes | All passing (incl. 25 Quint tests) |
 | parser | @specverse/engine-parser | yes | ParserEngine | passing | yes | Self-hosting proven |
 | inference | @specverse/engine-inference | yes | InferenceEngine + model conversion | passing | yes | Self-hosting proven |
 | realize | @specverse/engine-realize | yes | RealizeEngine + realizeAll() | passing | yes | Self-hosting proven |
 | generators | @specverse/engine-generators | yes | GeneratorsEngine (diagrams/docs/uml) | passing | yes | Self-hosting proven |
-| ai | @specverse/engine-ai | yes | AIEngine (graceful fallback) | none | **partial** | EcosystemPromptManager not wired |
+| ai | @specverse/engine-ai | yes | AIEngine (graceful fallback) | none | **partial** | EcosystemPromptManager needs catalogPath |
 
 **Missing engines for production release:**
 
@@ -93,7 +156,7 @@ specverse-self IS specverse. The complete toolchain — CLI, engines, VSCode ext
 | Examples (25+ .specly files) | yes (examples/) | only self-spec | Learning material missing |
 | JSON Schema | composed at build time | copied manually | Need build pipeline |
 | Build scripts | yes (scripts/) | **NO** | Schema composition, rule composition |
-| Tests (1,752) | yes | **NO** | No test infrastructure |
+| Tests (1,685) | split across repos | **NO** | No test infrastructure in self |
 
 ### 1.6 Self-Spec Completeness
 
@@ -135,7 +198,7 @@ The self-specification (817 lines, 46 models, 4 components) describes:
 | **VSCode extension** | Syntax highlighting, validation | Ship existing extension with generated project OR specify it in self-spec |
 | **MCP server** | Claude Desktop integration | Extract to @specverse/engine-mcp OR ship existing |
 | **Build scripts** | Inference rule composition, prompt copying | Part of realize pipeline or separate engine |
-| **Full test suite** | 1,752+ tests | Port tests to specverse-engines, run against generated output |
+| **Full test suite** | 1,685 tests (619 lang + 1,066 engines) | Run against generated output |
 
 ### Tier 3: Nice to Have (ecosystem)
 
@@ -150,14 +213,14 @@ The self-specification (817 lines, 46 models, 4 components) describes:
 
 ## Part 3: Implementation Plan
 
-### Phase 1: Consolidate (1 week)
+### Phase 1: Consolidate (1 week) -- COMPLETE
 
-Clean up before building new things.
-
-1. Merge `feature/wire-entity-modules` to `main` in specverse-lang
-2. Fix 93 failing tests in specverse-engines
-3. Decide: specverse-lang src/ is source of truth; specverse-engines packages are extraction targets
-4. Update domain repos (or archive them if stale beyond repair)
+1. ~~Merge `feature/wire-entity-modules` to `main` in specverse-lang~~ DONE
+2. ~~Fix 93 failing tests in specverse-engines~~ DONE (1,066/1,066 passing)
+3. ~~Decide: specverse-engines is source of truth; specverse-lang depends on engine packages~~ DONE
+4. ~~Remove duplicate source from specverse-lang~~ DONE (-74,489 lines)
+5. ~~Code quality audit and fixes~~ DONE (rule formats, ESM hacks, silent catches, etc.)
+6. Domain repos: deferred (not blocking)
 
 ### Phase 2: Ship Assets with Generated Project (1 week)
 
