@@ -100,7 +100,26 @@ export function registerAiCommand(program: Command): void {
         }
         await aiEngine.initialize();
         const suggestions = await aiEngine.suggest(parseResult.ast!);
-        suggestions.forEach((s: any) => console.log(' -', s.description || s));
+        if (suggestions.length === 0) {
+          console.log('No suggestions — spec looks good!');
+        } else {
+          const warnings = suggestions.filter((s: any) => s.severity === 'warning');
+          const improvements = suggestions.filter((s: any) => s.severity === 'improvement');
+          const info = suggestions.filter((s: any) => s.severity === 'info');
+          if (warnings.length > 0) {
+            console.log('\nWarnings:');
+            warnings.forEach((s: any) => console.log('  [' + s.target + '] ' + s.description));
+          }
+          if (improvements.length > 0) {
+            console.log('\nSuggested improvements:');
+            improvements.forEach((s: any) => console.log('  [' + s.target + '] ' + s.description));
+          }
+          if (info.length > 0) {
+            console.log('\nInfo:');
+            info.forEach((s: any) => console.log('  [' + s.target + '] ' + s.description));
+          }
+          console.log('\n' + suggestions.length + ' suggestion(s): ' + warnings.length + ' warning, ' + improvements.length + ' improvement, ' + info.length + ' info');
+        }
       } catch (error: any) {
         console.error('Error:', error.message);
         process.exit(1);
