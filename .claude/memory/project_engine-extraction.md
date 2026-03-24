@@ -1,10 +1,12 @@
 ---
 name: Engine Extraction and Self-Hosting
-description: Engines extracted to specverse-engines. Self-hosting proven. Generated CLI has 8 commands, all engine-wired. 7 engine packages.
+description: Engines extracted to specverse-engines. Self-hosting proven. Source consolidation complete — specverse-lang depends on engine packages with no duplicate code.
 type: project
 ---
 
-## Status: SELF-HOSTING COMPLETE. 8 CLI commands, 7 engine packages, byte-for-byte identical output.
+## Status: SOURCE CONSOLIDATION COMPLETE (2026-03-24)
+
+Self-hosting proven. specverse-lang now depends entirely on @specverse/engine-* packages.
 
 ## Self-Hosting Results
 - validate: engine-wired — identical output
@@ -18,7 +20,7 @@ type: project
 - ai docs/suggest/template: engine-wired, graceful degradation when engine not available
 
 ## Architecture
-- specverse-lang: 4,407-line monolithic CLI → orchestrator
+- specverse-lang: CLI orchestrator (54 files in src/) — imports from @specverse/engine-* packages
 - Generated CLI: 410 lines, 8 modular command files, engine-discovered
 - 7 engine packages in specverse-engines (all build, all strict)
 - ENGINE_HANDLERS in command generator: all 8 commands + subcommands keyed as 'parent.sub'
@@ -27,7 +29,7 @@ type: project
 ## Engine Packages (specverse-engines)
 | Package | Status |
 |---------|--------|
-| @specverse/types | builds, strict |
+| @specverse/types | builds, strict, includes shared pluralize() utility |
 | @specverse/engine-entities | builds, strict, includes EngineRegistry |
 | @specverse/engine-parser | builds, strict, engine adapter |
 | @specverse/engine-inference | builds, strict, engine adapter + model conversion |
@@ -35,8 +37,15 @@ type: project
 | @specverse/engine-generators | builds, strict, engine adapter (diagrams/docs/uml) |
 | @specverse/engine-ai | builds, engine adapter (graceful degradation) |
 
+## Completed (previously TODO)
+- [x] Remove duplicated src/ code from specverse-lang
+- [x] Fix inference rule loading (v3.4 files had wrong format)
+- [x] Fix VSCode extension CLI discovery (missing exports)
+- [x] Fix code quality issues (ESM hacks, silent catches, duplicated pluralization, etc.)
+- [x] specverse-engines test framework (1032 tests, cross-package resolution)
+
 ## Guides Written
 - docs/guides/ARCHITECTURE-GUIDE.md — full system overview
 - docs/guides/ADDING-AN-ENTITY-TYPE.md — 11-step entity creation guide
 - docs/guides/ADDING-AN-ENGINE.md — engine package creation guide
-- Guide accuracy verified during implementation (EngineRegistry discovery docs corrected)
+- docs/guides/TEST-STRATEGY.md — test patterns for engine packages
