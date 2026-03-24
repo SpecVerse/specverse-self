@@ -11,8 +11,6 @@ import { resolve, dirname, basename, join } from 'path';
 import { fileURLToPath } from 'url';
 import { EngineRegistry } from '@specverse/engine-entities';
 import type { ParserEngine } from '@specverse/types';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { resolve, dirname, basename } from 'path';
 
 interface CommandOptions {
   [key: string]: any;
@@ -48,19 +46,22 @@ export function registerGenCommand(program: Command): void {
 
         const content = readFileSync(file, 'utf8');
         const parseResult = parser.parseContent(content, file);
-        if (parseResult.errors.length > 0) { console.error('Invalid spec'); process.exit(1); }
-        const ast = parseResult.ast!;
+        if (parseResult.errors.length > 0) {
+          console.error('Invalid spec:');
+          parseResult.errors.forEach((e: string) => console.error(' ', e));
+          process.exit(1);
+        }
 
         const gen = registry.getEngineForCapability('generate-diagrams') as any;
         if (!gen) { console.error('No generators engine found.'); process.exit(1); }
         await gen.initialize();
 
-        const diagrams = await gen.generateDiagrams(ast, { type: options.type || 'all' });
+        const diagrams = await gen.generateDiagrams(parseResult.ast!, { type: options.type || 'all' });
         const outputDir = options.output || basename(file, '.specly') + '-diagrams';
         if (!existsSync(outputDir)) mkdirSync(outputDir, { recursive: true });
-        for (const [type, content] of diagrams.entries()) {
-          writeFileSync(join(outputDir, type + '.mmd'), content);
-          console.log('  ' + type);
+        for (const [diagramType, diagramContent] of diagrams.entries()) {
+          writeFileSync(join(outputDir, diagramType + '.mmd'), diagramContent);
+          console.log('  ' + diagramType);
         }
         console.log('Generated ' + diagrams.size + ' diagrams in: ' + outputDir);
       } catch (error: any) {
@@ -89,7 +90,11 @@ export function registerGenCommand(program: Command): void {
 
         const content = readFileSync(file, 'utf8');
         const parseResult = parser.parseContent(content, file);
-        if (parseResult.errors.length > 0) { console.error('Invalid spec'); process.exit(1); }
+        if (parseResult.errors.length > 0) {
+          console.error('Invalid spec:');
+          parseResult.errors.forEach((e: string) => console.error(' ', e));
+          process.exit(1);
+        }
 
         const gen = registry.getEngineForCapability('generate-docs') as any;
         if (!gen) { console.error('No generators engine found.'); process.exit(1); }
@@ -125,7 +130,11 @@ export function registerGenCommand(program: Command): void {
 
         const content = readFileSync(file, 'utf8');
         const parseResult = parser.parseContent(content, file);
-        if (parseResult.errors.length > 0) { console.error('Invalid spec'); process.exit(1); }
+        if (parseResult.errors.length > 0) {
+          console.error('Invalid spec:');
+          parseResult.errors.forEach((e: string) => console.error(' ', e));
+          process.exit(1);
+        }
 
         const gen = registry.getEngineForCapability('generate-uml') as any;
         if (!gen) { console.error('No generators engine found.'); process.exit(1); }

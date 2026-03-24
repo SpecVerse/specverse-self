@@ -44,13 +44,13 @@ export class ExportController {
     }
 
     // Create record
-    const exportItem = await prisma.exportItem.create({
+    const exportRecord = await prisma.exportRecord.create({
       data
     });
 
     
 
-    return exportItem;
+    return exportRecord;
   }
 
   
@@ -58,22 +58,22 @@ export class ExportController {
    * Retrieve Export by ID
    */
   public async retrieve(id: string): Promise<any> {
-    const exportItem = await prisma.exportItem.findUnique({
+    const exportRecord = await prisma.exportRecord.findUnique({
       where: { id }
     });
 
-    if (!exportItem) {
+    if (!exportRecord) {
       throw new Error('Export not found');
     }
 
-    return exportItem;
+    return exportRecord;
   }
 
   /**
    * Retrieve all Exports
    */
   public async retrieveAll(options: { skip?: number; take?: number } = {}): Promise<any[]> {
-    return await prisma.exportItem.findMany({
+    return await prisma.exportRecord.findMany({
       skip: options.skip,
       take: options.take
     });
@@ -91,14 +91,14 @@ export class ExportController {
     }
 
     // Update record
-    const exportItem = await prisma.exportItem.update({
+    const exportRecord = await prisma.exportRecord.update({
       where: { id },
       data
     });
 
     
 
-    return exportItem;
+    return exportRecord;
   }
 
   
@@ -115,12 +115,12 @@ export class ExportController {
     
 
     // Update record
-    const exportItem = await prisma.exportItem.update({
+    const exportRecord = await prisma.exportRecord.update({
       where: { id },
       data
     });
 
-    return exportItem;
+    return exportRecord;
   }
 
   
@@ -130,7 +130,7 @@ export class ExportController {
   public async delete(id: string): Promise<void> {
     
 
-    await prisma.exportItem.delete({
+    await prisma.exportRecord.delete({
       where: { id }
     });
 
@@ -141,5 +141,5 @@ export class ExportController {
 }
 
 // Export singleton instance
-export const exportItemController = new ExportController();
-export default exportItemController;
+export const exportRecordController = new ExportController();
+export default exportRecordController;

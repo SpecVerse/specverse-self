@@ -58,10 +58,11 @@ model Export {
 
 model Model {
   id             String @id @default(uuid())
-  createdAt      DateTime
-  updatedAt      DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
   createdBy      String? @db.VarChar(255)
   updatedBy      String? @db.VarChar(255)
+  id             String @id @default(uuid())
   name           String @unique @db.VarChar(255)
   description    String? @db.VarChar(255)
   extends        String? @db.VarChar(255)

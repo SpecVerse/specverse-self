@@ -44,13 +44,13 @@ export class ImportController {
     }
 
     // Create record
-    const importItem = await prisma.importItem.create({
+    const importRecord = await prisma.importRecord.create({
       data
     });
 
     
 
-    return importItem;
+    return importRecord;
   }
 
   
@@ -58,22 +58,22 @@ export class ImportController {
    * Retrieve Import by ID
    */
   public async retrieve(id: string): Promise<any> {
-    const importItem = await prisma.importItem.findUnique({
+    const importRecord = await prisma.importRecord.findUnique({
       where: { id }
     });
 
-    if (!importItem) {
+    if (!importRecord) {
       throw new Error('Import not found');
     }
 
-    return importItem;
+    return importRecord;
   }
 
   /**
    * Retrieve all Imports
    */
   public async retrieveAll(options: { skip?: number; take?: number } = {}): Promise<any[]> {
-    return await prisma.importItem.findMany({
+    return await prisma.importRecord.findMany({
       skip: options.skip,
       take: options.take
     });
@@ -91,14 +91,14 @@ export class ImportController {
     }
 
     // Update record
-    const importItem = await prisma.importItem.update({
+    const importRecord = await prisma.importRecord.update({
       where: { id },
       data
     });
 
     
 
-    return importItem;
+    return importRecord;
   }
 
   
@@ -115,12 +115,12 @@ export class ImportController {
     
 
     // Update record
-    const importItem = await prisma.importItem.update({
+    const importRecord = await prisma.importRecord.update({
       where: { id },
       data
     });
 
-    return importItem;
+    return importRecord;
   }
 
   
@@ -130,7 +130,7 @@ export class ImportController {
   public async delete(id: string): Promise<void> {
     
 
-    await prisma.importItem.delete({
+    await prisma.importRecord.delete({
       where: { id }
     });
 
@@ -141,5 +141,5 @@ export class ImportController {
 }
 
 // Export singleton instance
-export const importItemController = new ImportController();
-export default importItemController;
+export const importRecordController = new ImportController();
+export default importRecordController;

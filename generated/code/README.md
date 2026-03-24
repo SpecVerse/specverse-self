@@ -73,52 +73,6 @@ npm start
 
 The API server runs on `http://localhost:${PORT}` (default: 3000)
 
-### Endpoints
-
-- **SpecificationController**: `/api`
-- **ComponentController**: `/api`
-- **ImportController**: `/api`
-- **ExportController**: `/api`
-- **ModelController**: `/api`
-- **AttributeController**: `/api`
-- **RelationshipController**: `/api`
-- **LifecycleController**: `/api`
-- **LifecycleStateController**: `/api`
-- **LifecycleTransitionController**: `/api`
-- **ProfileController**: `/api`
-- **PrimitiveController**: `/api`
-- **OperationController**: `/api`
-- **StepController**: `/api`
-- **ControllerController**: `/api`
-- **ServiceController**: `/api`
-- **EventController**: `/api`
-- **EventVersionController**: `/api`
-- **ViewController**: `/api`
-- **LayoutController**: `/api`
-- **UIComponentController**: `/api`
-- **DeploymentController**: `/api`
-- **DeploymentInstanceController**: `/api`
-- **CommunicationChannelController**: `/api`
-- **ManifestController**: `/api`
-- **InstanceFactoryController**: `/api`
-- **CapabilityMappingController**: `/api`
-- **EntityModuleController**: `/api`
-- **EntityRegistryController**: `/api`
-- **ConventionGrammarController**: `/api`
-- **ConventionPatternController**: `/api`
-- **InferenceRuleController**: `/api`
-- **RuleTemplateController**: `/api`
-- **BehaviourSpecController**: `/api`
-- **InvariantController**: `/api`
-- **SchemaFragmentController**: `/api`
-- **DiagramPluginController**: `/api`
-- **CodeTemplateController**: `/api`
-- **MCPServerController**: `/api`
-- **MCPResourceController**: `/api`
-- **MCPToolController**: `/api`
-- **AIOrchestratorController**: `/api`
-- **AIWorkflowController**: `/api`
-
 ---
 
 _Generated with [SpecVerse](https://github.com/specverse/specverse-lang)_

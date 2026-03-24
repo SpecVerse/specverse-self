@@ -11,9 +11,6 @@ import { resolve, dirname, basename } from 'path';
 import { fileURLToPath } from 'url';
 import { EngineRegistry } from '@specverse/engine-entities';
 import type { ParserEngine } from '@specverse/types';
-import { readFileSync, existsSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { writeFileSync } from 'fs';
 
 interface CommandOptions {
   [key: string]: any;
@@ -49,17 +46,22 @@ export function registerAiCommand(program: Command): void {
 
         const content = readFileSync(file, 'utf8');
         const parseResult = parser.parseContent(content, file);
-        if (parseResult.errors.length > 0) { console.error('Invalid spec'); process.exit(1); }
-
-        const ai = registry.getEngineForCapability('ai-prompts') as any;
-        if (ai) {
-          await ai.initialize(options.config ? { configPath: options.config } : {});
-          const prompt = await ai.generatePrompt(parseResult.ast!);
-          if (options.output) { writeFileSync(options.output, prompt); console.log('AI docs written to: ' + options.output); }
-          else { console.log(prompt); }
-        } else {
-          console.log('AI engine not available. Install @specverse/engine-ai.');
+        if (parseResult.errors.length > 0) {
+          console.error('Invalid spec:');
+          parseResult.errors.forEach((e: string) => console.error(' ', e));
+          process.exit(1);
         }
+
+        const aiEngine = registry.getEngineForCapability('ai-prompts') as any;
+        if (!aiEngine) {
+          console.error('AI engine not available. Install @specverse/engine-ai.');
+          process.exit(1);
+        }
+        await aiEngine.initialize({ provider: options.provider });
+        const prompt = await aiEngine.generatePrompt(parseResult.ast!, { type: 'docs' });
+        const outputFile = options.output || basename(file, '.specly') + '-ai-docs.md';
+        writeFileSync(outputFile, prompt);
+        console.log('AI documentation prompt generated: ' + outputFile);
       } catch (error: any) {
         console.error('Error:', error.message);
         process.exit(1);
@@ -85,16 +87,20 @@ export function registerAiCommand(program: Command): void {
 
         const content = readFileSync(file, 'utf8');
         const parseResult = parser.parseContent(content, file);
-        if (parseResult.errors.length > 0) { console.error('Invalid spec'); process.exit(1); }
-
-        const ai = registry.getEngineForCapability('ai-prompts') as any;
-        if (ai) {
-          await ai.initialize();
-          const suggestions = await ai.suggest(parseResult.ast!);
-          for (const s of suggestions) console.log('-', s.description || s);
-        } else {
-          console.log('AI engine not available. Install @specverse/engine-ai.');
+        if (parseResult.errors.length > 0) {
+          console.error('Invalid spec:');
+          parseResult.errors.forEach((e: string) => console.error(' ', e));
+          process.exit(1);
         }
+
+        const aiEngine = registry.getEngineForCapability('ai-suggestions') as any;
+        if (!aiEngine) {
+          console.error('AI engine not available. Install @specverse/engine-ai.');
+          process.exit(1);
+        }
+        await aiEngine.initialize();
+        const suggestions = await aiEngine.suggest(parseResult.ast!);
+        suggestions.forEach((s: any) => console.log(' -', s.description || s));
       } catch (error: any) {
         console.error('Error:', error.message);
         process.exit(1);
@@ -110,14 +116,18 @@ export function registerAiCommand(program: Command): void {
       try {
         const registry = new EngineRegistry();
         await registry.discover();
-        const ai = registry.getEngineForCapability('ai-prompts') as any;
-        if (ai) {
-          await ai.initialize(options.config ? { configPath: options.config } : {});
-          const template = await ai.template(operation);
-          if (options.output) { writeFileSync(options.output, template); console.log('Template written to: ' + options.output); }
-          else { console.log(template); }
+        const aiEngine = registry.getEngineForCapability('ai-templates') as any;
+        if (!aiEngine) {
+          console.error('AI engine not available. Install @specverse/engine-ai.');
+          process.exit(1);
+        }
+        await aiEngine.initialize();
+        const template = await aiEngine.template(operation, { config: options.config });
+        if (options.output) {
+          writeFileSync(options.output, template);
+          console.log('Template written to: ' + options.output);
         } else {
-          console.log('AI engine not available. Install @specverse/engine-ai.');
+          console.log(template);
         }
       } catch (error: any) {
         console.error('Error:', error.message);

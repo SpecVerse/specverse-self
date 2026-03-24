@@ -6,13 +6,11 @@
 
 import { Command } from 'commander';
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, watch } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { EngineRegistry } from '@specverse/engine-entities';
 import type { ParserEngine } from '@specverse/types';
-import { readFileSync, existsSync, watch } from 'fs';
-import { readFileSync, existsSync } from 'fs';
 
 interface CommandOptions {
   [key: string]: any;
@@ -52,7 +50,6 @@ export function registerDevCommand(program: Command): void {
           result.errors.forEach((e: string) => console.error(' ', e));
           process.exit(1);
         }
-        // Re-serialize the parsed AST as formatted YAML
         const yaml = await import('js-yaml');
         const formatted = yaml.dump(yaml.load(content), { lineWidth: 120, noRefs: true });
         if (options.write) {
@@ -85,21 +82,20 @@ export function registerDevCommand(program: Command): void {
         await parser.initialize({ schema });
 
         console.log('Watching ' + file + ' for changes...');
-        const validate = () => {
+        const doValidate = () => {
           try {
-            const content = readFileSync(file, 'utf8');
-            const result = parser.parseContent(content, file);
-            if (result.errors.length > 0) {
-              console.log('[' + new Date().toLocaleTimeString() + '] Validation FAILED');
-              result.errors.forEach((e: string) => console.error(' ', e));
+            const c = readFileSync(file, 'utf8');
+            const r = parser.parseContent(c, file);
+            if (r.errors.length > 0) {
+              console.log('[' + new Date().toLocaleTimeString() + '] FAILED');
+              r.errors.forEach((e: string) => console.error(' ', e));
             } else {
               console.log('[' + new Date().toLocaleTimeString() + '] Valid');
             }
           } catch (e: any) { console.error('Watch error:', e.message); }
         };
-        validate();
-        watch(file, validate);
-        // Keep process alive
+        doValidate();
+        watch(file, doValidate);
         await new Promise(() => {});
       } catch (error: any) {
         console.error('Error:', error.message);
