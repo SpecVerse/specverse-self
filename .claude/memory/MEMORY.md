@@ -17,10 +17,7 @@
 ## TODO
 
 ### Near-term
-- [ ] Wire gen commands (diagrams/docs/uml) in generated CLI
-- [ ] Wire dev commands (format/watch/quick) in generated CLI
-- [ ] Wire cache command to parser engine's ImportResolver
-- [ ] Wire AI engine properly (EcosystemPromptManager needs catalogPath config)
+- [ ] Phase 2: Ship assets (templates, prompts, examples, build scripts) with generated project
 - [ ] Add quint as devDependency to specverse-engines package.json (currently relies on global install)
 - [ ] Publish engine packages to npm (currently `file:` references)
 
