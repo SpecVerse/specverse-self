@@ -253,21 +253,18 @@ When a new entity type is registered, all engines automatically discover its fac
 
 ## Testing Your Engine
 
+Use the `testEngine()` helper for baseline coverage, then add engine-specific tests:
+
 ```typescript
 import { describe, it, expect } from 'vitest';
+import { testEngine } from '../../test-helpers.js';
 import { engine } from './index.js';
 
-describe('AI Engine', () => {
-  it('has correct metadata', () => {
-    expect(engine.name).toBe('ai');
-    expect(engine.capabilities).toContain('ai-prompts');
-  });
+// Standard engine tests (metadata, capabilities, initialize)
+testEngine(engine);
 
-  it('initializes successfully', async () => {
-    await engine.initialize();
-    expect(engine.getInfo().name).toBe('ai');
-  });
-
+// Engine-specific tests
+describe('AI Engine specific', () => {
   it('generates prompts', async () => {
     await engine.initialize();
     const prompt = await engine.generatePrompt({ models: [] });
@@ -275,6 +272,30 @@ describe('AI Engine', () => {
   });
 });
 ```
+
+### Cross-Package Tests
+
+If your engine needs files from other packages (e.g., entity grammar files, schema):
+
+```typescript
+import { resolvePackage } from '../../test-helpers.js';
+
+// Resolve a file in another package
+const schema = resolvePackage('engine-parser', 'schema/SPECVERSE-SCHEMA.json');
+const grammar = resolvePackage('engine-entities', 'src/core/models/behaviour/conventions/grammar.yaml');
+```
+
+This uses workspace symlinks — no hardcoded paths.
+
+### Test Types
+
+| Type | What | Pattern |
+|------|------|---------|
+| **Single-package** | Tests using only your engine's code | Local imports + fixtures/ directory |
+| **Cross-package** | Tests needing data from other engines | `resolvePackage()` from test-helpers |
+| **Conditional** | Tests needing external tools (quint, etc.) | `itIfQuint` / `itIfExamples` |
+
+See `docs/TEST-STRATEGY.md` for the full test strategy.
 
 ## Checklist
 

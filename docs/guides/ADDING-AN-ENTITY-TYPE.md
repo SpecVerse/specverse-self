@@ -268,7 +268,48 @@ module workflowInvariants {
 }
 ```
 
-### Step 11: Build and test
+### Step 11: Add tests
+
+Use the `testEntityModule()` helper for baseline coverage, then add entity-specific tests:
+
+```typescript
+// __tests__/workflows-entity.test.ts
+import { describe, it, expect } from 'vitest';
+import { testEntityModule, createTestContext } from '../../test-helpers.js';
+import { workflowsModule } from '../extensions/workflows/index.js';
+import { WorkflowProcessor } from '../extensions/workflows/conventions/workflow-processor.js';
+
+// Standard entity module tests (metadata, schema, processor, diagrams)
+testEntityModule(workflowsModule);
+
+// Entity-specific tests
+describe('Workflows convention processing', () => {
+  it('should expand workflow definition', () => {
+    const ctx = createTestContext();
+    const processor = new WorkflowProcessor(ctx);
+    const result = processor.process({
+      checkout: {
+        description: 'Checkout process',
+        steps: [{ name: 'validate', service: 'CartService' }]
+      }
+    });
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe('checkout');
+    expect(result[0].steps).toHaveLength(1);
+  });
+});
+```
+
+If your tests need files from other packages, use cross-package resolution:
+
+```typescript
+import { resolvePackage } from '../../test-helpers.js';
+const schemaPath = resolvePackage('engine-parser', 'schema/SPECVERSE-SCHEMA.json');
+```
+
+See `docs/TEST-STRATEGY.md` for the full test strategy, including conditional tests and cross-package patterns.
+
+### Step 12: Build and verify
 
 ```bash
 npm run build          # Rebuilds schema, compiles TypeScript
