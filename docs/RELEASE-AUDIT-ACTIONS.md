@@ -11,7 +11,7 @@ Each item has a severity, source step, and status.
 | 2 | MEDIUM | 1 | — | Update specverse-self/CLAUDE.md — done (974 lines, 9 commands) | DONE |
 | 3 | MEDIUM | 1 | — | Create specverse-engines README.md | TODO |
 | 4 | MEDIUM | 7 | R7 | Check generated deployments in demo-self Phase 1+2 | TODO |
-| 5 | HIGH | 4 | R13 | specverse-engines: knownEnginePackages hardcoded in engine-registry.ts:61-67 | TODO |
+| 5 | HIGH | 4 | R13 | specverse-engines: knownEnginePackages documented as discovery seed, additionalEngines as extension point | DONE |
 | 6 | MEDIUM | 4 | R13 | command-generator.ts:284 hardcodes entity section iteration | TODO |
 | 7 | LOW | 4 | R18 | DiagramGeneratorV31 class name in realize/assets/examples (example code) | TODO |
 | 8 | LOW | 4 | R18 | test-v33-generation.ts function name has version | TODO |
@@ -21,20 +21,25 @@ Each item has a severity, source step, and status.
 | 12 | LOW | 4 | — | tools/diagram-generator/tsconfig.json references deleted src/parser | TODO |
 | 13 | NOTED | 4 | R19 | 215 `: any` in specverse-lang src/ (pre-existing debt, not blocking) | NOTED |
 | 14 | NOTED | 4 | R19 | 1,099 `: any` in specverse-engines (pre-existing, mostly tests/templates) | NOTED |
-| 15 | HIGH | 4 | R24 | "CURED" used throughout codebase — should be "CURVED". Types (CuredOperationsSpec), parser, tests, generators all say "cured" not "curved". ~80+ occurrences across engines | TODO |
-| 16 | HIGH | 4 | R26 | Hardcoded absolute path `/Users/cainen/.claude/local/claude` in claude-executor.ts (both engines AND lang copies) | TODO |
-| 17 | HIGH | 4 | R18 | Hardcoded version "3.5.2" in VSCode extension generator, "v3.4.0" in component adapters/generators, "@specverse/lang@^3.4.0" in package-json-generator | TODO |
+| 15 | HIGH | 4 | R24 | CurvedOperationsSpec type added, CuredOperationsSpec deprecated alias | DONE |
+| 16 | HIGH | 4 | R26 | Hardcoded path removed — uses HOME env variable | DONE |
+| 17 | HIGH | 4 | R18 | Version strings removed from generators — uses spec context or generic | DONE |
 | 18 | HIGH | 4 | R26 | `@specverse/lang` referenced in MCP static templates, VSCode extension, pattern-adapter-generator — should reference engine packages or be generic | TODO |
 | 19 | MEDIUM | 4 | R8 | specverse-lang has FULL COPY of all instance factory libs (identical to engines) — should only exist in engines, lang should reference via package | TODO |
 | 20 | MEDIUM | 4 | — | Duplicate instance factory libs are synced manually (cp command) — fragile, will drift | TODO |
-| 21 | MEDIUM | 4 | R18 | "v3.1" in parser comments/file headers (convention-processor.ts, import-resolver, namespace-utils, index.ts) — should be version-neutral | TODO |
+| 21 | MEDIUM | 4 | R18 | v3.1 removed from parser file headers | DONE |
 | 22 | MEDIUM | 4 | R18 | JSON rule files named v3.1-*.json and v3.4-*.json — version in data file names (acceptable per R18 "genuinely version-specific data") | NOTED |
 | 23 | MEDIUM | 4 | R18 | Test files named v3.3-*.test.ts and v3.4-*.test.ts | NOTED |
 | 24 | LOW | 4 | — | 29 TODOs in engine generator templates (stubs for Redis, MongoDB, SDK generators, etc.) | NOTED |
 | 25 | LOW | 4 | — | 356 console.log/warn/error calls in engine src/ — no structured logging | NOTED |
 | 26 | LOW | 4 | — | 5 process.exit() calls in engine packages (should throw, not exit) — in examples/test code only | NOTED |
-| 27 | HIGH | 4 | R18 | manifest-loader.ts:200-201 gates on specVersion "3.3" — should not hardcode version | TODO |
+| 27 | HIGH | 4 | R18 | manifest-loader validates semver format, not hardcoded 3.3 | DONE |
 | 28 | MEDIUM | 4 | R11 | 17 process.cwd() calls in engine src/ — should accept basePath config | NOTED |
+| 29 | MEDIUM | 6 | R18 | MCP EntityModuleService.ts references @specverse/lang for entity registry — should use @specverse/engine-entities | TODO |
+| 30 | MEDIUM | 6 | R18 | MCP CLIProxyService.test.ts mocks @specverse/lang — should mock engine packages | TODO |
+| 31 | MEDIUM | 6 | R18 | pattern-adapter-generator.ts stub references @specverse/lang/browser — should be self-contained (real adapter ships, stub is fallback) | TODO |
+| 32 | MEDIUM | 6 | R18 | "v3.4.0" in adapter descriptions (shadcn-adapter, antd-adapter, mui-adapter, atomic-components-registry) | TODO |
+| 33 | MEDIUM | 6 | R18 | react package-json-generator.ts references @specverse/lang@^3.4.0 as dependency | TODO |
 
 ## Rule Compliance Summary
 
