@@ -13,6 +13,7 @@ import { registerGenCommand } from './commands/gen.js';
 import { registerDevCommand } from './commands/dev.js';
 import { registerCacheCommand } from './commands/cache.js';
 import { registerAiCommand } from './commands/ai.js';
+import { registerSessionCommand } from './commands/session.js';
 
 const program = new Command();
 
@@ -30,6 +31,7 @@ program
   registerDevCommand(program);
   registerCacheCommand(program);
   registerAiCommand(program);
+  registerSessionCommand(program);
 
 // Parse and execute
 program.parseAsync(process.argv).catch((error) => {

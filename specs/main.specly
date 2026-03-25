@@ -878,4 +878,97 @@ components:
                     type: FilePath
                     description: "Configuration file"
 
+          session:
+            description: "Manage AI sessions for spec generation with schema caching"
+            subcommands:
+              create:
+                description: "Create a new AI session with schema loading"
+                flags:
+                  --name:
+                    type: String
+                    alias: "-n"
+                    description: "Descriptive name for the session"
+                  --pver:
+                    type: String
+                    alias: "-p"
+                    default: "default"
+                    description: "Prompt version to use"
+                  --json:
+                    type: Boolean
+                    default: false
+                    description: "Output result as JSON"
+              list:
+                description: "List all active AI sessions"
+                flags:
+                  --all:
+                    type: Boolean
+                    alias: "-a"
+                    default: false
+                    description: "Include inactive sessions"
+                  --json:
+                    type: Boolean
+                    default: false
+                    description: "Output result as JSON"
+              delete:
+                description: "Delete an AI session"
+                arguments:
+                  sessionId:
+                    type: String
+                    required: true
+                    positional: true
+                flags:
+                  --force:
+                    type: Boolean
+                    alias: "-f"
+                    default: false
+                    description: "Force delete even if session has pending jobs"
+                  --json:
+                    type: Boolean
+                    default: false
+                    description: "Output result as JSON"
+              submit:
+                description: "Submit a job to an AI session"
+                arguments:
+                  sessionId:
+                    type: String
+                    required: true
+                    positional: true
+                  requirements:
+                    type: String
+                    required: true
+                    positional: true
+                flags:
+                  --job-id:
+                    type: String
+                    alias: "-j"
+                    description: "Custom job ID (auto-generated if not provided)"
+                  --output:
+                    type: FilePath
+                    alias: "-o"
+                    description: "Output file path for generated spec"
+                  --operation:
+                    type: String
+                    alias: "-op"
+                    default: "create"
+                    description: "Operation type: create, analyse, materialise, realize"
+              status:
+                description: "Check status of a job or session"
+                arguments:
+                  id:
+                    type: String
+                    required: true
+                    positional: true
+                flags:
+                  --json:
+                    type: Boolean
+                    default: false
+                    description: "Output result as JSON"
+              process:
+                description: "Process a pending job (resume AI session)"
+                arguments:
+                  jobId:
+                    type: String
+                    required: true
+                    positional: true
+
 deployments: {}
