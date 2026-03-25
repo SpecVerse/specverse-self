@@ -7,7 +7,7 @@ Each item has a severity, source step, and status.
 
 | # | Severity | Step | Rule | Action | Status |
 |---|----------|------|------|--------|--------|
-| 1 | HIGH | 1 | — | Rewrite specverse-lang/CLAUDE.md — references deleted src/ directories | TODO |
+| 1 | HIGH | 1 | — | specverse-lang/CLAUDE.md rewritten (90 lines, accurate) | DONE |
 | 2 | MEDIUM | 1 | — | Update specverse-self/CLAUDE.md — done (974 lines, 9 commands) | DONE |
 | 3 | MEDIUM | 1 | — | Create specverse-engines README.md | TODO |
 | 4 | MEDIUM | 7 | R7 | Check generated deployments in demo-self Phase 1+2 | TODO |
@@ -16,8 +16,8 @@ Each item has a severity, source step, and status.
 | 7 | LOW | 4 | R18 | DiagramGeneratorV31 class name in realize/assets/examples (example code) | TODO |
 | 8 | LOW | 4 | R18 | test-v33-generation.ts function name has version | TODO |
 | 9 | MEDIUM | 4 | R17 | claude-executor.ts:44,176,191 — bare catch blocks, no comments | TODO |
-| 10 | HIGH | 4 | R11 | specverse-lang CLI manually loads schema (lines 36-68) — parser should self-init | TODO |
-| 11 | MEDIUM | 4 | — | specverse-lang package.json has 5 scripts referencing deleted src/ dirs | TODO |
+| 10 | HIGH | 4 | R11 | CLI uses ConfigLoader.getSchema() — consolidated from 8 search paths | DONE |
+| 11 | MEDIUM | 4 | — | 5 stale scripts removed from package.json | DONE |
 | 12 | LOW | 4 | — | tools/diagram-generator/tsconfig.json references deleted src/parser | TODO |
 | 13 | NOTED | 4 | R19 | 215 `: any` in specverse-lang src/ (pre-existing debt, not blocking) | NOTED |
 | 14 | NOTED | 4 | R19 | 1,099 `: any` in specverse-engines (pre-existing, mostly tests/templates) | NOTED |
@@ -40,7 +40,7 @@ Each item has a severity, source step, and status.
 | 31 | MEDIUM | 6 | R18 | pattern-adapter-generator.ts stub references @specverse/lang/browser — should be self-contained (real adapter ships, stub is fallback) | TODO |
 | 32 | MEDIUM | 6 | R18 | "v3.4.0" in adapter descriptions (shadcn-adapter, antd-adapter, mui-adapter, atomic-components-registry) | TODO |
 | 33 | MEDIUM | 6 | R18 | react package-json-generator.ts references @specverse/lang@^3.4.0 as dependency | TODO |
-| 34 | HIGH | 8 | — | specverse-lang src/utils/__tests__/spec-helpers.test.ts imports from deleted ../../inference-engine/ | TODO |
+| 34 | HIGH | 8 | — | spec-helpers test import fixed — uses @specverse/engine-inference | DONE |
 | 35 | MEDIUM | 8 | — | specverse-lang has 1.3MB duplicate libs/instance-factories/ (engines has 1.9MB authoritative copy) | TODO |
 | 36 | MEDIUM | 8 | — | specverse-lang package.json: 5 stale scripts referencing deleted dirs (same as #11) | TODO |
 | 37 | LOW | 8 | — | specverse-lang tools/ (ai-orchestrator, diagram-generator, specverse-mcp, vscode-extension) — are these still used or should they move to engines? | TODO |
