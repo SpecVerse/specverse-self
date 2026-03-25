@@ -40,6 +40,10 @@ Each item has a severity, source step, and status.
 | 31 | MEDIUM | 6 | R18 | pattern-adapter-generator.ts stub references @specverse/lang/browser — should be self-contained (real adapter ships, stub is fallback) | TODO |
 | 32 | MEDIUM | 6 | R18 | "v3.4.0" in adapter descriptions (shadcn-adapter, antd-adapter, mui-adapter, atomic-components-registry) | TODO |
 | 33 | MEDIUM | 6 | R18 | react package-json-generator.ts references @specverse/lang@^3.4.0 as dependency | TODO |
+| 34 | HIGH | 8 | — | specverse-lang src/utils/__tests__/spec-helpers.test.ts imports from deleted ../../inference-engine/ | TODO |
+| 35 | MEDIUM | 8 | — | specverse-lang has 1.3MB duplicate libs/instance-factories/ (engines has 1.9MB authoritative copy) | TODO |
+| 36 | MEDIUM | 8 | — | specverse-lang package.json: 5 stale scripts referencing deleted dirs (same as #11) | TODO |
+| 37 | LOW | 8 | — | specverse-lang tools/ (ai-orchestrator, diagram-generator, specverse-mcp, vscode-extension) — are these still used or should they move to engines? | TODO |
 
 ## Rule Compliance Summary
 
