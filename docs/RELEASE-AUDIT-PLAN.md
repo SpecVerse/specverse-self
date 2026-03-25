@@ -102,7 +102,13 @@ Systematic review of code quality:
 - [ ] Generated code does not reference specverse-lang paths
 - [ ] No hardcoded absolute paths in generated output
 
-### 6d: No silent error swallowing
+### 6d: No version numbers in code identifiers
+- [ ] No version numbers in function/class/variable names (e.g., `parseV31`, `V3ControllerGenerator`)
+- [ ] No version numbers in file names except where genuinely version-specific (e.g., migration files)
+- [ ] No hardcoded version strings in comments that will go stale (e.g., "v3.1 format")
+- [ ] Version comes from package.json or config, not embedded in code
+
+### 6e: No silent error swallowing
 - [ ] Every catch block either logs or re-throws
 - [ ] No empty catch blocks (document acceptable ones with comments)
 - [ ] Realize pipeline reports all errors, not just count
