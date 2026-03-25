@@ -10,6 +10,7 @@ Each item has a severity, source step, and status.
 | 1 | HIGH | 1 | Rewrite specverse-lang/CLAUDE.md — most content references deleted src/ directories (parser, inference-engine, entities, generators, diagram-engine, realize, types). Added warning banner as interim fix. | TODO |
 | 2 | MEDIUM | 1 | Update specverse-self/CLAUDE.md — update spec line count (974), command count (9), structure diagram | TODO |
 | 3 | MEDIUM | 1 | Update specverse-engines README.md if exists — package descriptions, test counts | TODO |
+| 4 | MEDIUM | 7 | Check state of generated deployments in demo-self Phase 1 and Phase 2 — are deployment instances, channels, bindings generated correctly? Does R7 (Deployments Bridge Logical and Physical) hold? | TODO |
 
 ## Completed
 
