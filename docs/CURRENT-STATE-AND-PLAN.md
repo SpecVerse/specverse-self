@@ -1,6 +1,6 @@
 # SpecVerse: Current State and Implementation Plan
 
-**Date**: 24 March 2026 (updated)
+**Date**: 25 March 2026 (updated)
 **Purpose**: Honest, structured assessment of where we are, what's missing, and the plan to reach the goal: **specverse-self replaces specverse-lang as the production release of SpecVerse.**
 
 ---
@@ -32,12 +32,14 @@ specverse-lang was a monolith containing everything: parser, inference engine, e
 
 ### By the Numbers
 
-| Metric | Before | After |
+| Metric | Before (17 Mar) | After (25 Mar) |
 |--------|--------|-------|
-| specverse-lang src/ | 269 .ts files, 92,127 lines | 69 .ts files, 27,136 lines |
-| specverse-engines | (did not exist) | 318 .ts files, 74,194 lines |
-| Tests (combined) | 1,752 (all in specverse-lang) | 1,685 (619 + 1,066), zero failures |
+| specverse-lang src/ | 269 .ts files, 92,127 lines | 69 .ts files, 26,496 lines |
+| specverse-engines | (did not exist) | 351 .ts files, 83,769 lines |
+| Tests (combined) | 1,752 (all in specverse-lang) | 1,689 (619 + 1,070), zero failures, zero skips |
 | Lines removed from specverse-lang | — | -74,489 |
+| Self-spec | 817 lines, 4 components | 881 lines, 5 components |
+| Entity types | 9 (6 core + 3 extension) | 10 (6 core + 4 extension) |
 
 ### specverse-lang is now the CLI orchestrator
 
@@ -122,8 +124,8 @@ The generated CLI is 10x smaller and does the same core job — because the engi
 |---------|-------------|----------------|-------------|---------|-------|
 | validate | yes | yes | yes | **PROVEN** | Byte-for-byte identical |
 | infer | yes | yes | yes | **PROVEN** | Byte-for-byte identical |
-| realize | yes | yes | yes | **PROVEN** | Byte-for-byte identical |
-| init | yes | yes | delegates | partial | Needs templates shipped (Phase 2) |
+| realize | yes | yes | yes | **PROVEN** | Byte-for-byte identical, uses engine realizeAll() |
+| init | yes | yes | yes | **WORKING** | Templates from engine package, variable substitution, --list |
 | gen diagrams | yes | yes | yes | **WORKING** | 12 Mermaid diagrams |
 | gen docs | yes | yes | yes | **WORKING** | Markdown documentation |
 | gen uml | yes | yes | yes | **WORKING** | PlantUML |
@@ -133,49 +135,46 @@ The generated CLI is 10x smaller and does the same core job — because the engi
 | cache | yes | yes | yes | **WORKING** | --stats, --list, --clear via ImportResolver |
 | ai docs | yes | yes | yes | **WORKING** | 635-line implementation prompt from self-spec |
 | ai suggest | yes | yes | yes | **WORKING** | 101 suggestions, 3 severity levels |
-| ai template | yes | yes | yes | partial | Needs prompts shipped (Phase 2) |
+| ai template | yes | yes | yes | **WORKING** | Versioned prompt YAML from engine package |
 | migrate | no | no | no | n/a | Not in self-spec (deprecated) |
 | validate-manifest | no | no | no | n/a | Not in self-spec |
 | test/debug/schema | no | no | no | n/a | Internal tooling |
 
-### 1.4 Tools (NOT in specverse-self)
+### 1.4 Tools
 
-| Tool | In specverse-lang | In specverse-self | Gap |
-|------|-------------------|-------------------|-----|
-| VSCode extension | yes (v3.5.2, published) | **NO** | Syntax highlighting, validation, IntelliSense |
-| MCP server | yes (v3.5.1, production) | **NO** | Claude Desktop integration, AI tool access |
-| AI orchestrator | yes (v3.3.0, 75 tests) | **NO** | Multi-provider LLM workflows |
-| Diagram generator | via engine-generators | yes (engine-wired) | Covered |
+| Tool | In specverse-lang | In specverse-self | Status |
+|------|-------------------|-------------------|--------|
+| VSCode extension | yes (v3.5.2) | **Generated from spec** | 14 commands, tmLanguage, themes, schema validation |
+| MCP server | yes (v3.5.1) | **Generated from spec** | Spec-driven tool/resource registry |
+| AI orchestrator | yes (v3.3.0, 75 tests) | via engine-ai | Prompts, suggestions, templates working |
+| Diagram generator | via engine-generators | yes (engine-wired) | 12 diagram types |
 
-### 1.5 Assets (NOT in specverse-self)
+### 1.5 Assets
 
-| Asset | In specverse-lang | In specverse-self | Gap |
-|-------|-------------------|-------------------|-----|
-| Project templates (4 variants) | yes (templates/) | **NO** | `specverse init` won't work |
-| AI prompts (v1-v9) | yes (prompts/) | **NO** | AI commands need prompts |
-| Examples (25+ .specly files) | yes (examples/) | only self-spec | Learning material missing |
-| JSON Schema | composed at build time | copied manually | Need build pipeline |
-| Build scripts | yes (scripts/) | **NO** | Schema composition, rule composition |
-| Tests (1,685) | split across repos | **NO** | No test infrastructure in self |
+| Asset | In Engine Packages | Shipped by realize all | Status |
+|-------|-------------------|----------------------|--------|
+| Project templates (4 variants) | @specverse/engine-realize/assets/templates/ | yes | `init` finds them from engine package |
+| AI prompts (v1-v9 + default) | @specverse/engine-ai/assets/prompts/ | yes | `ai template` loads them |
+| Examples (53 .specly files) | @specverse/engine-realize/assets/examples/ | yes | Includes promotions domain extension |
+| JSON Schema | Composed from entity module fragments | yes | Auto-discovered from core/ and extensions/ dirs |
+| Build scripts | specverse-lang/scripts/ | not needed | Schema/rules composed by engine packages |
+| Tests (1,689) | Split: 1,070 engines + 619 lang | — | All passing, zero failures |
 
 ### 1.6 Self-Spec Completeness
 
-The self-specification (817 lines, 46 models, 4 components) describes:
+The self-specification (881 lines, 47+ models, 5 components) describes:
 
 | Component | What it covers | Complete? |
 |-----------|---------------|-----------|
 | SpecLanguage | Models, controllers, services, events, views, deployments, manifests, operations | yes |
 | BuildSystem | Entity modules, conventions, inference, schema, diagrams, realization | yes |
-| AISupport | MCP server, resources, tools, orchestrator, workflows | yes |
-| CLI | validate, infer, realize, init, gen, dev, cache, ai | yes |
+| ToolsSupport | VSCode extension (languages, commands, themes), MCP server (resources, tools) | yes |
+| AISupport | AI orchestrator, workflows | yes |
+| CLI | validate, infer, realize, init, gen, dev, cache, ai (8 commands, full subcommand defs) | yes |
 
 **NOT described in self-spec:**
-- VSCode extension structure
-- MCP server implementation details
-- AI orchestrator workflow engine
-- Project template structure
-- Build pipeline / schema composition
 - Test infrastructure
+- Build pipeline details (schema composition handled by engine packages)
 
 ---
 
@@ -185,20 +184,20 @@ The self-specification (817 lines, 46 models, 4 components) describes:
 
 | Item | What | How |
 |------|------|-----|
-| ~~**Working AI engine**~~ | ~~ai docs/suggest/template produce useful output~~ | **DONE** — generatePrompt (635 lines), spec analyser (101 suggestions), template loader |
-| **Project templates** | `specverse init` creates working projects | Ship templates with the generated project (copy from specverse-lang) |
-| **Schema composition** | Build pipeline composes schema from entity fragments | Ship compose-schema.cjs or make it an engine capability |
-| **Examples** | At least 5 reference .specly files | Copy core examples or generate from self-spec |
+| ~~**Working AI engine**~~ | ~~ai docs/suggest/template~~ | **DONE** — prompts, spec analyser, template loader |
+| ~~**Project templates**~~ | ~~`specverse init` creates working projects~~ | **DONE** — templates in engine package, init self-contained |
+| ~~**Schema composition**~~ | ~~Build pipeline composes schema~~ | **DONE** — auto-discovers from entity module directories |
+| ~~**Examples**~~ | ~~Reference .specly files~~ | **DONE** — 53 examples shipped including promotions domain extension |
 | **Tests** | CI/CD verification that generated CLI works | Self-hosting test as a test suite |
 
 ### Tier 2: Should Have (production quality)
 
 | Item | What | How |
 |------|------|-----|
-| **VSCode extension** | Syntax highlighting, validation | Ship existing extension with generated project OR specify it in self-spec |
-| **MCP server** | Claude Desktop integration | Extract to @specverse/engine-mcp OR ship existing |
-| **Build scripts** | Inference rule composition, prompt copying | Part of realize pipeline or separate engine |
-| **Full test suite** | 1,685 tests (619 lang + 1,066 engines) | Run against generated output |
+| ~~**VSCode extension**~~ | ~~Syntax highlighting, validation~~ | **DONE** — generated from spec (14 commands, tmLanguage, themes) |
+| ~~**MCP server**~~ | ~~Claude Desktop integration~~ | **DONE** — generated from spec with tool/resource registry |
+| ~~**Build scripts**~~ | ~~Inference rule composition~~ | **DONE** — auto-discovers from entity directories |
+| **Full test suite** | 1,689 tests (619 lang + 1,070 engines) | Run against generated output |
 
 ### Tier 3: Nice to Have (ecosystem)
 
@@ -222,51 +221,40 @@ The self-specification (817 lines, 46 models, 4 components) describes:
 5. ~~Code quality audit and fixes~~ DONE (rule formats, ESM hacks, silent catches, etc.)
 6. Domain repos: deferred (not blocking)
 
-### Phase 2: Ship Assets with Generated Project (1 week)
+### Phase 2: Ship Assets with Generated Project (1 week) -- COMPLETE
 
-Make `specverse realize all` also copy the assets that specverse-self needs:
+1. ~~Templates~~ DONE — in @specverse/engine-realize/assets/templates/, `init` finds them
+2. ~~Schema~~ DONE — auto-composed from entity directories, shipped by realizeAll()
+3. ~~Examples~~ DONE — 53 .specly files in engine-realize/assets/examples/
+4. ~~Prompts~~ DONE — v1-v9 + default in @specverse/engine-ai/assets/prompts/
+5. ~~Build scripts~~ DONE — schema/rule composition auto-discovers, no scripts needed
 
-1. **Templates**: Copy `templates/` during realize → generated project has `specverse init`
-2. **Schema**: Already done (copied manually). Automate in realize pipeline.
-3. **Examples**: Copy core examples during realize → learning material included
-4. **Prompts**: Copy `prompts/` during realize → AI commands have prompt versions
-5. **Build scripts**: Copy compose-schema.cjs, compose-inference-rules.cjs
-
-This means the realize pipeline produces a COMPLETE specverse installation, not just an app.
+`specverse realize all` now produces a COMPLETE self-contained SpecVerse installation.
 
 ### Phase 3: Working AI Engine (1 week) -- COMPLETE
 
-1. ~~Build a simpler prompt generator~~ DONE — generatePrompt produces structured implementation prompts from AST
-2. ~~`ai docs` generates implementation prompts~~ DONE — 635-line prompt from self-spec with model tables, relationships, controllers
-3. ~~`ai suggest` identifies missing patterns~~ DONE — spec-analyser inspects models, relationships, lifecycles, events, controllers, services, views (101 suggestions for self-spec)
-4. ~~`ai template` generates templates~~ DONE — wired to versioned prompt YAML loader (needs prompts shipped in Phase 2)
-5. Ship prompts/core/ with the AI engine package
+1. ~~generatePrompt~~ DONE — structured implementation prompts from AST (635 lines for self-spec)
+2. ~~`ai docs`~~ DONE — model tables, relationships, controllers, services, events
+3. ~~`ai suggest`~~ DONE — spec-analyser: models, relationships, lifecycles, events, controllers (101 suggestions)
+4. ~~`ai template`~~ DONE — loads versioned prompt YAML from engine package
+5. ~~Ship prompts~~ DONE — in @specverse/engine-ai/assets/prompts/
 
-### Phase 4: VSCode Extension + MCP Server (1 week)
+### Phase 4: VSCode Extension + MCP Server (1 week) -- COMPLETE (Option B)
 
-These are the developer experience tools.
+Went directly to Option B — specified in self-spec and generated:
 
-**Option A** (quick): Ship existing tools as-is with the generated project
-- Copy `tools/vscode-extension/` to generated project
-- Copy `tools/specverse-mcp/` to generated project
-- Add npm scripts to launch them
+1. ~~ToolsSupport component~~ DONE — 7 models (VSCodeExtension, ExtensionCommand, MCPServer, MCPTool, etc.)
+2. ~~VSCode extension instance factory~~ DONE — generates package.json (14 commands), ships tmLanguage, themes, schema
+3. ~~MCP server instance factory~~ DONE — ships core framework, generates spec-driven tool/resource registry
+4. ~~Wired into realizeAll()~~ DONE — Step 10 generates both tools
 
-**Option B** (proper): Specify them in the self-spec and generate
-- Add `ToolsSupport` component to self-spec with VSCode extension model
-- VSCode extension becomes a realize target (instance factory for VSCode)
-- MCP server becomes @specverse/engine-mcp
+### Phase 5: Domain Extension Example (1 week) -- COMPLETE
 
-Option A first, Option B as the longer-term goal.
-
-### Phase 5: Domain Extension Example (1 week)
-
-Build a fresh example (NOT using stale domain repos).
-
-1. Create a `promotions` extension entity type in a new example project
-2. Full 8-facet implementation: schema, conventions, inference, Quint, generators
-3. Demonstrate: `.specly` file with `promotions:` section validates, infers, realizes
-4. Document as a walkthrough showing the entity extension pattern in practice
-5. Add to examples/ as a reference for how to extend SpecVerse
+1. ~~`promotions` entity type~~ DONE — full 8-facet implementation (schema, conventions, inference, Quint, generators, docs, tests)
+2. ~~Inference integration~~ DONE — PromotionGenerator auto-discovered, generates PromotionService (4 ops) + 2 events
+3. ~~Example .specly file~~ DONE — e-commerce store with 6 promotions (shorthand + object syntax)
+4. ~~Framework made generic~~ DONE — removed all hardcoded entity lists (adding new entity = 3 changes)
+5. ~~Entity extension pattern proven~~ DONE — validates, infers, realizes through standard pipeline
 
 ### Phase 6: Sample Business App (1 week)
 
@@ -364,15 +352,17 @@ The final step: specverse-self becomes the release.
 - [x] `specverse gen diagrams/docs/uml` works (DONE — 12 diagrams, markdown docs, PlantUML)
 - [x] `specverse dev format/watch/quick` works (DONE — all tested)
 - [x] `specverse ai docs/suggest/template` produces useful output (DONE — 635-line prompt, 101 suggestions)
-- [ ] VSCode extension ships with the generated project
-- [ ] MCP server ships with the generated project
-- [ ] Examples directory is included
-- [ ] Build pipeline (schema composition) is included
-- [ ] At least one domain extension example exists
+- [x] VSCode extension ships with the generated project (DONE — generated from spec)
+- [x] MCP server ships with the generated project (DONE — generated from spec)
+- [x] Examples directory is included (DONE — 53 .specly files)
+- [x] Build pipeline (schema composition) is included (DONE — auto-discovers from directories)
+- [x] At least one domain extension example exists (DONE — promotions, full 8-facet)
+- [x] Entity extension framework is fully generic (DONE — 3 changes to add entity)
 - [ ] Sample business app with real business logic (behaviors, lifecycles, events)
 - [ ] L3 behavior generation produces operation logic (not just CRUD stubs)
+- [ ] Quint invariants transpile to runtime guards
 - [ ] Test suite runs and passes
-- [ ] Output is byte-for-byte identical to specverse-lang for core pipeline (DONE)
+- [x] Output is byte-for-byte identical to specverse-lang for core pipeline (DONE)
 
 ### The release test:
 
