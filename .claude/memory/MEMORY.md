@@ -16,10 +16,9 @@
 
 ## TODO
 
-### Near-term (Phase 6 in progress)
-- [ ] Exclude auto-generated fields (id, createdAt) from create validation in controller generator
-- [ ] Generate service files with real business logic from spec behaviors
-- [ ] Wire services into controller operations
+### Near-term
+- [ ] Phase 7: Quint → TypeScript runtime guards
+- [ ] Phase 8: Release as v4.0.0
 - [ ] Add quint as devDependency to specverse-engines package.json (currently relies on global install)
 - [ ] Publish engine packages to npm (currently `file:` references)
 
