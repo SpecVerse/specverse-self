@@ -16,8 +16,10 @@
 
 ## TODO
 
-### Near-term
-- [ ] Phase 2: Ship assets (templates, prompts, examples, build scripts) with generated project
+### Near-term (Phase 6 in progress)
+- [ ] Exclude auto-generated fields (id, createdAt) from create validation in controller generator
+- [ ] Generate service files with real business logic from spec behaviors
+- [ ] Wire services into controller operations
 - [ ] Add quint as devDependency to specverse-engines package.json (currently relies on global install)
 - [ ] Publish engine packages to npm (currently `file:` references)
 
