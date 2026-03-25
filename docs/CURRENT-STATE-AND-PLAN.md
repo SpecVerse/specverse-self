@@ -312,14 +312,21 @@ Build a complete business application spec (e.g., order management, subscription
 
 **Why this matters**: This is the proof that SpecVerse is a business specification language, not just an ORM/API scaffolder. The L3 behavior generation should produce code that a developer can read and recognize as their business rules.
 
-### Phase 7: Quint → Runtime Guards (1 week)
+### Phase 6: Sample Business App (1 week) -- COMPLETE
 
-Bridge formal verification to generated code.
+1. ~~Runnable generated app~~ DONE — Fastify + Prisma + SQLite, starts with `npx tsx src/main.ts`
+2. ~~All CURED operations~~ DONE — Create, Update, Retrieve, Validate, Evolve, Delete all working
+3. ~~Lifecycle state machine enforced~~ DONE — pending → confirmed → checked_in → checked_out, invalid transitions rejected
+4. ~~L3 behavior generation~~ DONE — services have preconditions, postconditions, event stubs from spec
+5. ~~React frontend with actual model fields~~ DONE — sidebar nav, list/detail/form views, FK selects, date formatting, clickable FK links
+6. ~~Both Phase 3 and Phase 4 apps run~~ DONE — UUID and Integer ID handling
 
-1. Parse .qnt files with @informalsystems/quint API
-2. Walk IR, generate TypeScript guard functions
-3. Wire guards into realized services/controllers
-4. Each entity module's Quint invariants become runtime checks
+### Phase 7: Quint → Runtime Guards (1 week) -- COMPLETE
+
+1. ~~Parse .qnt files~~ DONE — quint-transpiler.ts reads all entity module .qnt files
+2. ~~Transpile to TypeScript~~ DONE — 117 guards (6 pure functions, 111 invariants) from 10 entity modules
+3. ~~Ship with generated code~~ DONE — guards.ts (635 lines) generated in realize pipeline
+4. ~~Type mapping~~ DONE — int→number, str→string, bool→boolean, if/else→ternary, forall→every
 
 ### Phase 8: Self-Hosting as Release (1 week)
 
@@ -358,10 +365,11 @@ The final step: specverse-self becomes the release.
 - [x] Build pipeline (schema composition) is included (DONE — auto-discovers from directories)
 - [x] At least one domain extension example exists (DONE — promotions, full 8-facet)
 - [x] Entity extension framework is fully generic (DONE — 3 changes to add entity)
-- [ ] Sample business app with real business logic (behaviors, lifecycles, events)
-- [ ] L3 behavior generation produces operation logic (not just CRUD stubs)
-- [ ] Quint invariants transpile to runtime guards
-- [ ] Test suite runs and passes
+- [x] Sample business app with real business logic (DONE — guesthouse booking with CURED + lifecycle)
+- [x] L3 behavior generation produces operation logic (DONE — preconditions, postconditions, events)
+- [x] Quint invariants transpile to runtime guards (DONE — 117 guards, 635-line guards.ts)
+- [ ] Test suite runs and passes (1,689 tests — audit pending)
+- [ ] Release audit complete (see RELEASE-AUDIT-PLAN.md)
 - [x] Output is byte-for-byte identical to specverse-lang for core pipeline (DONE)
 
 ### The release test:

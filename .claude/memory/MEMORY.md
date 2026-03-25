@@ -1,18 +1,23 @@
 # SpecVerse Project Memory
 
-## Current State (2026-03-24)
+## Current State (2026-03-25)
 
-**Self-hosting is complete.** The generated CLI produces byte-for-byte identical output to the hand-written CLI.
-
-**Source consolidation complete.** specverse-lang depends entirely on @specverse/engine-* packages — no duplicate source code.
+**Phases 1-7 complete.** All 8 implementation phases done except release audit (Phase 8).
 
 ### Repos (all on GitHub)
-- **specverse-lang** (`main`): CLI orchestrator only, 619 tests passing, no duplicate engine source
-- **specverse-engines** (`main`): 7 engine packages, 1066 tests passing
-- **specverse-self** (`main`): Self-spec realization, generated CLI works
+- **specverse-lang** (`main`): CLI orchestrator only, 619 tests, depends on engine packages
+- **specverse-engines** (`main`): 7 engine packages, 1,070 tests, 10 entity types
+- **specverse-self** (`main`): 974-line self-spec, 9-command generated CLI, all working
+- **specverse-demo-self**: 4-phase proof cycle (create, analyse, realize, materialise)
 
-### What Self-Hosting Means
-817-line self-spec → generates 410-line CLI → that CLI validates/infers/realizes the self-spec → produces 390 files byte-for-byte identical to the hand-written CLI's output.
+### What's Proven
+- 974-line self-spec → 9-command CLI with session management
+- Generated apps run: Fastify + Prisma + SQLite + React (both UUID and Integer IDs)
+- All CURED operations work via API and GUI
+- Lifecycle state machines enforced at runtime
+- L3 behavior generation (preconditions, postconditions, events)
+- 117 Quint guards transpile to TypeScript runtime functions
+- 4-phase proof cycle: requirements → spec → code, and code → spec → code
 
 ## TODO
 

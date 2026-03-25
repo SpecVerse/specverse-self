@@ -4,9 +4,9 @@ description: Engines extracted to specverse-engines. Self-hosting proven. Source
 type: project
 ---
 
-## Status: SOURCE CONSOLIDATION COMPLETE (2026-03-24)
+## Status: ALL PHASES COMPLETE (2026-03-25)
 
-Self-hosting proven. specverse-lang now depends entirely on @specverse/engine-* packages.
+Phases 1-7 done. Self-hosting proven. Generated apps run with full CURED + GUI + Quint guards.
 
 ## Self-Hosting Results
 - validate: engine-wired — identical output

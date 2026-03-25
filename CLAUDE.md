@@ -2,63 +2,89 @@
 
 ## What This Repo Is
 
-SpecVerse self-specification — the language specifying and implementing itself. This is the future production release of SpecVerse (targeting v4.0.0).
+SpecVerse self-specification — the language specifying and implementing itself. This is the production release of SpecVerse (v4.0.0).
 
 ## Goal
 
-specverse-self replaces specverse-lang as the production release. The complete toolchain — CLI, engines, VSCode extension, MCP server, templates, examples, tests — generated from the self-specification.
+specverse-self IS specverse. The complete toolchain — CLI, engines, VSCode extension, MCP server, templates, examples — generated from the self-specification.
 
 ## Structure
 
 ```
 specverse-self/
 ├── specs/
-│   └── main.specly              # The self-spec (817 lines, 46 models, 4 components, 8 CLI commands)
+│   └── main.specly              # The self-spec (974 lines, 5 components, 9 CLI commands)
 ├── manifests/
-│   └── implementation.yaml      # Fastify + Prisma + PostgreSQL + React + Commander.js
+│   └── implementation.yaml      # Fastify + Prisma + SQLite + React + Commander.js
 ├── generated/
-│   └── code/                    # Generated output (390+ files)
+│   └── code/                    # Generated output (465+ files)
 │       ├── backend/
-│       │   ├── src/cli/         # Generated CLI (8 engine-wired commands)
-│       │   ├── src/controllers/ # 43 CURED controllers
-│       │   ├── src/services/    # 12 relationship services
-│       │   ├── src/routes/      # 43 Fastify route handlers
-│       │   ├── prisma/          # 43-model Prisma schema
-│       │   └── schema/          # SPECVERSE-SCHEMA.json for validation
-│       └── frontend/            # React app (types, hooks, components, forms)
+│       │   ├── src/cli/         # Generated CLI (9 commands incl. session)
+│       │   ├── src/controllers/ # CURED controllers
+│       │   ├── src/services/    # Business logic services with L3 behaviors
+│       │   ├── src/routes/      # Fastify route handlers
+│       │   ├── src/guards.ts    # 117 runtime guards from Quint specs
+│       │   ├── src/main.ts      # Fastify server with auto-wired routes
+│       │   ├── prisma/          # Prisma schema (SQLite)
+│       │   └── schema/          # SPECVERSE-SCHEMA.json
+│       ├── frontend/            # React app (list/detail/form views, sidebar nav)
+│       └── tools/
+│           ├── vscode-extension/  # 14-command VSCode extension
+│           └── specverse-mcp/     # MCP server with spec-driven registry
 ├── docs/
-│   ├── CURRENT-STATE-AND-PLAN.md  # 8-phase implementation plan
-│   └── guides/                    # Architecture, entity, engine guides
-├── .claude/memory/                # Project memory for AI assistants
+│   ├── CURRENT-STATE-AND-PLAN.md    # Phase tracker and gap analysis
+│   ├── RELEASE-AUDIT-PLAN.md        # v4.0.0 release audit steps
+│   ├── RELEASE-AUDIT-ACTIONS.md     # Running action list from audit
+│   └── guides/                      # Architecture, entity, engine guides
+├── .claude/memory/                  # Project memory (source of truth for all repos)
 └── package.json
 ```
 
-## Key Facts
+## Self-Spec Components (5)
 
-- Self-hosting is PROVEN: generated CLI produces byte-for-byte identical output to hand-written CLI
-- 7 engine packages in specverse-engines repo (types, entities, parser, inference, realize, generators, ai)
-- Generated CLI: 410 lines vs hand-written 4,407 lines — same functionality
-- All engines discovered at runtime via EngineRegistry
+1. **SpecLanguage** — 27 models: Specification, Component, Model, Controller, Service, Event, View, Deployment, etc.
+2. **BuildSystem** — 11 models: EntityModule, ConventionGrammar, InferenceRule, SchemaFragment, etc.
+3. **ToolsSupport** — 7 models: VSCodeExtension, ExtensionCommand, MCPServer, MCPTool, etc.
+4. **AISupport** — 2 models: AIOrchestrator, AIWorkflow
+5. **CLI** — 9 commands: validate, infer, realize, init, gen, dev, cache, ai, session
 
 ## Dependencies
 
-- specverse-lang: the hand-written CLI (orchestrator, to be replaced by this)
-- specverse-engines: 7 engine packages (parser, inference, realize, generators, entities, types, ai)
+- **specverse-engines**: 7 engine packages (types, entities, parser, inference, realize, generators, ai)
+- **specverse-lang**: CLI orchestrator only (being replaced by this repo's generated CLI)
 
 ## Commands
 
 ```bash
-# From generated/code/backend:
-npm run cli -- validate ../../../specs/main.specly     # Validate self-spec
-npm run cli -- infer ../../../specs/main.specly         # Infer architecture
-npm run cli -- realize all <file> -o <dir> -m <manifest>  # Generate code
-npm run cli -- gen diagrams ../../../specs/main.specly  # Generate diagrams
-npm run cli -- gen docs ../../../specs/main.specly      # Generate documentation
+# Using the generated CLI (via npx tsx):
+CLI="npx tsx generated/code/backend/src/cli/index.ts"
+
+$CLI validate specs/main.specly
+$CLI infer specs/main.specly -o inferred.specly
+$CLI realize all specs/main.specly -o generated/code -m manifests/implementation.yaml
+$CLI gen diagrams specs/main.specly
+$CLI gen docs specs/main.specly
+$CLI gen uml specs/main.specly
+$CLI dev quick specs/main.specly
+$CLI ai docs specs/main.specly
+$CLI ai suggest specs/main.specly
+$CLI session create --name "test"
+$CLI init my-project
+$CLI cache --stats
 ```
+
+## Key Principles
+
+- Fix generators, never hand-edit generated output
+- Fix root causes, don't hack around problems
+- Schema validation runs twice (before AND after convention processing)
+- Adding a new entity type requires only 3 changes (module, schema property, bootstrap)
+- All engine code lives in specverse-engines, not here
 
 ## See Also
 
-- docs/CURRENT-STATE-AND-PLAN.md — full gap analysis and 8-phase plan
-- docs/guides/ARCHITECTURE-GUIDE.md — how the whole system works
-- docs/guides/ADDING-AN-ENTITY-TYPE.md — how to add entity types
-- docs/guides/ADDING-AN-ENGINE.md — how to add engines
+- docs/CURRENT-STATE-AND-PLAN.md — phase tracker
+- docs/RELEASE-AUDIT-PLAN.md — v4.0.0 audit steps
+- docs/guides/ARCHITECTURE-GUIDE.md — system architecture
+- docs/guides/ADDING-AN-ENTITY-TYPE.md — entity creation (11 steps)
+- docs/guides/ADDING-AN-ENGINE.md — engine creation
