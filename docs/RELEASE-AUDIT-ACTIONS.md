@@ -27,6 +27,14 @@ Each item has a severity, source step, and status.
 | 18 | HIGH | 4 | R26 | `@specverse/lang` referenced in MCP static templates, VSCode extension, pattern-adapter-generator — should reference engine packages or be generic | TODO |
 | 19 | MEDIUM | 4 | R8 | specverse-lang has FULL COPY of all instance factory libs (identical to engines) — should only exist in engines, lang should reference via package | TODO |
 | 20 | MEDIUM | 4 | — | Duplicate instance factory libs are synced manually (cp command) — fragile, will drift | TODO |
+| 21 | MEDIUM | 4 | R18 | "v3.1" in parser comments/file headers (convention-processor.ts, import-resolver, namespace-utils, index.ts) — should be version-neutral | TODO |
+| 22 | MEDIUM | 4 | R18 | JSON rule files named v3.1-*.json and v3.4-*.json — version in data file names (acceptable per R18 "genuinely version-specific data") | NOTED |
+| 23 | MEDIUM | 4 | R18 | Test files named v3.3-*.test.ts and v3.4-*.test.ts | NOTED |
+| 24 | LOW | 4 | — | 29 TODOs in engine generator templates (stubs for Redis, MongoDB, SDK generators, etc.) | NOTED |
+| 25 | LOW | 4 | — | 356 console.log/warn/error calls in engine src/ — no structured logging | NOTED |
+| 26 | LOW | 4 | — | 5 process.exit() calls in engine packages (should throw, not exit) — in examples/test code only | NOTED |
+| 27 | HIGH | 4 | R18 | manifest-loader.ts:200-201 gates on specVersion "3.3" — should not hardcode version | TODO |
+| 28 | MEDIUM | 4 | R11 | 17 process.cwd() calls in engine src/ — should accept basePath config | NOTED |
 
 ## Rule Compliance Summary
 
