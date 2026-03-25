@@ -21,6 +21,12 @@ Each item has a severity, source step, and status.
 | 12 | LOW | 4 | — | tools/diagram-generator/tsconfig.json references deleted src/parser | TODO |
 | 13 | NOTED | 4 | R19 | 215 `: any` in specverse-lang src/ (pre-existing debt, not blocking) | NOTED |
 | 14 | NOTED | 4 | R19 | 1,099 `: any` in specverse-engines (pre-existing, mostly tests/templates) | NOTED |
+| 15 | HIGH | 4 | R24 | "CURED" used throughout codebase — should be "CURVED". Types (CuredOperationsSpec), parser, tests, generators all say "cured" not "curved". ~80+ occurrences across engines | TODO |
+| 16 | HIGH | 4 | R26 | Hardcoded absolute path `/Users/cainen/.claude/local/claude` in claude-executor.ts (both engines AND lang copies) | TODO |
+| 17 | HIGH | 4 | R18 | Hardcoded version "3.5.2" in VSCode extension generator, "v3.4.0" in component adapters/generators, "@specverse/lang@^3.4.0" in package-json-generator | TODO |
+| 18 | HIGH | 4 | R26 | `@specverse/lang` referenced in MCP static templates, VSCode extension, pattern-adapter-generator — should reference engine packages or be generic | TODO |
+| 19 | MEDIUM | 4 | R8 | specverse-lang has FULL COPY of all instance factory libs (identical to engines) — should only exist in engines, lang should reference via package | TODO |
+| 20 | MEDIUM | 4 | — | Duplicate instance factory libs are synced manually (cp command) — fragile, will drift | TODO |
 
 ## Rule Compliance Summary
 
