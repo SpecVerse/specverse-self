@@ -33,16 +33,11 @@ export function registerAiCommand(program: Command): void {
     .option('--config <config>', 'Configuration file with requirements, scale, etc.')
     .action(async (file: string, options: any) => {
       try {
-        const __fn = fileURLToPath(import.meta.url);
-        const __dn = dirname(__fn);
-        const schemaPath = resolve(__dn, '../../../schema/SPECVERSE-SCHEMA.json');
-
         const registry = new EngineRegistry();
         await registry.discover();
         const parser = registry.getEngineForCapability('parse') as ParserEngine;
         if (!parser) { console.error('No parser engine found.'); process.exit(1); }
-        const schema = existsSync(schemaPath) ? JSON.parse(readFileSync(schemaPath, 'utf8')) : {};
-        await parser.initialize({ schema });
+        await parser.initialize();
 
         const content = readFileSync(file, 'utf8');
         const parseResult = parser.parseContent(content, file);
@@ -74,16 +69,11 @@ export function registerAiCommand(program: Command): void {
 
     .action(async (file: string, options: any) => {
       try {
-        const __fn = fileURLToPath(import.meta.url);
-        const __dn = dirname(__fn);
-        const schemaPath = resolve(__dn, '../../../schema/SPECVERSE-SCHEMA.json');
-
         const registry = new EngineRegistry();
         await registry.discover();
         const parser = registry.getEngineForCapability('parse') as ParserEngine;
         if (!parser) { console.error('No parser engine found.'); process.exit(1); }
-        const schema = existsSync(schemaPath) ? JSON.parse(readFileSync(schemaPath, 'utf8')) : {};
-        await parser.initialize({ schema });
+        await parser.initialize();
 
         const content = readFileSync(file, 'utf8');
         const parseResult = parser.parseContent(content, file);
