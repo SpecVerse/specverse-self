@@ -44,6 +44,10 @@ Each item has a severity, source step, and status.
 | 35 | MEDIUM | 8 | — | specverse-lang has 1.3MB duplicate libs/instance-factories/ (engines has 1.9MB authoritative copy) | TODO |
 | 36 | MEDIUM | 8 | — | specverse-lang package.json: 5 stale scripts referencing deleted dirs (same as #11) | TODO |
 | 37 | LOW | 8 | — | specverse-lang tools/ (ai-orchestrator, diagram-generator, specverse-mcp, vscode-extension) — are these still used or should they move to engines? | TODO |
+| 38 | NOTED | 9 | — | realize depends on engine-parser + engine-generators — acceptable (generates code that references both) | NOTED |
+| 39 | NOTED | 9 | — | All file: references in specverse-lang and demo-self are to local engine packages (expected pre-npm-publish) | NOTED |
+| 40 | NOTED | 9 | — | No circular dependencies found between engine packages | PASS |
+| 41 | NOTED | 9 | — | All 7 packages have exports with default + ./package.json | PASS |
 
 ## Rule Compliance Summary
 
