@@ -5,19 +5,60 @@ Each item has a severity, source step, and status.
 
 ## Actions
 
-| # | Severity | Step | Action | Status |
-|---|----------|------|--------|--------|
-| 1 | HIGH | 1 | Rewrite specverse-lang/CLAUDE.md — most content references deleted src/ directories (parser, inference-engine, entities, generators, diagram-engine, realize, types). Added warning banner as interim fix. | TODO |
-| 2 | MEDIUM | 1 | Update specverse-self/CLAUDE.md — update spec line count (974), command count (9), structure diagram | TODO |
-| 3 | MEDIUM | 1 | Update specverse-engines README.md if exists — package descriptions, test counts | TODO |
-| 4 | MEDIUM | 7 | Check state of generated deployments in demo-self Phase 1 and Phase 2 — are deployment instances, channels, bindings generated correctly? Does R7 (Deployments Bridge Logical and Physical) hold? | TODO |
+| # | Severity | Step | Rule | Action | Status |
+|---|----------|------|------|--------|--------|
+| 1 | HIGH | 1 | — | Rewrite specverse-lang/CLAUDE.md — references deleted src/ directories | TODO |
+| 2 | MEDIUM | 1 | — | Update specverse-self/CLAUDE.md — done (974 lines, 9 commands) | DONE |
+| 3 | MEDIUM | 1 | — | Create specverse-engines README.md | TODO |
+| 4 | MEDIUM | 7 | R7 | Check generated deployments in demo-self Phase 1+2 | TODO |
+| 5 | HIGH | 4 | R13 | specverse-engines: knownEnginePackages hardcoded in engine-registry.ts:61-67 | TODO |
+| 6 | MEDIUM | 4 | R13 | command-generator.ts:284 hardcodes entity section iteration | TODO |
+| 7 | LOW | 4 | R18 | DiagramGeneratorV31 class name in realize/assets/examples (example code) | TODO |
+| 8 | LOW | 4 | R18 | test-v33-generation.ts function name has version | TODO |
+| 9 | MEDIUM | 4 | R17 | claude-executor.ts:44,176,191 — bare catch blocks, no comments | TODO |
+| 10 | HIGH | 4 | R11 | specverse-lang CLI manually loads schema (lines 36-68) — parser should self-init | TODO |
+| 11 | MEDIUM | 4 | — | specverse-lang package.json has 5 scripts referencing deleted src/ dirs | TODO |
+| 12 | LOW | 4 | — | tools/diagram-generator/tsconfig.json references deleted src/parser | TODO |
+| 13 | NOTED | 4 | R19 | 215 `: any` in specverse-lang src/ (pre-existing debt, not blocking) | NOTED |
+| 14 | NOTED | 4 | R19 | 1,099 `: any` in specverse-engines (pre-existing, mostly tests/templates) | NOTED |
+
+## Rule Compliance Summary
+
+| Rule | Engines | Lang | Notes |
+|------|---------|------|-------|
+| R1 | PASS | — | |
+| R2 | PASS | — | |
+| R3 | PASS | — | |
+| R4 | PASS | — | |
+| R5 | PASS | — | |
+| R6 | PASS | — | |
+| R7 | PASS | — | Check demo-self deployments (#4) |
+| R8 | PASS | — | |
+| R9 | PASS | — | |
+| R10 | PASS | — | |
+| R11 | PASS | FAIL | CLI loads schema manually (#10) |
+| R12 | PASS | — | |
+| R13 | FAIL | — | Hardcoded engine list (#5), entity sections (#6) |
+| R14 | PASS | — | |
+| R15 | PASS | — | |
+| R16 | PASS | PASS | |
+| R17 | PARTIAL | PASS | bare catches in claude-executor (#9) |
+| R18 | PARTIAL | PASS | version in example code (#7, #8) |
+| R19 | NOTED | NOTED | pre-existing any debt |
+| R20 | PASS | N/A | |
+| R21-R24 | — | — | Verified in Phase 6 testing |
+| R25 | PASS | PASS | |
+| R26 | PASS | PASS | |
+| R27 | PASS | — | |
 
 ## Completed
 
 | # | Step | Action | Done |
 |---|------|--------|------|
-| | 1 | Update CURRENT-STATE-AND-PLAN.md — Phase 6+7 complete, success criteria | 25 Mar |
-| | 1 | Update MEMORY.md — current state (Phases 1-7), repos, proven results | 25 Mar |
-| | 1 | Update project_engine-extraction.md — all phases complete | 25 Mar |
-| | 1 | Update specverse-self/CLAUDE.md — 974 lines, 9 commands, full structure | 25 Mar |
-| | 1 | Add warning banner to specverse-lang/CLAUDE.md re stale content | 25 Mar |
+| | 1 | Update CURRENT-STATE-AND-PLAN.md — Phase 6+7 complete | 25 Mar |
+| | 1 | Update MEMORY.md — current state | 25 Mar |
+| | 1 | Update project_engine-extraction.md | 25 Mar |
+| | 1 | Update specverse-self/CLAUDE.md | 25 Mar |
+| | 1 | Add warning banner to specverse-lang/CLAUDE.md | 25 Mar |
+| | 2-3 | 27 Golden Rules documented in GOLDEN-RULES.md | 25 Mar |
+| | 4 | Golden Rules audit — engines + lang | 25 Mar |
