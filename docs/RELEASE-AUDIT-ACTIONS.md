@@ -10,7 +10,7 @@ Each item has a severity, source step, and status.
 | 1 | HIGH | 1 | — | specverse-lang/CLAUDE.md rewritten (90 lines, accurate) | DONE |
 | 2 | MEDIUM | 1 | — | Update specverse-self/CLAUDE.md — done (974 lines, 9 commands) | DONE |
 | 3 | MEDIUM | 1 | — | Create specverse-engines README.md | DONE |
-| 4 | MEDIUM | 7 | R7 | Check generated deployments in demo-self Phase 1+2 | TODO |
+| 4 | MEDIUM | 7 | R7 | Check generated deployments in demo-self Phase 1+2 — both present, bridge logical→physical (SQLite/PostgreSQL) | DONE |
 | 5 | HIGH | 4 | R13 | specverse-engines: knownEnginePackages documented as discovery seed, additionalEngines as extension point | DONE |
 | 6 | MEDIUM | 4 | R13 | command-generator.ts entity section iteration made dynamic (filters object-valued keys, excludes known non-entity keys) | DONE |
 | 7 | LOW | 4 | R18 | DiagramGeneratorV31 renamed to UnifiedDiagramGenerator in example code | DONE |
@@ -43,7 +43,7 @@ Each item has a severity, source step, and status.
 | 34 | HIGH | 8 | — | spec-helpers test import fixed — uses @specverse/engine-inference | DONE |
 | 35 | MEDIUM | 8 | — | specverse-lang libs/instance-factories/ symlinked to engines (eliminates 1.3MB duplicate) | DONE |
 | 36 | MEDIUM | 8 | — | specverse-lang package.json: stale scripts already removed (same as #11) | DONE |
-| 37 | LOW | 8 | — | specverse-lang tools/ (ai-orchestrator, diagram-generator, specverse-mcp, vscode-extension) — are these still used or should they move to engines? | TODO |
+| 37 | LOW | 8 | — | specverse-lang tools/ — hand-written, still in active use (VSCode published, MCP works). Generated equivalents from instance factories will replace them at v4.0.0 release | NOTED |
 | 38 | NOTED | 9 | — | realize depends on engine-parser + engine-generators — acceptable (generates code that references both) | NOTED |
 | 39 | NOTED | 9 | — | All file: references in specverse-lang and demo-self are to local engine packages (expected pre-npm-publish) | NOTED |
 | 40 | NOTED | 9 | — | No circular dependencies found between engine packages | PASS |
