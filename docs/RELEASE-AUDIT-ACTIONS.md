@@ -51,11 +51,15 @@ Each item has a severity, source step, and status.
 | 42 | MEDIUM | — | R8 | Cross-repo content indexing tools (repo-indexer, repo-compare) — tracks 379 duplicated source files | DONE |
 | 43 | HIGH | — | R8 | Examples decomposed into entity modules (9th facet) — 54 files distributed to owners with .example.yaml sidecars | DONE |
 | 44 | HIGH | — | R8 | compose-examples.mjs in specverse-self — composes 54 examples from 10 sources into 15 categories | DONE |
-| 45 | MEDIUM | — | — | Move doc generation scripts (generate-diagrams, generate-sidebar) from lang to self | TODO |
-| 46 | MEDIUM | — | — | Repoint specverse-lang-doc sync script from lang to self | TODO |
-| 47 | MEDIUM | — | — | Delete flat examples from realize/assets/examples/ after transition period | TODO |
+| 45 | MEDIUM | — | — | Doc generation scripts moved from lang to self (generate-diagrams, generate-sidebar, build.sh) | DONE |
+| 46 | MEDIUM | — | — | specverse-lang-doc sync repointed from lang to self (default ../specverse-self) | DONE |
+| 47 | MEDIUM | — | — | Flat examples deleted from realize/assets/examples/ — entity modules are source of truth | DONE |
 | 48 | LOW | — | — | Archive prompt versions v1-v8 (only default/v9 actively used) | TODO |
-| 49 | LOW | — | — | Symlink prompts + templates in lang → engines (same pattern as instance-factories) | TODO |
+| 49 | LOW | — | — | Prompts + templates in lang symlinked to engines (eliminates 159 file duplicates) | DONE |
+| 50 | MEDIUM | — | — | Entity-Module-Intro docs deleted from lang (canonical copy in self) | DONE |
+| 51 | HIGH | — | — | ai-orchestrator merged into @specverse/engine-ai (providers, orchestrator, config) | DONE |
+| 52 | MEDIUM | — | — | Compose scripts (schema, inference rules) moved to engine-entities/scripts/ | DONE |
+| 53 | MEDIUM | — | — | Lang old compose scripts deleted, postbuild calls engine-entities versions | DONE |
 
 ## Rule Compliance Summary
 
@@ -100,3 +104,7 @@ Each item has a severity, source step, and status.
 | | 4-8 | Fix all HIGH/MEDIUM audit items (#3-#36) | 25 Mar |
 | | — | Cross-repo content indexing tools added to all 4 repos | 26 Mar |
 | | — | Examples decomposed into entity modules (9th facet) + compose-examples.mjs | 26 Mar |
+| | — | Doc pipeline moved to self, lang-doc repointed | 26 Mar |
+| | — | Flat examples deleted, lang symlinks for examples/prompts/templates | 26 Mar |
+| | — | ai-orchestrator merged into engine-ai | 26 Mar |
+| | — | Compose scripts moved to engine-entities | 26 Mar |
