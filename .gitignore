@@ -5,3 +5,4 @@ dist/
 generated/code/node_modules/
 generated/code/backend/node_modules/
 generated/code/frontend/node_modules/
+.specverse-index.json
