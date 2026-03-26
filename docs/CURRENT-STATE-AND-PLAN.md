@@ -1,13 +1,13 @@
 # SpecVerse: Current State and Implementation Plan
 
-**Date**: 25 March 2026 (updated)
-**Purpose**: Honest, structured assessment of where we are, what's missing, and the plan to reach the goal: **specverse-self replaces specverse-lang as the production release of SpecVerse.**
+**Date**: 26 March 2026
+**Status**: **v4.0.0 RELEASED** — all 7 engine packages published to npm.
 
 ---
 
-## The Goal
+## The Goal — ACHIEVED
 
-specverse-self IS specverse. The complete toolchain — CLI, engines, VSCode extension, MCP server, templates, examples, tests — generated from the self-specification. Not a demo. The actual release.
+specverse-self IS specverse. The complete toolchain — CLI, engines, VSCode extension, MCP server, templates, examples — generated from the self-specification. Published as v4.0.0 to npm on 26 March 2026.
 
 ---
 

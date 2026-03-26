@@ -108,3 +108,8 @@ Each item has a severity, source step, and status.
 | | — | Flat examples deleted, lang symlinks for examples/prompts/templates | 26 Mar |
 | | — | ai-orchestrator merged into engine-ai | 26 Mar |
 | | — | Compose scripts moved to engine-entities | 26 Mar |
+| | — | Schema generation scripts moved to engine-entities | 26 Mar |
+| | — | Prompt versions v1-v8 archived | 26 Mar |
+| | — | Published 8 packages @ 3.5.3 (final 3.x release) | 26 Mar |
+| | — | Bumped engines to 4.0.0, published to npm | 26 Mar |
+| | — | specverse-self v4.0.0 released | 26 Mar |
