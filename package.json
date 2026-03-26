@@ -1,13 +1,25 @@
 {
-  "name": "specverse-self",
-  "version": "1.0.0",
-  "description": "SpecVerse self-specification realized - the language specifying and implementing itself",
+  "name": "@specverse/self",
+  "version": "4.0.0",
+  "description": "SpecVerse v4.0.0 — the language specifying and implementing itself",
   "scripts": {
     "validate": "specverse validate specs/main.specly",
     "infer": "specverse infer specs/main.specly -o specs/main-inferred.specly --deployment --verbose",
     "realize:views": "specverse realize views specs/main-inferred.specly -o generated/main-ai-optimized.json",
     "realize:all": "specverse realize all specs/main-inferred.specly -o generated/code -m manifests/implementation.yaml",
     "realize": "npm run infer && npm run realize:all",
+    "compose:examples": "node scripts/compose-examples.mjs",
+    "docs:generate": "cd documentation && ./scripts/build.sh",
+    "build:docs": "npm run compose:examples && npm run docs:generate",
     "dev": "cd generated/code && npm run dev"
+  },
+  "dependencies": {
+    "@specverse/types": "^4.0.0",
+    "@specverse/engine-entities": "^4.0.0",
+    "@specverse/engine-parser": "^4.0.0",
+    "@specverse/engine-inference": "^4.0.0",
+    "@specverse/engine-realize": "^4.0.0",
+    "@specverse/engine-generators": "^4.0.0",
+    "@specverse/engine-ai": "^4.0.0"
   }
 }
