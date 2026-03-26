@@ -48,6 +48,14 @@ Each item has a severity, source step, and status.
 | 39 | NOTED | 9 | — | All file: references in specverse-lang and demo-self are to local engine packages (expected pre-npm-publish) | NOTED |
 | 40 | NOTED | 9 | — | No circular dependencies found between engine packages | PASS |
 | 41 | NOTED | 9 | — | All 7 packages have exports with default + ./package.json | PASS |
+| 42 | MEDIUM | — | R8 | Cross-repo content indexing tools (repo-indexer, repo-compare) — tracks 379 duplicated source files | DONE |
+| 43 | HIGH | — | R8 | Examples decomposed into entity modules (9th facet) — 54 files distributed to owners with .example.yaml sidecars | DONE |
+| 44 | HIGH | — | R8 | compose-examples.mjs in specverse-self — composes 54 examples from 10 sources into 15 categories | DONE |
+| 45 | MEDIUM | — | — | Move doc generation scripts (generate-diagrams, generate-sidebar) from lang to self | TODO |
+| 46 | MEDIUM | — | — | Repoint specverse-lang-doc sync script from lang to self | TODO |
+| 47 | MEDIUM | — | — | Delete flat examples from realize/assets/examples/ after transition period | TODO |
+| 48 | LOW | — | — | Archive prompt versions v1-v8 (only default/v9 actively used) | TODO |
+| 49 | LOW | — | — | Symlink prompts + templates in lang → engines (same pattern as instance-factories) | TODO |
 
 ## Rule Compliance Summary
 
@@ -90,3 +98,5 @@ Each item has a severity, source step, and status.
 | | 2-3 | 27 Golden Rules documented in GOLDEN-RULES.md | 25 Mar |
 | | 4 | Golden Rules audit — engines + lang | 25 Mar |
 | | 4-8 | Fix all HIGH/MEDIUM audit items (#3-#36) | 25 Mar |
+| | — | Cross-repo content indexing tools added to all 4 repos | 26 Mar |
+| | — | Examples decomposed into entity modules (9th facet) + compose-examples.mjs | 26 Mar |

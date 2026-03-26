@@ -155,8 +155,20 @@ The generated CLI is 10x smaller and does the same core job — because the engi
 |-------|-------------------|----------------------|--------|
 | Project templates (4 variants) | @specverse/engine-realize/assets/templates/ | yes | `init` finds them from engine package |
 | AI prompts (v1-v9 + default) | @specverse/engine-ai/assets/prompts/ | yes | `ai template` loads them |
-| Examples (53 .specly files) | @specverse/engine-realize/assets/examples/ | yes | Includes promotions domain extension |
+| Examples (54 .specly files) | Entity modules + engine packages (9th facet) | composed into specverse-self/examples/ | Decomposed into entity modules, composed by compose-examples.mjs |
 | JSON Schema | Composed from entity module fragments | yes | Auto-discovered from core/ and extensions/ dirs |
+
+### 1.6 Content Indexing and Composition
+
+Cross-repo content indexing tools (repo-indexer.mjs, repo-compare.mjs) track duplicates across all 4 repos. Each repo has a `.specverse-content-map.json` defining content area mappings.
+
+**Examples as 9th entity module facet** (26 March 2026):
+- 54 examples decomposed into entity modules and engine packages
+- Each .specly paired with .example.yaml sidecar (title, category, order, difficulty, concepts)
+- `category-order.yaml` in _shared/examples/ defines numbered output structure
+- `compose-examples.mjs` in specverse-self discovers and composes into numbered directories
+- specverse-self/examples/ is now the composed output (replaces realize/assets/examples as doc source)
+- Doc pipeline (specverse-lang-doc) to be repointed from lang to self
 | Build scripts | specverse-lang/scripts/ | not needed | Schema/rules composed by engine packages |
 | Tests (1,689) | Split: 1,070 engines + 619 lang | — | All passing, zero failures |
 
