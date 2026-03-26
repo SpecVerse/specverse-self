@@ -1,0 +1,22 @@
+{
+  "repo": "specverse-self",
+  "description": "Self-specification — the language specifying itself, production v4.0.0",
+
+  "contentAreas": {
+    "self-spec":            "specs/",
+    "manifests":            "manifests/",
+    "generated/backend":    "generated/code/backend/",
+    "generated/frontend":   "generated/code/frontend/",
+    "docs":                 "docs/",
+    "scripts":              "scripts/"
+  },
+
+  "originRules": [
+    { "pattern": "generated/**", "origin": "generated" }
+  ],
+
+  "exclude": [
+    "package-lock.json",
+    ".specverse-index.json"
+  ]
+}
