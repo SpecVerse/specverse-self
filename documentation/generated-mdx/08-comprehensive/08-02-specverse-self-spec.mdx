@@ -1,0 +1,556 @@
+---
+id: 08-02-specverse-self-spec
+title: Specverse Self Spec
+sidebar_label: Specverse Self Spec
+---
+
+import Mermaid from '@site/src/components/Mermaid';
+
+
+{/* Auto-generated diagram from canonical examples */}
+
+{/* Generated: 2026-03-26T14:41:56.730Z */}
+
+<div className="diagram-generated">
+
+<Mermaid chart={`
+classDiagram
+    class Specification {
+        +id: UUID required unique
+        +filename: String required unique
+        +specVersion: String required
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Component {
+        +id: UUID required unique
+        +name: String required unique
+        +version: String required
+        +description: String
+        +tags: String
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Import {
+        +id: UUID required unique
+        +from: String required
+        +file: String
+        +package: String
+        +namespace: String
+        +version: String
+        +select: String
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Export {
+        +id: UUID required unique
+        +capabilities: String
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Model {
+        +id: UUID required unique
+        +createdAt: Timestamp required
+        +updatedAt: Timestamp required
+        +createdBy: String
+        +updatedBy: String
+        +id: UUID required unique
+        +name: String required unique
+        +description: String
+        +extends: String
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Attribute {
+        +id: UUID required unique
+        +name: String required
+        +attrType: String required
+        +required: Boolean = false
+        +unique: Boolean = false
+        +searchable: Boolean = false
+        +verified: Boolean = false
+        +defaultValue: String
+        +auto: String
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Relationship {
+        +id: UUID required unique
+        +name: String required
+        +relType: String required values=[hasMany, belongsTo, hasOne, manyToMany]
+        +target: String required
+        +eager: Boolean = false
+        +cascade: String
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Lifecycle {
+        +id: UUID required unique
+        +name: String required
+        +flow: String required
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class LifecycleState {
+        +id: UUID required unique
+        +name: String required
+        +isInitial: Boolean = false
+        +isTerminal: Boolean = false
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class LifecycleTransition {
+        +id: UUID required unique
+        +name: String required
+        +fromState: String required
+        +toState: String required
+        +action: String
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Profile {
+        +id: UUID required unique
+        +name: String required unique
+        +description: String
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Primitive {
+        +id: UUID required unique
+        +name: String required unique
+        +baseType: String required
+        +description: String
+        +pattern: String
+        +isTypeAlias: Boolean = true
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Operation {
+        +id: UUID required unique
+        +name: String required
+        +description: String
+        +returns: String
+        +requires: String
+        +ensures: String
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Step {
+        +id: UUID required unique
+        +ordinal: Integer required
+        +instruction: String
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Controller {
+        +id: UUID required unique
+        +name: String required unique
+        +pattern: String required values=[StandardCURED, ParentScopedCURED]
+        +parentModel: String
+        +hasAssociationOps: Boolean = false
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Service {
+        +id: UUID required unique
+        +name: String required unique
+        +pattern: String required values=[LifecycleService, RelationshipService, IntegrationService]
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Event {
+        +id: UUID required unique
+        +name: String required unique
+        +description: String
+        +pattern: String required values=[StandardEvents, LifecycleEvents, RelationshipEvents, ValidationEvents, ProfileEvents]
+        +modelName: String required
+        +version: Integer required = 1
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class EventVersion {
+        +id: UUID required unique
+        +version: Integer required
+        +compatibility: String required = none values=[backward, forward, full, none]
+        +deprecated: Boolean = false
+        +deprecationMessage: String
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class View {
+        +id: UUID required unique
+        +name: String required unique
+        +viewType: String required
+        +primaryModel: String required
+        +tags: String
+        +export: Boolean = false
+        +hasProfileSupport: Boolean = false
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Layout {
+        +id: UUID required unique
+        +layoutType: String required
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class UIComponent {
+        +id: UUID required unique
+        +componentType: String required
+        +name: String required
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Deployment {
+        +id: UUID required unique
+        +name: String required unique
+        +environment: String required values=[development, staging, production]
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class DeploymentInstance {
+        +id: UUID required unique
+        +name: String required
+        +category: String required values=[controller, service, view, storage, security, infrastructure, monitoring]
+        +scale: Integer = 1
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class CommunicationChannel {
+        +id: UUID required unique
+        +name: String required
+        +channelType: String required values=[pubsub, request-reply, stream]
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Manifest {
+        +id: UUID required unique
+        +name: String required unique
+        +specVersion: String required
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class InstanceFactory {
+        +id: UUID required unique
+        +name: String required unique
+        +version: String required
+        +category: String required values=[backend, frontend, storage, infrastructure]
+        +technology: String required
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class CapabilityMapping {
+        +id: UUID required unique
+        +capability: String required
+        +factoryName: String required
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class EntityModule {
+        +id: UUID required unique
+        +name: String required unique
+        +moduleType: String required values=[core, extension]
+        +version: String required
+        +hasFacetSchema: Boolean = true
+        +hasFacetConventions: Boolean = true
+        +hasFacetInference: Boolean = false
+        +hasFacetBehaviour: Boolean = true
+        +hasFacetGenerators: Boolean = false
+        +hasFacetDiagrams: Boolean = false
+        +hasFacetDocs: Boolean = true
+        +hasFacetTests: Boolean = true
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class EntityRegistry {
+        +id: UUID required unique
+        +moduleCount: Integer
+        +usesKahnsAlgorithm: Boolean = true
+        +bootstrap() %% ensures: All 9 modules registered, Dependency order resolved
+        +getConventionProcessors(): Map<string, EntityConventionProcessor>
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class ConventionGrammar {
+        +id: UUID required unique
+        +domain: String required = quint
+        +entityType: String required unique
+        +conventionCount: Integer
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class ConventionPattern {
+        +id: UUID required unique
+        +name: String required unique
+        +pattern: String required
+        +expandsTo: String required values=[quint:invariant, quint:rule, quint:temporal]
+        +description: String
+        +templateName: String required
+        +templateBody: String required
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class InferenceRule {
+        +id: UUID required unique
+        +ruleId: String required unique
+        +description: String required
+        +pattern: String required
+        +priority: Integer required = 100
+        +category: String required values=[controllers, services, events, views, deployment]
+        +conditionExpression: String
+        +isActive: Boolean = true
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class RuleTemplate {
+        +id: UUID required unique
+        +templateType: String required values=[yaml, json]
+        +content: String required
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class BehaviourSpec {
+        +id: UUID required unique
+        +entityType: String required
+        +invariantCount: Integer
+        +ruleCount: Integer
+        +verificationStatus: String values=[untested, typechecked, verified]
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Invariant {
+        +id: UUID required unique
+        +name: String required unique
+        +description: String required
+        +quintExpression: String required
+        +category: String required values=[structural, relationship, lifecycle, inference, deprecated]
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class SchemaFragment {
+        +id: UUID required unique
+        +schemaId: String required unique
+        +description: String
+        +defsCount: Integer required
+        +fragmentType: String required values=[primitives, entity, root, manifests, instance-factories]
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class DiagramPlugin {
+        +id: UUID required unique
+        +diagramType: String required unique values=[er, class, event-flow, lifecycle, architecture, deployment, manifest]
+        +description: String
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class CodeTemplate {
+        +id: UUID required unique
+        +name: String required unique
+        +templateType: String required values=[schema, services, routes, hooks, api-client]
+        +technology: String required
+        +basePath: String required
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class MCPServer {
+        +id: UUID required unique
+        +name: String required = "specverse-dynamic-cli"
+        +mode: String required values=[local, web, extension, enterprise]
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class MCPResource {
+        +id: UUID required unique
+        +uri: String required unique
+        +name: String required
+        +description: String
+        +mimeType: String required = "application/json"
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class MCPTool {
+        +id: UUID required unique
+        +name: String required unique
+        +description: String required
+        +isEntityModuleTool: Boolean = false
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class AIOrchestrator {
+        +id: UUID required unique
+        +name: String required
+        +providerType: String required values=[openai, anthropic, interactive]
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class AIWorkflow {
+        +id: UUID required unique
+        +name: String required unique
+        +description: String
+        +stepCount: Integer
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+
+    Specification o-- Component : *_components
+    Specification o-- Deployment : *_deployments
+    Specification o-- Manifest : *_manifests
+    Component -- Specification : 1_specification
+    Component o-- Import : *_imports
+    Component o-- Export : *_exports
+    Component o-- Model : *_models
+    Component o-- Controller : *_controllers
+    Component o-- Service : *_services
+    Component o-- Event : *_events
+    Component o-- View : *_views
+    Model -- Component : 1_component
+    Model o-- Attribute : *_attributes
+    Model o-- Relationship : *_relationships
+    Model o-- Lifecycle : *_lifecycles
+    Model o-- Operation : *_behaviors
+    Model o-- Profile : *_profiles
+    Attribute -- Model : 1_model
+    Relationship -- Model : 1_model
+    Lifecycle -- Model : 1_model
+    Lifecycle o-- LifecycleState : *_states
+    Lifecycle o-- LifecycleTransition : *_transitions
+    LifecycleState -- Lifecycle : 1_lifecycle
+    LifecycleTransition -- Lifecycle : 1_lifecycle
+    Profile -- Model : 1_model
+    Operation o-- Attribute : *_parameters
+    Operation o-- Event : *_publishes
+    Operation o-- Step : *_steps
+    Step -- Operation : 1_operation
+    Step -- Operation : 1_expandedOperation
+    Controller -- Component : 1_component
+    Controller -- Model : 1_model
+    Controller o-- Operation : *_curedOperations
+    Controller o-- Operation : *_actions
+    Controller o-- Event : *_subscriptions
+    Service -- Component : 1_component
+    Service -- Model : 1_model
+    Service o-- Operation : *_operations
+    Service o-- Event : *_subscriptions
+    Event -- Component : 1_component
+    Event o-- Attribute : *_attributes
+    Event o-- EventVersion : *_previousVersions
+    EventVersion -- Event : 1_event
+    View -- Component : 1_component
+    View -- Layout : 1_layout
+    View o-- UIComponent : *_uiComponents
+    View o-- Event : *_subscriptions
+    Layout -- View : 1_view
+    UIComponent -- View : 1_view
+    Deployment -- Specification : 1_specification
+    Deployment o-- DeploymentInstance : *_instances
+    Deployment o-- CommunicationChannel : *_channels
+    DeploymentInstance -- Deployment : 1_deployment
+    CommunicationChannel -- Deployment : 1_deployment
+    Manifest -- Specification : 1_specification
+    Manifest o-- InstanceFactory : *_instanceFactories
+    Manifest o-- CapabilityMapping : *_capabilityMappings
+    InstanceFactory -- Manifest : 1_manifest
+    CapabilityMapping -- Manifest : 1_manifest
+    CapabilityMapping -- InstanceFactory : 1_instanceFactory
+    ConventionPattern -- ConventionGrammar : 1_grammar
+    RuleTemplate -- InferenceRule : 1_rule
+    BehaviourSpec -- EntityModule : 1_module
+    Invariant -- BehaviourSpec : 1_spec
+    SchemaFragment -- EntityModule : 1_module
+    CodeTemplate -- EntityModule : 1_entityModule
+    MCPServer o-- MCPResource : *_resources
+    MCPServer o-- MCPTool : *_tools
+    MCPResource -- MCPServer : 1_server
+    MCPTool -- MCPServer : 1_server
+    AIOrchestrator o-- AIWorkflow : *_workflows
+    AIWorkflow -- AIOrchestrator : 1_orchestrator
+`} />
+
+</div>
+
+### Service - servicePattern Lifecycle
+
+<Mermaid chart={`
+stateDiagram-v2
+    %% Service - servicePattern Lifecycle
+    ___ --> active : start
+    active --> deprecated : to_deprecated
+`} />
+
+### EntityModule - registration Lifecycle
+
+<Mermaid chart={`
+stateDiagram-v2
+    %% EntityModule - registration Lifecycle
+    ___ --> discovered : start
+    discovered --> registered : to_registered
+    registered --> active : to_active
+    active --> deprecated : to_deprecated
+`} />
+
+### InferenceRule - ruleStatus Lifecycle
+
+<Mermaid chart={`
+stateDiagram-v2
+    %% InferenceRule - ruleStatus Lifecycle
+    ___ --> active : start
+    active --> disabled : to_disabled
+    disabled --> active : to_active
+`} />
+
+### AIOrchestrator - workflow Lifecycle
+
+<Mermaid chart={`
+stateDiagram-v2
+    %% AIOrchestrator - workflow Lifecycle
+    ___ --> idle : start
+    idle --> analysing : to_analysing
+    analysing --> creating : to_creating
+    creating --> inferring : to_inferring
+    inferring --> materialising : to_materialising
+    materialising --> realizing : to_realizing
+    realizing --> complete : to_complete
+`} />

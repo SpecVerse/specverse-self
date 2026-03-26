@@ -1,0 +1,20 @@
+{
+  "name": "@specverse/docs",
+  "version": "3.3.0",
+  "description": "SpecVerse Documentation Generation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "./scripts/build.sh",
+    "build:force": "./scripts/build.sh --force",
+    "diagrams": "node scripts/generate-diagrams.js",
+    "sidebar": "node scripts/generate-sidebar.js",
+    "api": "typedoc ../src --out api/",
+    "test": "node scripts/test.js",
+    "clean": "rm -rf generated-md generated-mdx api"
+  },
+  "devDependencies": {
+    "typedoc": "^0.25.4",
+    "glob": "^10.3.10"
+  }
+}

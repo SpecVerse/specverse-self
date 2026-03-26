@@ -1,0 +1,101 @@
+import Mermaid from '@site/src/components/Mermaid';
+
+
+
+{/* Auto-generated diagram from canonical examples */}
+
+{/* Generated: 2026-03-26T14:41:52.469Z */}
+
+<div className="diagram-generated">
+
+<Mermaid chart={`
+classDiagram
+    class Product {
+        +id: UUID required unique
+        +name: String required
+        +description: Text
+        +price: Decimal required
+        +sku: String required unique
+        +category: String
+        +inStock: Boolean = true
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Customer {
+        +id: UUID required unique
+        +email: Email required unique
+        +name: String required
+        +memberSince: DateTime
+        +tier: String = standard values=[standard, silver, gold, platinum]
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Order {
+        +id: UUID required unique
+        +orderNumber: String required unique
+        +totalAmount: Decimal required
+        +discountAmount: Decimal = 0
+        +status: String required = pending
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class OrderItem {
+        +id: UUID required unique
+        +quantity: Integer required
+        +unitPrice: Decimal required
+        +lineTotal: Decimal required
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+    class Subscription {
+        +id: UUID required unique
+        +planName: String required
+        +monthlyPrice: Decimal required
+        +billingCycle: String = monthly values=[monthly, quarterly, annual]
+        +status: String required = active
+        +attachProfile(profileName: String): Boolean %% requires: Profile exists and is compatible with this model | ensures: Profile is attached, Profile attributes are available
+        +detachProfile(profileName: String): Boolean %% requires: Profile is currently attached | ensures: Profile is detached, Profile attributes are no longer available
+        +hasProfile(profileName: String): Boolean
+    }
+
+    Product o-- OrderItem : *_orders
+    Order -- Customer : 1_customer
+    Order o-- OrderItem : *_items
+    OrderItem -- Order : 1_order
+    OrderItem -- Product : 1_product
+    Subscription -- Customer : 1_customer
+`} />
+
+</div>
+
+
+### Order - orderStatus Lifecycle
+
+
+<Mermaid chart={`
+stateDiagram-v2
+    %% Order - orderStatus Lifecycle
+    ___ --> pending : start
+    pending --> confirmed : to_confirmed
+    confirmed --> processing : to_processing
+    processing --> shipped : to_shipped
+    shipped --> delivered : to_delivered
+`} />
+
+
+### Subscription - subscriptionStatus Lifecycle
+
+
+<Mermaid chart={`
+stateDiagram-v2
+    %% Subscription - subscriptionStatus Lifecycle
+    ___ --> trial : start
+    trial --> active : to_active
+    active --> paused : to_paused
+    paused --> cancelled : to_cancelled
+    cancelled --> expired : to_expired
+`} />
