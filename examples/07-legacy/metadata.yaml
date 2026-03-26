@@ -1,0 +1,21 @@
+category: "legacy"
+title: "Legacy Conversions"
+description: "Converting existing systems to SpecVerse specifications"
+targetAudience: "intermediate"
+
+examples:
+  - id: "07-01-ecommerce-legacy-conversion"
+    title: "E-Commerce Legacy Conversion"
+    description: "E-commerce system converted from legacy JSON format demonstrating migration steps and advanced features"
+    difficulty: "intermediate"
+    concepts: ["legacy", "conversion", "ecommerce"]
+  - id: "07-02-inventory-management-conversion"
+    title: "Inventory Management Conversion"
+    description: "Product catalog and inventory management system with real-time updates, converted from legacy format"
+    difficulty: "intermediate"
+    concepts: ["legacy", "conversion", "inventory"]
+  - id: "07-03-guesthouse-booking-conversion"
+    title: "Guesthouse Booking Conversion"
+    description: "Multi-property guest house booking management system with visual timeline interface, converted from legacy format"
+    difficulty: "intermediate"
+    concepts: ["legacy", "conversion", "booking"]

@@ -1,0 +1,11 @@
+category: "meta"
+title: "Meta-Specifications"
+description: "SpecVerse specifying itself and build systems"
+targetAudience: "advanced"
+
+examples:
+  - id: "05-01-specverse-app-build"
+    title: "SpecVerse App Build"
+    description: "Realistic build system meta-model based on actual SpecVerse project structure with TypeScript, Vitest, and CI/CD pipeline"
+    difficulty: "advanced"
+    concepts: ["meta-specification", "build-system"]

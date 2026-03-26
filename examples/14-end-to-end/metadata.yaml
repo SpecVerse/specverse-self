@@ -1,0 +1,11 @@
+category: "end-to-end"
+title: "End-to-End"
+description: "Complete application examples from spec to code"
+targetAudience: "advanced"
+
+examples:
+  - id: "14-01-task-management-app"
+    title: "Task Management App"
+    description: "Complete fullstack task management application with real-time updates, React frontend, and event-driven architecture"
+    difficulty: "advanced"
+    concepts: ["end-to-end", "task-management", "complete-app"]

@@ -1,0 +1,11 @@
+category: "reference"
+title: "Syntax Reference"
+description: "Auto-generated complete syntax reference"
+targetAudience: "reference"
+
+examples:
+  - id: "00-01-minimal-syntax-reference"
+    title: "Minimal Syntax Reference"
+    description: "Auto-generated reference showing minimal valid syntax for every SpecVerse entity type"
+    difficulty: "reference"
+    concepts: ["syntax", "reference", "all-entities"]

@@ -1,0 +1,76 @@
+category: "diagrams"
+title: "Diagram Examples"
+description: "Mermaid diagram generation from specifications"
+targetAudience: "intermediate"
+
+examples:
+  - id: "13-01-event-flow-layered-demo"
+    title: "Event Flow Layered Diagram"
+    description: "5-layer architecture with dual event bus pattern showing layered event flow visualization"
+    difficulty: "intermediate"
+    concepts: ["diagrams", "mermaid", "event-flow"]
+  - id: "13-02-event-flow-sequence-demo"
+    title: "Event Flow Sequence Diagram"
+    description: "Comprehensive event flow sequence demonstration showing temporal event flows"
+    difficulty: "intermediate"
+    concepts: ["diagrams", "mermaid", "event-flow"]
+  - id: "13-03-event-flow-swimlane-demo"
+    title: "Event Flow Swimlane Diagram"
+    description: "Swimlane event flow visualization showing parallel event processing across multiple components"
+    difficulty: "intermediate"
+    concepts: ["diagrams", "mermaid", "event-flow"]
+  - id: "13-04-er-diagram-demo"
+    title: "ER Diagram"
+    description: "Comprehensive ER diagram demonstrating all attribute types and relationship patterns"
+    difficulty: "intermediate"
+    concepts: ["diagrams", "mermaid", "er-diagram"]
+  - id: "13-05-profile-attachment-demo"
+    title: "Profile Attachment Diagram"
+    description: "Advanced profile attachment scenarios showing profile visualization in diagrams"
+    difficulty: "intermediate"
+    concepts: ["diagrams", "mermaid", "profile-attachment"]
+  - id: "13-06-lifecycle-demo"
+    title: "Lifecycle State Diagram"
+    description: "Lifecycle state machine visualization for models showing state transitions and workflows"
+    difficulty: "intermediate"
+    concepts: ["diagrams", "mermaid", "lifecycle"]
+  - id: "13-07-mvc-architecture-demo"
+    title: "MVC Architecture Diagram"
+    description: "MVC architecture visualization showing the traditional three-tier pattern with separation of concerns"
+    difficulty: "intermediate"
+    concepts: ["diagrams", "mermaid", "mvc-architecture"]
+  - id: "13-08-service-architecture-demo"
+    title: "Service Architecture Diagram"
+    description: "Service layer architecture visualization showing service organization, dependencies, and data access patterns"
+    difficulty: "intermediate"
+    concepts: ["diagrams", "mermaid", "service-architecture"]
+  - id: "13-09-component-dependencies-demo"
+    title: "Component Dependencies Diagram"
+    description: "Component dependency visualization showing how services interact through event-based communication"
+    difficulty: "intermediate"
+    concepts: ["diagrams", "mermaid", "component-dependencies"]
+  - id: "13-10-deployment-topology-demo"
+    title: "Deployment Topology Diagram"
+    description: "Deployment topology visualization showing logical architecture and infrastructure layout"
+    difficulty: "intermediate"
+    concepts: ["diagrams", "mermaid", "deployment-topology"]
+  - id: "13-11-capability-flow-demo"
+    title: "Capability Flow Diagram"
+    description: "Capability flow visualization showing logical architecture and capability relationships"
+    difficulty: "intermediate"
+    concepts: ["diagrams", "mermaid", "capability-flow"]
+  - id: "13-12-manifest-mapping-demo"
+    title: "Manifest Mapping Diagram"
+    description: "Manifest mapping visualization showing how specifications map to implementation manifests"
+    difficulty: "intermediate"
+    concepts: ["diagrams", "mermaid", "manifest-mapping"]
+  - id: "13-13-technology-stack-demo"
+    title: "Technology Stack Diagram"
+    description: "Technology stack visualization showing the technology layers and their relationships"
+    difficulty: "intermediate"
+    concepts: ["diagrams", "mermaid", "technology-stack"]
+  - id: "13-14-capability-bindings-demo"
+    title: "Capability Bindings Diagram"
+    description: "Capability bindings visualization showing how capabilities bind to implementation components"
+    difficulty: "intermediate"
+    concepts: ["diagrams", "mermaid", "capability-bindings"]

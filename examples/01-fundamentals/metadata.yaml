@@ -1,0 +1,32 @@
+category: "fundamentals"
+title: "SpecVerse Fundamentals"
+description: "Learn the basic building blocks of SpecVerse specifications"
+targetAudience: "beginners"
+estimatedTime: "3-4 hours"
+
+examples:
+  - id: "01-01-basic-model"
+    title: "Basic Model Definition"
+    description: "Defines a basic Product model with typed attributes demonstrating fundamental model structure"
+    difficulty: "beginner"
+    concepts: ["models", "attributes", "types"]
+  - id: "01-02-model-with-lifecycle"
+    title: "Model with Lifecycle"
+    description: "Adds lifecycle state management to a model with states and transitions"
+    difficulty: "beginner"
+    concepts: ["models", "lifecycles", "states", "transitions"]
+  - id: "01-03-model-with-behaviors"
+    title: "Model with Behaviors"
+    description: "Defines declarative behaviors with contracts on a model including events"
+    difficulty: "beginner"
+    concepts: ["models", "behaviors", "contracts"]
+  - id: "01-04-models-with-relations"
+    title: "Models with Relations"
+    description: "Demonstrates data relationships between models using belongsTo and hasMany"
+    difficulty: "beginner"
+    concepts: ["models", "relationships", "belongsTo", "hasMany"]
+  - id: "01-05-behaviors-with-steps"
+    title: "Behaviors with Steps"
+    description: "Defines multi-step behavioral workflows on an OrderProcessor model"
+    difficulty: "beginner"
+    concepts: ["models", "behaviors", "steps", "workflows"]

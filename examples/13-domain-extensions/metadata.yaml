@@ -1,0 +1,10 @@
+category: "domain-extensions"
+title: "Domain Extensions"
+description: "Extending SpecVerse with custom entity types"
+targetAudience: "advanced"
+
+examples:
+  - id: "13-01-promotions"
+    title: "Promotions Extension"
+    description: "Custom entity type demonstrating domain-specific promotional offers, discounts, and campaigns"
+    difficulty: "advanced"

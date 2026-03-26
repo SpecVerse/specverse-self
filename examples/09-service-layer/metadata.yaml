@@ -1,0 +1,16 @@
+category: "service-layer"
+title: "Service Layer"
+description: "Service-oriented architecture examples"
+targetAudience: "intermediate"
+
+examples:
+  - id: "09-01-blog-api"
+    title: "Blog API"
+    description: "Blog API service layer with user management, posts, comments, and tag relationships"
+    difficulty: "intermediate"
+    concepts: ["services", "api", "blog"]
+  - id: "09-02-blog-api-manifest"
+    title: "Blog API Manifest"
+    description: "Simple blog API deployment example demonstrating v3.3 hybrid manifest mapping"
+    difficulty: "intermediate"
+    concepts: ["manifests", "blog", "deployment"]

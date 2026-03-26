@@ -1,0 +1,47 @@
+category: "architecture"
+title: "System Architecture"
+description: "Controllers, services, events, views, and how they work together"
+targetAudience: "intermediate"
+estimatedTime: "5-6 hours"
+
+examples:
+  - id: "03-01-enhanced-imports"
+    title: "Enhanced Imports"
+    description: "Demonstrates the import system with granular selection, aliasing, and cross-component references"
+    difficulty: "intermediate"
+    concepts: ["imports", "modules", "cross-component"]
+  - id: "03-02-controllers-and-actions"
+    title: "Controllers and Actions"
+    description: "Controllers and actions for API design"
+    difficulty: "intermediate"
+    concepts: ["controllers", "actions", "endpoints"]
+  - id: "03-03-services-and-events"
+    title: "Services and Events"
+    description: "Services and event-driven architecture"
+    difficulty: "intermediate"
+    concepts: ["services", "events", "event-driven"]
+  - id: "03-04-views-and-components"
+    title: "Views and Components"
+    description: "Views and components for frontend architecture"
+    difficulty: "intermediate"
+    concepts: ["views", "components", "UI"]
+  - id: "03-05-complete-event-flow"
+    title: "Complete Event Flow"
+    description: "Demonstrates complete event subscription system across controllers, services, and models with compensation patterns"
+    difficulty: "intermediate"
+    concepts: ["events", "controllers", "services", "subscriptions"]
+  - id: "03-06-inference-engine-demo"
+    title: "Inference Engine Demo"
+    description: "Complete e-commerce system to test inference engine"
+    difficulty: "intermediate"
+    concepts: ["inference", "automatic-generation", "architecture"]
+  - id: "03-07-relationships-demo"
+    title: "Relationships Demo"
+    description: "Demonstrates relationship types in SpecVerse v3.2 including hasMany, belongsTo, and manyToMany with inference"
+    difficulty: "intermediate"
+    concepts: ["relationships", "models", "controllers", "inference"]
+  - id: "03-08-one-line-relationships"
+    title: "One-Line Relationships"
+    description: "Demonstrates comprehensive relationship patterns using compact convention syntax in SpecVerse v3.2"
+    difficulty: "intermediate"
+    concepts: ["relationships", "convention-syntax"]

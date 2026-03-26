@@ -1,0 +1,16 @@
+category: "domains"
+title: "Real-World Domains"
+description: "Complete domain examples showing SpecVerse in practice"
+targetAudience: "intermediate"
+
+examples:
+  - id: "04-01-digital-product-catalog"
+    title: "Digital Product Catalog"
+    description: "Complete digital product catalog with subscription management, download capabilities, and payment processing"
+    difficulty: "intermediate"
+    concepts: ["models", "controllers", "services", "domain-modeling"]
+  - id: "04-02-organization-management"
+    title: "Organization Management"
+    description: "Complete company and organization management system with HR, payroll, compliance, and employee profiles"
+    difficulty: "intermediate"
+    concepts: ["models", "controllers", "services", "domain-modeling"]

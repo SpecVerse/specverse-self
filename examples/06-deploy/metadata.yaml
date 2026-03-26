@@ -1,0 +1,34 @@
+category: "deploy"
+title: "Deployment Specifications"
+description: "Deployment specs and implementation manifests"
+targetAudience: "intermediate"
+
+examples:
+  - id: "06-01-basic-deployment-intro"
+    title: "Basic Deployment"
+    description: "Introduction to deployment specifications - simple web application with environments and instances"
+    difficulty: "beginner"
+  - id: "06-02-enhanced-deployment-example"
+    title: "Enhanced Deployment"
+    description: "Enhanced deployment for e-commerce platform with caching, monitoring, and comprehensive deployment features"
+    difficulty: "intermediate"
+  - id: "06-03-kubernetes-deployment-manifest"
+    title: "Kubernetes Deployment Manifest"
+    description: "Kubernetes implementation manifest for basic web application deployment"
+    difficulty: "intermediate"
+    concepts: ["manifests", "kubernetes", "deployment"]
+  - id: "06-04-docker-compose-manifest"
+    title: "Docker Compose Deployment Manifest"
+    description: "Docker Compose implementation manifest for local and staging deployment"
+    difficulty: "intermediate"
+    concepts: ["manifests", "docker-compose", "deployment"]
+  - id: "06-05-cloud-native-manifest"
+    title: "Cloud Native Deployment Manifest"
+    description: "Cloud-native implementation manifest for AWS EKS deployment"
+    difficulty: "advanced"
+    concepts: ["manifests", "aws", "cloud-native", "deployment"]
+  - id: "06-08-custom-providers"
+    title: "Custom Providers"
+    description: "Demonstrates v3.4.0 extensible provider support with custom runtimes, languages, and code templates"
+    difficulty: "advanced"
+    concepts: ["deployments", "custom-providers", "code-templates"]

@@ -1,0 +1,31 @@
+category: "view-inference"
+title: "View Inference"
+description: "Automatic view generation from models"
+targetAudience: "intermediate"
+
+examples:
+  - id: "11-01-automatic-crud-views"
+    title: "Automatic CRUD Views"
+    description: "Demonstrates automatic CRUD view generation with 49 atomic components"
+    difficulty: "intermediate"
+    concepts: ["views", "inference", "CRUD"]
+  - id: "11-02-specialist-dashboard"
+    title: "Specialist Dashboard"
+    description: "Specialist view inference with abstract dashboard type expanding to atomic components"
+    difficulty: "intermediate"
+    concepts: ["views", "dashboard", "specialist"]
+  - id: "11-03-explicit-override"
+    title: "Explicit Override"
+    description: "Explicit component override for full control over view generation"
+    difficulty: "intermediate"
+    concepts: ["views", "override", "customization"]
+  - id: "11-04-all-specialist-types"
+    title: "All Specialist View Types"
+    description: "Demonstrates all specialist view types including dashboard, form, report, map, and timeline"
+    difficulty: "intermediate"
+    concepts: ["views", "dashboard", "form", "report", "map", "timeline"]
+  - id: "11-05-test-view-generation"
+    title: "Test View Generation"
+    description: "Test fixture for view generation validation"
+    difficulty: "intermediate"
+    concepts: ["views", "testing", "generation"]

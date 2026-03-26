@@ -1,0 +1,16 @@
+category: "comprehensive"
+title: "Comprehensive Examples"
+description: "Complete examples demonstrating the full language"
+targetAudience: "advanced"
+
+examples:
+  - id: "08-01-complete-grammar-example"
+    title: "Complete Grammar Example"
+    description: "Complete e-commerce platform demonstrating all SpecVerse v3.5 language features including microservices"
+    difficulty: "advanced"
+    concepts: ["complete-grammar", "all-entities"]
+  - id: "08-02-specverse-self-spec"
+    title: "SpecVerse Self-Specification"
+    description: "The SpecVerse specification language specified in itself, covering all five domain areas including formal verification"
+    difficulty: "advanced"
+    concepts: ["self-specification", "meta"]

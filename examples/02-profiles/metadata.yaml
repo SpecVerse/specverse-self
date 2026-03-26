@@ -1,0 +1,17 @@
+category: "profiles"
+title: "Profile System"
+description: "Reusable configuration profiles for models"
+targetAudience: "intermediate"
+estimatedTime: "2-3 hours"
+
+examples:
+  - id: "02-01-using-profiles"
+    title: "Using Profiles"
+    description: "Introduces the profile attachment system for composable model extensions"
+    difficulty: "intermediate"
+    concepts: ["models", "profiles"]
+  - id: "02-02-profile-attachment"
+    title: "Profile Attachment"
+    description: "Advanced profile attachment scenarios with multiple profiles and behaviors"
+    difficulty: "intermediate"
+    concepts: ["models", "profiles", "behaviors"]
