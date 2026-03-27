@@ -2,8 +2,10 @@
   "name": "speclanguage-backend",
   "version": "4.0.0",
   "description": "Backend API for SpecLanguage",
-  "private": true,
   "type": "module",
+  "bin": {
+    "speclanguage": "./bin/cli.mjs"
+  },
   "scripts": {
     "dev": "tsx watch src/main.ts",
     "dev:debug": "tsx watch --inspect src/main.ts",

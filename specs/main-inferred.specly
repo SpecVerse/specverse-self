@@ -1,6 +1,6 @@
 components:
   SpecLanguage:
-    version: "3.5.2"
+    version: "4.0.0"
     description: "The core specification language: components, models, controllers, services, events, views, deployments"
 
     models:
@@ -1188,6 +1188,136 @@ components:
           basePath: String required
         relationships:
           entityModule: belongsTo EntityModule
+        behaviors:
+          attachProfile:
+            description: "Attach a profile to this model instance"
+            parameters:
+              profileName: String required
+            returns: Boolean
+            requires: ["Profile exists and is compatible with this model"]
+            ensures: ["Profile is attached", "Profile attributes are available"]
+          detachProfile:
+            description: "Detach a profile from this model instance"
+            parameters:
+              profileName: String required
+            returns: Boolean
+            requires: ["Profile is currently attached"]
+            ensures: ["Profile is detached", "Profile attributes are no longer available"]
+          hasProfile:
+            description: "Check if a profile is attached to this model instance"
+            parameters:
+              profileName: String required
+            returns: Boolean
+
+      VSCodeExtension:
+        description: "Auto-generated model specification for VSCodeExtension"
+        attributes:
+          id: UUID required unique
+          name: String required unique
+          displayName: String required
+          publisher: String required default="specverse"
+          version: String required
+          description: String
+          categories: String
+          activationEvents: String
+        relationships:
+          languages: hasMany ExtensionLanguage
+          commands: hasMany ExtensionCommand
+          themes: hasMany ExtensionTheme
+        behaviors:
+          attachProfile:
+            description: "Attach a profile to this model instance"
+            parameters:
+              profileName: String required
+            returns: Boolean
+            requires: ["Profile exists and is compatible with this model"]
+            ensures: ["Profile is attached", "Profile attributes are available"]
+          detachProfile:
+            description: "Detach a profile from this model instance"
+            parameters:
+              profileName: String required
+            returns: Boolean
+            requires: ["Profile is currently attached"]
+            ensures: ["Profile is detached", "Profile attributes are no longer available"]
+          hasProfile:
+            description: "Check if a profile is attached to this model instance"
+            parameters:
+              profileName: String required
+            returns: Boolean
+
+      ExtensionLanguage:
+        description: "Auto-generated model specification for ExtensionLanguage"
+        attributes:
+          id: UUID required unique
+          languageId: String required
+          extensions: String required
+          configuration: String
+          grammarScopeName: String required
+          grammarPath: String required
+        relationships:
+          extension: belongsTo VSCodeExtension
+        behaviors:
+          attachProfile:
+            description: "Attach a profile to this model instance"
+            parameters:
+              profileName: String required
+            returns: Boolean
+            requires: ["Profile exists and is compatible with this model"]
+            ensures: ["Profile is attached", "Profile attributes are available"]
+          detachProfile:
+            description: "Detach a profile from this model instance"
+            parameters:
+              profileName: String required
+            returns: Boolean
+            requires: ["Profile is currently attached"]
+            ensures: ["Profile is detached", "Profile attributes are no longer available"]
+          hasProfile:
+            description: "Check if a profile is attached to this model instance"
+            parameters:
+              profileName: String required
+            returns: Boolean
+
+      ExtensionCommand:
+        description: "Auto-generated model specification for ExtensionCommand"
+        attributes:
+          id: UUID required unique
+          command: String required unique
+          title: String required
+          category: String default="SpecVerse"
+          enablement: String
+          keybinding: String
+        relationships:
+          extension: belongsTo VSCodeExtension
+        behaviors:
+          attachProfile:
+            description: "Attach a profile to this model instance"
+            parameters:
+              profileName: String required
+            returns: Boolean
+            requires: ["Profile exists and is compatible with this model"]
+            ensures: ["Profile is attached", "Profile attributes are available"]
+          detachProfile:
+            description: "Detach a profile from this model instance"
+            parameters:
+              profileName: String required
+            returns: Boolean
+            requires: ["Profile is currently attached"]
+            ensures: ["Profile is detached", "Profile attributes are no longer available"]
+          hasProfile:
+            description: "Check if a profile is attached to this model instance"
+            parameters:
+              profileName: String required
+            returns: Boolean
+
+      ExtensionTheme:
+        description: "Auto-generated model specification for ExtensionTheme"
+        attributes:
+          id: UUID required unique
+          label: String required
+          uiTheme: String required default="vs-dark"
+          path: String required
+        relationships:
+          extension: belongsTo VSCodeExtension
         behaviors:
           attachProfile:
             description: "Attach a profile to this model instance"
@@ -4315,6 +4445,319 @@ components:
             requires: []
             ensures: []
 
+      VSCodeExtensionController:
+        description: "Auto-generated CURED controller for VSCodeExtension"
+        model: VSCodeExtension
+        cured:
+          create:
+            parameters:
+              data: VSCodeExtension required
+            returns: VSCodeExtension
+            requires:
+              - "VSCodeExtension data is valid"
+              - "id is not empty"
+              - "name is not empty"
+              - "displayName is not empty"
+              - "publisher is not empty"
+              - "version is not empty"
+            ensures: ["VSCodeExtension created with unique ID", "VSCodeExtension persisted to storage"]
+            publishes: [VSCodeExtensionCreated]
+          retrieve:
+            parameters:
+              id: UUID required
+            returns: VSCodeExtension
+            requires: ["VSCodeExtension with ID exists"]
+            ensures: ["Returns complete VSCodeExtension details"]
+          retrieve_many:
+            parameters:
+              filters: VSCodeExtensionFilter optional
+              limit: Integer default=20
+              offset: Integer default=0
+            returns: Array[VSCodeExtension]
+            ensures: ["Returns paginated list of VSCodeExtensions", "Applies filters if specified"]
+          update:
+            parameters:
+              id: UUID required
+              updates: Object required
+            returns: VSCodeExtension
+            requires: ["VSCodeExtension with ID exists", "Update data is valid"]
+            ensures: ["VSCodeExtension attributes updated", "Version number incremented"]
+            publishes: [VSCodeExtensionUpdated]
+          delete:
+            parameters:
+              id: UUID required
+              soft: Boolean default=true
+            returns: Boolean
+            requires: ["VSCodeExtension with ID exists"]
+            ensures: ["VSCodeExtension marked as deleted"]
+            publishes: [VSCodeExtensionDeleted]
+          validate:
+            parameters:
+              data: VSCodeExtension required
+              operation: String required
+            returns: ValidationResult
+            requires: ["Operation is one of: create, update, evolve", "Data structure matches VSCodeExtension schema"]
+            ensures: ["Returns validation status and errors", "No side effects - dry run only"]
+        actions:
+          attachProfile:
+            description: "Attach a profile to this model instance"
+            parameters:
+              id: UUID required
+              profileName: String required
+            returns: Boolean
+            requires: ["Profile exists and is compatible with this model"]
+            ensures: ["Profile is attached", "Profile attributes are available"]
+          detachProfile:
+            description: "Detach a profile from this model instance"
+            parameters:
+              id: UUID required
+              profileName: String required
+            returns: Boolean
+            requires: ["Profile is currently attached"]
+            ensures: ["Profile is detached", "Profile attributes are no longer available"]
+          hasProfile:
+            description: "Check if a profile is attached to this model instance"
+            parameters:
+              id: UUID required
+              profileName: String required
+            returns: Boolean
+            requires: []
+            ensures: []
+
+      ExtensionLanguageController:
+        description: "Auto-generated CURED controller for ExtensionLanguage"
+        model: ExtensionLanguage
+        cured:
+          create:
+            parameters:
+              data: ExtensionLanguage required
+            returns: ExtensionLanguage
+            requires:
+              - "ExtensionLanguage data is valid"
+              - "id is not empty"
+              - "languageId is not empty"
+              - "extensions is not empty"
+              - "grammarScopeName is not empty"
+              - "grammarPath is not empty"
+            ensures: ["ExtensionLanguage created with unique ID", "ExtensionLanguage persisted to storage"]
+            publishes: [ExtensionLanguageCreated]
+          retrieve:
+            parameters:
+              id: UUID required
+            returns: ExtensionLanguage
+            requires: ["ExtensionLanguage with ID exists"]
+            ensures: ["Returns complete ExtensionLanguage details"]
+          retrieve_many:
+            parameters:
+              filters: ExtensionLanguageFilter optional
+              limit: Integer default=20
+              offset: Integer default=0
+            returns: Array[ExtensionLanguage]
+            ensures: ["Returns paginated list of ExtensionLanguages", "Applies filters if specified"]
+          update:
+            parameters:
+              id: UUID required
+              updates: Object required
+            returns: ExtensionLanguage
+            requires: ["ExtensionLanguage with ID exists", "Update data is valid"]
+            ensures: ["ExtensionLanguage attributes updated", "Version number incremented"]
+            publishes: [ExtensionLanguageUpdated]
+          delete:
+            parameters:
+              id: UUID required
+              soft: Boolean default=true
+            returns: Boolean
+            requires: ["ExtensionLanguage with ID exists"]
+            ensures: ["ExtensionLanguage marked as deleted"]
+            publishes: [ExtensionLanguageDeleted]
+          validate:
+            parameters:
+              data: ExtensionLanguage required
+              operation: String required
+            returns: ValidationResult
+            requires: ["Operation is one of: create, update, evolve", "Data structure matches ExtensionLanguage schema"]
+            ensures: ["Returns validation status and errors", "No side effects - dry run only"]
+        actions:
+          attachProfile:
+            description: "Attach a profile to this model instance"
+            parameters:
+              id: UUID required
+              profileName: String required
+            returns: Boolean
+            requires: ["Profile exists and is compatible with this model"]
+            ensures: ["Profile is attached", "Profile attributes are available"]
+          detachProfile:
+            description: "Detach a profile from this model instance"
+            parameters:
+              id: UUID required
+              profileName: String required
+            returns: Boolean
+            requires: ["Profile is currently attached"]
+            ensures: ["Profile is detached", "Profile attributes are no longer available"]
+          hasProfile:
+            description: "Check if a profile is attached to this model instance"
+            parameters:
+              id: UUID required
+              profileName: String required
+            returns: Boolean
+            requires: []
+            ensures: []
+
+      ExtensionCommandController:
+        description: "Auto-generated CURED controller for ExtensionCommand"
+        model: ExtensionCommand
+        cured:
+          create:
+            parameters:
+              data: ExtensionCommand required
+            returns: ExtensionCommand
+            requires:
+              - "ExtensionCommand data is valid"
+              - "id is not empty"
+              - "command is not empty"
+              - "title is not empty"
+            ensures: ["ExtensionCommand created with unique ID", "ExtensionCommand persisted to storage"]
+            publishes: [ExtensionCommandCreated]
+          retrieve:
+            parameters:
+              id: UUID required
+            returns: ExtensionCommand
+            requires: ["ExtensionCommand with ID exists"]
+            ensures: ["Returns complete ExtensionCommand details"]
+          retrieve_many:
+            parameters:
+              filters: ExtensionCommandFilter optional
+              limit: Integer default=20
+              offset: Integer default=0
+            returns: Array[ExtensionCommand]
+            ensures: ["Returns paginated list of ExtensionCommands", "Applies filters if specified"]
+          update:
+            parameters:
+              id: UUID required
+              updates: Object required
+            returns: ExtensionCommand
+            requires: ["ExtensionCommand with ID exists", "Update data is valid"]
+            ensures: ["ExtensionCommand attributes updated", "Version number incremented"]
+            publishes: [ExtensionCommandUpdated]
+          delete:
+            parameters:
+              id: UUID required
+              soft: Boolean default=true
+            returns: Boolean
+            requires: ["ExtensionCommand with ID exists"]
+            ensures: ["ExtensionCommand marked as deleted"]
+            publishes: [ExtensionCommandDeleted]
+          validate:
+            parameters:
+              data: ExtensionCommand required
+              operation: String required
+            returns: ValidationResult
+            requires: ["Operation is one of: create, update, evolve", "Data structure matches ExtensionCommand schema"]
+            ensures: ["Returns validation status and errors", "No side effects - dry run only"]
+        actions:
+          attachProfile:
+            description: "Attach a profile to this model instance"
+            parameters:
+              id: UUID required
+              profileName: String required
+            returns: Boolean
+            requires: ["Profile exists and is compatible with this model"]
+            ensures: ["Profile is attached", "Profile attributes are available"]
+          detachProfile:
+            description: "Detach a profile from this model instance"
+            parameters:
+              id: UUID required
+              profileName: String required
+            returns: Boolean
+            requires: ["Profile is currently attached"]
+            ensures: ["Profile is detached", "Profile attributes are no longer available"]
+          hasProfile:
+            description: "Check if a profile is attached to this model instance"
+            parameters:
+              id: UUID required
+              profileName: String required
+            returns: Boolean
+            requires: []
+            ensures: []
+
+      ExtensionThemeController:
+        description: "Auto-generated CURED controller for ExtensionTheme"
+        model: ExtensionTheme
+        cured:
+          create:
+            parameters:
+              data: ExtensionTheme required
+            returns: ExtensionTheme
+            requires:
+              - "ExtensionTheme data is valid"
+              - "id is not empty"
+              - "label is not empty"
+              - "uiTheme is not empty"
+              - "path is not empty"
+            ensures: ["ExtensionTheme created with unique ID", "ExtensionTheme persisted to storage"]
+            publishes: [ExtensionThemeCreated]
+          retrieve:
+            parameters:
+              id: UUID required
+            returns: ExtensionTheme
+            requires: ["ExtensionTheme with ID exists"]
+            ensures: ["Returns complete ExtensionTheme details"]
+          retrieve_many:
+            parameters:
+              filters: ExtensionThemeFilter optional
+              limit: Integer default=20
+              offset: Integer default=0
+            returns: Array[ExtensionTheme]
+            ensures: ["Returns paginated list of ExtensionThemes", "Applies filters if specified"]
+          update:
+            parameters:
+              id: UUID required
+              updates: Object required
+            returns: ExtensionTheme
+            requires: ["ExtensionTheme with ID exists", "Update data is valid"]
+            ensures: ["ExtensionTheme attributes updated", "Version number incremented"]
+            publishes: [ExtensionThemeUpdated]
+          delete:
+            parameters:
+              id: UUID required
+              soft: Boolean default=true
+            returns: Boolean
+            requires: ["ExtensionTheme with ID exists"]
+            ensures: ["ExtensionTheme marked as deleted"]
+            publishes: [ExtensionThemeDeleted]
+          validate:
+            parameters:
+              data: ExtensionTheme required
+              operation: String required
+            returns: ValidationResult
+            requires: ["Operation is one of: create, update, evolve", "Data structure matches ExtensionTheme schema"]
+            ensures: ["Returns validation status and errors", "No side effects - dry run only"]
+        actions:
+          attachProfile:
+            description: "Attach a profile to this model instance"
+            parameters:
+              id: UUID required
+              profileName: String required
+            returns: Boolean
+            requires: ["Profile exists and is compatible with this model"]
+            ensures: ["Profile is attached", "Profile attributes are available"]
+          detachProfile:
+            description: "Detach a profile from this model instance"
+            parameters:
+              id: UUID required
+              profileName: String required
+            returns: Boolean
+            requires: ["Profile is currently attached"]
+            ensures: ["Profile is detached", "Profile attributes are no longer available"]
+          hasProfile:
+            description: "Check if a profile is attached to this model instance"
+            parameters:
+              id: UUID required
+              profileName: String required
+            returns: Boolean
+            requires: []
+            ensures: []
+
       MCPServerController:
         description: "Auto-generated CURED controller for MCPServer"
         model: MCPServer
@@ -5216,6 +5659,52 @@ components:
             returns: RepairResult
             requires:
               - "EntityModule exists"
+              - "Repair options are valid"
+            ensures:
+              - "Relationship integrity issues resolved"
+              - "Repair actions logged"
+
+      VSCodeExtensionRelationshipService:
+        description: "Manages complex relationships and ensures relationship integrity for VSCodeExtension"
+        subscribes_to:
+          ExtensionLanguageCreated: handleChildAdded
+          ExtensionLanguageDeleted: handleChildRemoved
+          ExtensionCommandCreated: handleChildAdded
+          ExtensionCommandDeleted: handleChildRemoved
+          ExtensionThemeCreated: handleChildAdded
+          ExtensionThemeDeleted: handleChildRemoved
+        operations:
+          handleChildAdded:
+            parameters:
+              event: ChildEntityEvent required
+            returns: Void
+            ensures:
+              - "Parent relationship established"
+              - "Relationship integrity maintained"
+          handleChildRemoved:
+            parameters:
+              event: ChildEntityEvent required
+            returns: Void
+            ensures:
+              - "Parent relationship cleaned up"
+              - "Cascade rules applied"
+          validateRelationshipIntegrity:
+            parameters:
+              id: UUID required
+              relationshipType: String optional
+            returns: IntegrityValidationResult
+            requires:
+              - "VSCodeExtension exists"
+            ensures:
+              - "All relationships validated for integrity"
+              - "Constraint violations identified"
+          repairRelationshipIntegrity:
+            parameters:
+              id: UUID required
+              repairOptions: RepairOptions required
+            returns: RepairResult
+            requires:
+              - "VSCodeExtension exists"
               - "Repair options are valid"
             ensures:
               - "Relationship integrity issues resolved"
@@ -9339,6 +9828,357 @@ components:
           timestamp: DateTime required
           validatedBy: UUID required
 
+      VSCodeExtensionCreated:
+        description: "VSCodeExtension was created"
+        attributes:
+          id: UUID required
+          timestamp: DateTime required
+          createdBy: UUID required
+          version: Integer default=1
+          name: String required
+
+      VSCodeExtensionUpdated:
+        description: "VSCodeExtension was updated"
+        attributes:
+          id: UUID required
+          changedFields: Array required
+          previousValues: Object optional
+          newValues: Object required
+          timestamp: DateTime required
+          updatedBy: UUID required
+          version: Integer required
+          name: String optional
+
+      VSCodeExtensionDeleted:
+        description: "VSCodeExtension was deleted"
+        attributes:
+          id: UUID required
+          deletedBy: UUID required
+          timestamp: DateTime required
+          soft: Boolean default=true
+          reason: String optional
+          name: String optional
+
+      LanguagesAddedToVSCodeExtension:
+        description: "languages was added to VSCodeExtension"
+        attributes:
+          vscodeextensionId: UUID required
+          languagesId: UUID required
+          relationshipType: String default=hasMany
+          timestamp: DateTime required
+
+      LanguagesRemovedFromVSCodeExtension:
+        description: "languages was removed from VSCodeExtension"
+        attributes:
+          vscodeextensionId: UUID required
+          languagesId: UUID required
+          relationshipType: String default=hasMany
+          timestamp: DateTime required
+
+      CommandsAddedToVSCodeExtension:
+        description: "commands was added to VSCodeExtension"
+        attributes:
+          vscodeextensionId: UUID required
+          commandsId: UUID required
+          relationshipType: String default=hasMany
+          timestamp: DateTime required
+
+      CommandsRemovedFromVSCodeExtension:
+        description: "commands was removed from VSCodeExtension"
+        attributes:
+          vscodeextensionId: UUID required
+          commandsId: UUID required
+          relationshipType: String default=hasMany
+          timestamp: DateTime required
+
+      ThemesAddedToVSCodeExtension:
+        description: "themes was added to VSCodeExtension"
+        attributes:
+          vscodeextensionId: UUID required
+          themesId: UUID required
+          relationshipType: String default=hasMany
+          timestamp: DateTime required
+
+      ThemesRemovedFromVSCodeExtension:
+        description: "themes was removed from VSCodeExtension"
+        attributes:
+          vscodeextensionId: UUID required
+          themesId: UUID required
+          relationshipType: String default=hasMany
+          timestamp: DateTime required
+
+      ExtensionLanguageAddedToVSCodeExtension:
+        description: "ExtensionLanguage was added to VSCodeExtension"
+        attributes:
+          vscodeextensionId: UUID required
+          extensionlanguageId: UUID required
+          relationshipType: String default=hasMany
+          addedBy: UUID required
+          timestamp: DateTime required
+
+      ExtensionLanguageRemovedFromVSCodeExtension:
+        description: "ExtensionLanguage was removed from VSCodeExtension"
+        attributes:
+          id: UUID required
+          vscodeextensionId: UUID required
+          vscodeextensionName: String optional
+          removedBy: UUID required
+          timestamp: DateTime required
+          reason: String optional
+
+      ExtensionCommandAddedToVSCodeExtension:
+        description: "ExtensionCommand was added to VSCodeExtension"
+        attributes:
+          vscodeextensionId: UUID required
+          extensioncommandId: UUID required
+          relationshipType: String default=hasMany
+          addedBy: UUID required
+          timestamp: DateTime required
+
+      ExtensionCommandRemovedFromVSCodeExtension:
+        description: "ExtensionCommand was removed from VSCodeExtension"
+        attributes:
+          id: UUID required
+          vscodeextensionId: UUID required
+          vscodeextensionName: String optional
+          removedBy: UUID required
+          timestamp: DateTime required
+          reason: String optional
+
+      ExtensionThemeAddedToVSCodeExtension:
+        description: "ExtensionTheme was added to VSCodeExtension"
+        attributes:
+          vscodeextensionId: UUID required
+          extensionthemeId: UUID required
+          relationshipType: String default=hasMany
+          addedBy: UUID required
+          timestamp: DateTime required
+
+      ExtensionThemeRemovedFromVSCodeExtension:
+        description: "ExtensionTheme was removed from VSCodeExtension"
+        attributes:
+          id: UUID required
+          vscodeextensionId: UUID required
+          vscodeextensionName: String optional
+          removedBy: UUID required
+          timestamp: DateTime required
+          reason: String optional
+
+      VSCodeExtensionProcessingStarted:
+        description: "VSCodeExtension business processing started"
+        attributes:
+          id: UUID required
+          processType: String required
+          processId: UUID required
+          processParameters: Object optional
+          startedBy: UUID required
+          timestamp: DateTime required
+          estimatedDuration: Integer optional
+
+      VSCodeExtensionProcessingCompleted:
+        description: "VSCodeExtension business processing completed"
+        attributes:
+          id: UUID required
+          processType: String required
+          processId: UUID required
+          processingResults: Object required
+          duration: Integer required
+          completedBy: UUID required
+          timestamp: DateTime required
+          sideEffects: String optional
+
+      VSCodeExtensionProcessingFailed:
+        description: "VSCodeExtension business processing failed"
+        attributes:
+          id: UUID required
+          processType: String required
+          processId: UUID required
+          failureReason: String required
+          errorDetails: Object required
+          partialResults: Object optional
+          failedBy: UUID required
+          timestamp: DateTime required
+          recoverable: Boolean required
+
+      ExtensionLanguageCreated:
+        description: "ExtensionLanguage was created"
+        attributes:
+          id: UUID required
+          timestamp: DateTime required
+          createdBy: UUID required
+          version: Integer default=1
+
+      ExtensionLanguageUpdated:
+        description: "ExtensionLanguage was updated"
+        attributes:
+          id: UUID required
+          changedFields: Array required
+          previousValues: Object optional
+          newValues: Object required
+          timestamp: DateTime required
+          updatedBy: UUID required
+          version: Integer required
+
+      ExtensionLanguageDeleted:
+        description: "ExtensionLanguage was deleted"
+        attributes:
+          id: UUID required
+          deletedBy: UUID required
+          timestamp: DateTime required
+          soft: Boolean default=true
+          reason: String optional
+
+      ExtensionLanguageCreatedInVSCodeExtension:
+        description: "ExtensionLanguage was created within VSCodeExtension"
+        attributes:
+          id: UUID required
+          vscodeextensionId: UUID required
+          vscodeextensionName: String optional
+          timestamp: DateTime required
+          createdBy: UUID required
+
+      ExtensionLanguageValidationFailed:
+        description: "ExtensionLanguage validation failed"
+        attributes:
+          id: UUID optional
+          entityData: Object required
+          validationType: String required
+          failedRules: String optional
+          errorDetails: Object required
+          timestamp: DateTime required
+          validatedBy: UUID required
+          severity: String default=error
+
+      ExtensionLanguageValidationPassed:
+        description: "ExtensionLanguage validation passed"
+        attributes:
+          id: UUID optional
+          entityData: Object required
+          validationType: String required
+          rulesChecked: String optional
+          timestamp: DateTime required
+          validatedBy: UUID required
+
+      ExtensionCommandCreated:
+        description: "ExtensionCommand was created"
+        attributes:
+          id: UUID required
+          timestamp: DateTime required
+          createdBy: UUID required
+          version: Integer default=1
+          title: String required
+
+      ExtensionCommandUpdated:
+        description: "ExtensionCommand was updated"
+        attributes:
+          id: UUID required
+          changedFields: Array required
+          previousValues: Object optional
+          newValues: Object required
+          timestamp: DateTime required
+          updatedBy: UUID required
+          version: Integer required
+          title: String optional
+
+      ExtensionCommandDeleted:
+        description: "ExtensionCommand was deleted"
+        attributes:
+          id: UUID required
+          deletedBy: UUID required
+          timestamp: DateTime required
+          soft: Boolean default=true
+          reason: String optional
+
+      ExtensionCommandCreatedInVSCodeExtension:
+        description: "ExtensionCommand was created within VSCodeExtension"
+        attributes:
+          id: UUID required
+          vscodeextensionId: UUID required
+          vscodeextensionName: String optional
+          timestamp: DateTime required
+          createdBy: UUID required
+
+      ExtensionCommandValidationFailed:
+        description: "ExtensionCommand validation failed"
+        attributes:
+          id: UUID optional
+          entityData: Object required
+          validationType: String required
+          failedRules: String optional
+          errorDetails: Object required
+          timestamp: DateTime required
+          validatedBy: UUID required
+          severity: String default=error
+
+      ExtensionCommandValidationPassed:
+        description: "ExtensionCommand validation passed"
+        attributes:
+          id: UUID optional
+          entityData: Object required
+          validationType: String required
+          rulesChecked: String optional
+          timestamp: DateTime required
+          validatedBy: UUID required
+
+      ExtensionThemeCreated:
+        description: "ExtensionTheme was created"
+        attributes:
+          id: UUID required
+          timestamp: DateTime required
+          createdBy: UUID required
+          version: Integer default=1
+
+      ExtensionThemeUpdated:
+        description: "ExtensionTheme was updated"
+        attributes:
+          id: UUID required
+          changedFields: Array required
+          previousValues: Object optional
+          newValues: Object required
+          timestamp: DateTime required
+          updatedBy: UUID required
+          version: Integer required
+
+      ExtensionThemeDeleted:
+        description: "ExtensionTheme was deleted"
+        attributes:
+          id: UUID required
+          deletedBy: UUID required
+          timestamp: DateTime required
+          soft: Boolean default=true
+          reason: String optional
+
+      ExtensionThemeCreatedInVSCodeExtension:
+        description: "ExtensionTheme was created within VSCodeExtension"
+        attributes:
+          id: UUID required
+          vscodeextensionId: UUID required
+          vscodeextensionName: String optional
+          timestamp: DateTime required
+          createdBy: UUID required
+
+      ExtensionThemeValidationFailed:
+        description: "ExtensionTheme validation failed"
+        attributes:
+          id: UUID optional
+          entityData: Object required
+          validationType: String required
+          failedRules: String optional
+          errorDetails: Object required
+          timestamp: DateTime required
+          validatedBy: UUID required
+          severity: String default=error
+
+      ExtensionThemeValidationPassed:
+        description: "ExtensionTheme validation passed"
+        attributes:
+          id: UUID optional
+          entityData: Object required
+          validationType: String required
+          rulesChecked: String optional
+          timestamp: DateTime required
+          validatedBy: UUID required
+
       MCPServerCreated:
         description: "MCPServer was created"
         attributes:
@@ -10689,6 +11529,103 @@ components:
         description: "Form view for creating and editing CodeTemplate"
         subscribes_to: [CodeTemplateCreated, CodeTemplateUpdated]
 
+      VSCodeExtensionListView:
+        type: list
+        model: VSCodeExtension
+        description: "List view for VSCodeExtensions"
+        subscribes_to: [VSCodeExtensionCreated, VSCodeExtensionUpdated, VSCodeExtensionDeleted]
+
+      VSCodeExtensionDetailView:
+        type: detail
+        model: [VSCodeExtension, ExtensionLanguage, ExtensionCommand, ExtensionTheme]
+        description: "Detail view for VSCodeExtension"
+        subscribes_to:
+          - VSCodeExtensionUpdated
+          - LanguagesAddedToVSCodeExtension
+          - LanguagesRemovedFromVSCodeExtension
+          - CommandsAddedToVSCodeExtension
+          - CommandsRemovedFromVSCodeExtension
+          - ThemesAddedToVSCodeExtension
+          - ThemesRemovedFromVSCodeExtension
+        uiComponents:
+          vscodeextensionContent:
+            type: content
+          extensionlanguageList:
+            type: list
+          extensioncommandList:
+            type: list
+          extensionthemeList:
+            type: list
+
+      VSCodeExtensionFormView:
+        type: form
+        model: VSCodeExtension
+        description: "Form view for creating and editing VSCodeExtension"
+        subscribes_to: [VSCodeExtensionCreated, VSCodeExtensionUpdated]
+
+      ExtensionLanguageListView:
+        type: list
+        model: ExtensionLanguage
+        description: "List view for ExtensionLanguages"
+        subscribes_to: [ExtensionLanguageCreated, ExtensionLanguageUpdated, ExtensionLanguageDeleted]
+
+      ExtensionLanguageDetailView:
+        type: detail
+        model: ExtensionLanguage
+        description: "Detail view for ExtensionLanguage"
+        subscribes_to: [ExtensionLanguageUpdated]
+        uiComponents:
+          extensionlanguageContent:
+            type: content
+
+      ExtensionLanguageFormView:
+        type: form
+        model: ExtensionLanguage
+        description: "Form view for creating and editing ExtensionLanguage"
+        subscribes_to: [ExtensionLanguageCreated, ExtensionLanguageUpdated]
+
+      ExtensionCommandListView:
+        type: list
+        model: ExtensionCommand
+        description: "List view for ExtensionCommands"
+        subscribes_to: [ExtensionCommandCreated, ExtensionCommandUpdated, ExtensionCommandDeleted]
+
+      ExtensionCommandDetailView:
+        type: detail
+        model: ExtensionCommand
+        description: "Detail view for ExtensionCommand"
+        subscribes_to: [ExtensionCommandUpdated]
+        uiComponents:
+          extensioncommandContent:
+            type: content
+
+      ExtensionCommandFormView:
+        type: form
+        model: ExtensionCommand
+        description: "Form view for creating and editing ExtensionCommand"
+        subscribes_to: [ExtensionCommandCreated, ExtensionCommandUpdated]
+
+      ExtensionThemeListView:
+        type: list
+        model: ExtensionTheme
+        description: "List view for ExtensionThemes"
+        subscribes_to: [ExtensionThemeCreated, ExtensionThemeUpdated, ExtensionThemeDeleted]
+
+      ExtensionThemeDetailView:
+        type: detail
+        model: ExtensionTheme
+        description: "Detail view for ExtensionTheme"
+        subscribes_to: [ExtensionThemeUpdated]
+        uiComponents:
+          extensionthemeContent:
+            type: content
+
+      ExtensionThemeFormView:
+        type: form
+        model: ExtensionTheme
+        description: "Form view for creating and editing ExtensionTheme"
+        subscribes_to: [ExtensionThemeCreated, ExtensionThemeUpdated]
+
       MCPServerListView:
         type: list
         model: MCPServer
@@ -10802,7 +11739,7 @@ components:
 
       SystemDashboardView:
         type: dashboard
-        model: [Specification, Import, Export, Primitive, Operation, EntityModule, EntityRegistry, ConventionGrammar, InferenceRule, DiagramPlugin, MCPServer, AIOrchestrator]
+        model: [Specification, Import, Export, Primitive, Operation, EntityModule, EntityRegistry, ConventionGrammar, InferenceRule, DiagramPlugin, VSCodeExtension, MCPServer, AIOrchestrator]
         description: "System-wide dashboard showing overview of all main entities"
         subscribes_to:
           - SpecificationCreated
@@ -10835,6 +11772,9 @@ components:
           - DiagramPluginCreated
           - DiagramPluginUpdated
           - DiagramPluginDeleted
+          - VSCodeExtensionCreated
+          - VSCodeExtensionUpdated
+          - VSCodeExtensionDeleted
           - MCPServerCreated
           - MCPServerUpdated
           - MCPServerDeleted
