@@ -10,7 +10,7 @@ For the philosophy and motivation behind SpecVerse, see [SPECVERSE-INTRODUCTION-
 
 ### Part 1: Writing Specifications
 - [Your First Spec](#your-first-spec) — a minimal working example
-- [Models](#models) — attributes, metadata, convention shorthand
+- [Models](#models) — attributes, metadata, profiles, convention shorthand
 - [Relationships](#relationships) — hasMany, belongsTo, hasOne, manyToMany
 - [Lifecycles](#lifecycles) — state machines on models
 - [Behaviors](#behaviors) — declarative business logic with contracts
@@ -19,7 +19,8 @@ For the philosophy and motivation behind SpecVerse, see [SPECVERSE-INTRODUCTION-
 - [Events](#events) — domain events with typed payloads
 - [The Event System](#the-event-system) — publish, subscribe, and event-driven architecture
 - [Views](#views) — UI specifications
-- [Deployments](#deployments) — runtime topology
+- [Deployments](#deployments) — runtime topology, operation policies, autoscaling, namespaces
+- [Primitives](#primitives) — custom type definitions
 - [Commands](#commands-extension-entity) — CLI generation from spec
 - [Measures](#measures-extension-entity) — aggregation metrics
 - [Conventions](#conventions-extension-entity) — meta-circular shorthand definitions
@@ -110,6 +111,30 @@ models:
       version: true          # Generates version field for optimistic locking
       label: [title]         # Display label field(s)
 ```
+
+### Relationships
+
+**Profiles** attach reusable configuration to models. Define a model as a profile with `profile-attachment`:
+
+```yaml
+models:
+  Product:
+    attributes:
+      id: UUID required unique
+      name: String required
+      price: Money required
+
+  DigitalProductProfile:
+    description: "Profile for digital products"
+    attributes:
+      downloadUrl: String required
+      fileSize: String
+      license: String required
+    profile-attachment:
+      profiles: [Product]         # This profile attaches to Product
+```
+
+Profiles let you compose model capabilities without deep inheritance. A `Product` can have both a `DigitalProductProfile` and a `PhysicalProductProfile` attached.
 
 ### Relationships
 
@@ -248,17 +273,15 @@ behaviors:
     publishes: [OrderConfirmed, InventoryReservationRequested]
 ```
 
-**Subscribing** — services declare which events they handle:
+**Subscribing** — services declare which events they handle using `subscribes_to`:
 
 ```yaml
 services:
   InventoryService:
     description: "Manages stock levels"
-    subscribes:
-      - event: InventoryReservationRequested
-        handler: reserveStock
-      - event: OrderCancelled
-        handler: releaseStock
+    subscribes_to:
+      InventoryReservationRequested: reserveStock
+      OrderCancelled: releaseStock
     operations:
       reserveStock:
         parameters:
@@ -339,6 +362,84 @@ deployments:
 ```
 
 Instance types: `controllers`, `services`, `views`, `communications`, `storage`, `security`, `infrastructure`, `monitoring`
+
+**Operation policies** — apply resilience patterns to specific operations:
+
+```yaml
+deployments:
+  production:
+    instances:
+      controllers:
+        api:
+          component: MyApp
+          operationPolicies:
+            processPayment:
+              retry:
+                enabled: true
+                maxAttempts: 3
+                backoffMs: 100
+                retryableErrors: ["TIMEOUT", "UNAVAILABLE"]
+              circuitBreaker:
+                enabled: true
+                failureThreshold: 5
+                halfOpenAfterMs: 60000
+            listProducts:
+              rateLimit:
+                enabled: true
+                requestsPerMinute: 1000
+                burstSize: 100
+                byIP: true
+              cache:
+                enabled: true
+                ttlSeconds: 300
+                keyFields: ["category", "limit", "offset"]
+```
+
+Available policies: `retry`, `circuitBreaker`, `rateLimit`, `cache`, `transactional`, `idempotency`
+
+**Autoscaling and resources** — production deployment configuration:
+
+```yaml
+deployments:
+  production:
+    instances:
+      controllers:
+        api:
+          component: MyApp
+          scale: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          autoscaling:
+            enabled: true
+            minReplicas: 2
+            maxReplicas: 10
+            targetCPU: 80
+```
+
+**Namespace configuration** — domain isolation:
+
+```yaml
+deployments:
+  production:
+    namespacing:
+      strategy: "domain-based"
+      namespaces:
+        products:
+          isolation: "strict"
+          resourceLimits:
+            cpu: "1000m"
+            memory: "2Gi"
+        orders:
+          isolation: "permissive"
+      crossNamespacePolicy: "explicit"
+```
+
+Strategies: `single`, `domain-based`, `environment-based`, `tenant-based`
 
 ### Commands (Extension Entity)
 
@@ -526,6 +627,28 @@ The inference engine generates architecture from minimal specs. Given just model
 
 Write 5 models, get 5 controllers + 5 services + 15+ events + 10+ views + deployment topology. That's the 220x expansion ratio.
 
+### Primitives
+
+Define custom types that can be imported across specs:
+
+```yaml
+primitives:
+  Money:
+    description: "Monetary value with currency"
+    baseType: Number
+  Address:
+    description: "Postal address"
+    baseType: String
+```
+
+SpecVerse ships with built-in primitives: `Money`, `Email`, `URL`, `PhoneNumber`, `Address`. Import them:
+
+```yaml
+import:
+  - from: "@specverse/primitives"
+    select: [Money, Email]
+```
+
 ### Imports and Exports
 
 Share types and models between specs:
@@ -542,6 +665,7 @@ components:
     export:
       models: [Customer, Order]
       events: [OrderPlaced]
+      primitives: [CustomType]
 ```
 
 ---
@@ -579,11 +703,31 @@ specverse gen docs app.specly
 # Initialize a new project
 specverse init my-project --template default
 
-# AI suggestions
-specverse ai suggest app.specly
+# AI commands
+specverse ai docs app.specly              # Generate implementation prompts
+specverse ai suggest app.specly            # Get improvement suggestions
+specverse ai template create               # Get prompt template for operation
 
-# Quick validation
-specverse dev quick app.specly
+# Development tools
+specverse dev quick app.specly             # Fast schema-only validation
+specverse dev format app.specly --write    # Format and save back
+specverse dev watch app.specly             # Watch and re-validate on change
+
+# Import cache
+specverse cache --stats                    # Show cache size
+specverse cache --list                     # List cached items
+specverse cache --clear                    # Clear cache
+
+# AI sessions (persistent Claude Code integration)
+specverse session create --name "my-session"
+specverse session list --all
+specverse session submit <id> "Build a user auth system" --operation create
+specverse session status <id>
+specverse session process <jobId>
+specverse session delete <id> --force
+
+# UML generation
+specverse gen uml app.specly
 ```
 
 ### Manifests
