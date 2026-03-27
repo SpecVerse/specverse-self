@@ -231,6 +231,192 @@ deployments:
 
 Instance types: `controllers`, `services`, `views`, `communications`, `storage`, `security`, `infrastructure`, `monitoring`
 
+### Commands (Extension Entity)
+
+Define CLI commands directly in your spec. The realize engine generates a full Commander.js CLI:
+
+```yaml
+components:
+  CLI:
+    commands:
+      mytool:
+        description: "My application CLI"
+        subcommands:
+          deploy:
+            description: "Deploy the application"
+            arguments:
+              environment:
+                type: String
+                required: true
+                positional: true
+            flags:
+              --dry-run:
+                type: Boolean
+                default: false
+                description: "Preview without executing"
+              --region:
+                type: String
+                alias: "-r"
+                default: "us-east-1"
+                description: "AWS region"
+            returns: DeploymentResult
+            exitCodes:
+              0: Success
+              1: Deployment failed
+```
+
+This generates:
+- CLI entry point with Commander.js
+- Typed argument and flag parsing
+- Subcommand registration
+- Help text from descriptions
+
+### Measures (Extension Entity)
+
+Define analytics and aggregation metrics:
+
+```yaml
+measures:
+  totalRevenue:
+    source: Order
+    aggregation: sum
+    field: total
+    filter: "status = 'completed'"
+    dimensions: [region, productCategory]
+    format: currency
+
+  activeUsers:
+    source: User
+    aggregation: count
+    filter: "lastLogin > now() - 30d"
+    dimensions: [plan, country]
+
+  averageOrderValue:
+    source: Order
+    aggregation: avg
+    field: total
+    dimensions: [month]
+```
+
+Aggregation types: `sum`, `count`, `avg`, `min`, `max`, `custom`
+
+### Conventions (Extension Entity)
+
+Define how shorthand syntax expands. This is the meta-circular entity — conventions defining how conventions work:
+
+```yaml
+conventions:
+  attributeShorthand:
+    pattern: "{name}: {type} {modifiers}"
+    expansion:
+      name: "{name}"
+      type: "{type}"
+      required: "contains(modifiers, 'required')"
+      unique: "contains(modifiers, 'unique')"
+
+  relationshipShorthand:
+    pattern: "{name}: {relType} {target} {modifiers}"
+    expansion:
+      name: "{name}"
+      type: "{relType}"
+      target: "{target}"
+      cascade: "contains(modifiers, 'cascade')"
+```
+
+### Promotions (Extension Entity)
+
+Domain-specific extension for e-commerce promotions:
+
+```yaml
+promotions:
+  summerSale:
+    description: "20% off all electronics"
+    discountType: percentage
+    discountValue: 20
+    conditions:
+      category: electronics
+      minOrderValue: 50
+    validFrom: "2026-06-01"
+    validTo: "2026-08-31"
+```
+
+Discount types: `percentage`, `fixed`, `buyXgetY`, `freeShipping`, `bundle`
+
+### How Behaviors Become Code
+
+This is **L3 generation** — the realize engine translates declarative behaviors into runtime code. Given this spec:
+
+```yaml
+behaviors:
+  processPayment:
+    parameters:
+      paymentMethod: String required
+      amount: Money required
+    requires: ["Order exists", "Amount matches order total"]
+    ensures: ["Payment recorded", "Order status updated"]
+    publishes: [PaymentProcessed]
+    steps:
+      - "Validate payment details"
+      - "Charge payment provider"
+      - "Record transaction"
+      - "Update order status"
+```
+
+The generator produces:
+
+```typescript
+async processPayment(paymentMethod: string, amount: number): Promise<void> {
+    // === PRECONDITIONS ===
+    const order = await this.prisma.order.findUnique({ where: { id: orderId } });
+    if (!order) throw new Error('Precondition failed: Order exists');
+    if (order.total !== amount) throw new Error('Precondition failed: Amount matches order total');
+
+    // === EXECUTE ===
+    // Step 1: Validate payment details
+    await this.validatePaymentDetails(paymentMethod, amount);
+
+    // Step 2: Charge payment provider
+    await this.chargePaymentProvider(paymentMethod, amount);
+
+    // Step 3: Record transaction
+    await this.recordTransaction(orderId, paymentMethod, amount);
+
+    // Step 4: Update order status
+    await this.prisma.order.update({ where: { id: orderId }, data: { status: 'paid' } });
+
+    // === POSTCONDITIONS (dev-mode) ===
+    if (process.env.NODE_ENV === 'development') {
+      console.assert(true, 'POSTCONDITION: Payment recorded');
+      console.assert(true, 'POSTCONDITION: Order status updated');
+    }
+
+    // === EVENTS ===
+    this.emit('PaymentProcessed', { orderId, paymentMethod, amount });
+}
+```
+
+The three levels of code generation:
+- **L1 (Structure)** — Prisma schema, project scaffolding, package.json
+- **L2 (CURVED)** — CRUD controllers, route handlers, basic services
+- **L3 (Behavior)** — precondition guards, step logic, postcondition verification, event publishing
+
+Each `requires` becomes a runtime guard that throws on failure. Each `step` becomes a method call (pattern-matched to common operations or generated as a stub). Each `ensures` becomes a dev-mode assertion. Each `publishes` becomes an event emission.
+
+### How Inference Works
+
+The inference engine generates architecture from minimal specs. Given just models, it produces:
+
+| Input | Inferred output | Rule |
+|-------|----------------|------|
+| Model with attributes | Controller with CURVED operations | controller-rules.json |
+| Model with relationships | Service with cross-model operations | service-rules.json |
+| Model with lifecycle | Evolve operation + lifecycle events | event-rules.json |
+| Model with behaviors | Service operations matching behaviors | service-rules.json |
+| Any model | List + Detail + Form views | view-rules.json |
+| Controllers + storage | Deployment instances | deployment-rules.json |
+
+Write 5 models, get 5 controllers + 5 services + 15+ events + 10+ views + deployment topology. That's the 220x expansion ratio.
+
 ### Imports and Exports
 
 Share types and models between specs:
