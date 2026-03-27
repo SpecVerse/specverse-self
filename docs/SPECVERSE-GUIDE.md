@@ -83,7 +83,7 @@ That's a complete, valid spec. The inference engine generates the rest — contr
 flowchart LR
     spec[".specly file<br/>5 models"] -->|parse| ast["AST<br/>(validated, conventions expanded)"]
     ast -->|infer| full["Full Architecture<br/>5 controllers<br/>5 services<br/>15+ events<br/>10+ views<br/>deployment"]
-    full -->|realize| code["Generated Code<br/>Fastify + Prisma + React<br/>CLI + VSCode + MCP<br/>465+ files"]
+    full -->|realize| code["Generated Code<br/>Backend + Frontend<br/>CLI + Tools"]
 
     style spec fill:#e8daef,stroke:#7d3c98
     style ast fill:#d5f5e3,stroke:#27ae60
@@ -707,9 +707,9 @@ flowchart TB
     end
 
     subgraph OUTPUT ["Generated Output"]
-        backend["Backend<br/>Fastify + Prisma"]
-        frontend["Frontend<br/>React"]
-        tools["Tools<br/>CLI + VSCode + MCP"]
+        backend["Backend<br/>(API + ORM + services)"]
+        frontend["Frontend<br/>(views + routing)"]
+        tools["Tools<br/>(CLI + extensions)"]
     end
 
     spec --> parse --> infer --> realize
