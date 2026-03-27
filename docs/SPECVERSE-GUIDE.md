@@ -35,6 +35,7 @@ For the philosophy and motivation behind SpecVerse, see [SPECVERSE-INTRODUCTION-
 - [Generated Output](#generated-output) — what you get
 
 ### Part 3: Extending SpecVerse
+- [Engines vs Entity Modules vs Factories](#understanding-engines-vs-entity-modules-vs-instance-factories) — when to use which
 - [Adding a New Entity Type](#adding-a-new-entity-type) — the 9-facet module system
 - [Adding a New Instance Factory](#adding-a-new-instance-factory) — code generation templates
 - [Adding a New LLM Provider](#adding-a-new-llm-provider) — pluggable AI execution
@@ -43,6 +44,7 @@ For the philosophy and motivation behind SpecVerse, see [SPECVERSE-INTRODUCTION-
 
 ### Part 4: Architecture
 - [Engine Packages](#engine-packages) — the 7 npm packages
+- [Instance Factory Catalog](#instance-factory-catalog) — the complete list of code generators
 - [Entity Module System](#entity-module-system) — composable 9-facet modules
 - [Separation of Concerns](#separation-of-concerns) — WHAT / WHERE / HOW
 - [Quick Reference](#quick-reference) — cheat sheets
@@ -661,9 +663,55 @@ Entity types are the building blocks (models, controllers, services, etc.). Addi
 
 See [ADDING-AN-ENTITY-TYPE.md](guides/ADDING-AN-ENTITY-TYPE.md) for the full 11-step guide.
 
+### Understanding Engines vs Entity Modules vs Instance Factories
+
+These three concepts are often confused. Here's how they differ:
+
+| Concept | What it is | Example | When to add one |
+|---------|-----------|---------|-----------------|
+| **Engine** | An npm package that implements a pipeline stage | `engine-parser`, `engine-inference` | You need a fundamentally new capability (e.g., a test runner engine, a deployment engine) |
+| **Entity Module** | A self-contained definition of a spec element type | `models`, `views`, `promotions` | You need a new kind of thing in .specly files (e.g., `workflows`, `policies`) |
+| **Instance Factory** | A code generator template for a specific technology | `fastify`, `prisma`, `react` | You need to target a new technology (e.g., Express instead of Fastify) |
+
+**Engines** are the pipeline stages — each does one job:
+
+| Engine | Role | Input | Output |
+|--------|------|-------|--------|
+| `engine-entities` | Define what entity types exist and how they behave | Entity module registrations | Convention processors, schema fragments, inference rules |
+| `engine-parser` | Read .specly files | Raw text | SpecVerseAST (validated, conventions expanded) |
+| `engine-inference` | Generate architecture from minimal specs | AST with models | AST with controllers, services, events, views, deployments |
+| `engine-realize` | Generate production code | AST + manifest | Source files (backend, frontend, CLI, tools) |
+| `engine-generators` | Generate diagrams and documentation | AST | Mermaid diagrams, markdown docs, UML |
+| `engine-ai` | Build prompts, execute LLMs, orchestrate workflows | AST or requirements | Prompts, suggestions, generated specs |
+| `types` | Shared type definitions | — | TypeScript interfaces used by all engines |
+
+**When would you add a new engine?** When the pipeline needs a new stage. For example:
+- A **test engine** that generates test suites from specs
+- A **migration engine** that generates database migrations from model diffs
+- A **monitoring engine** that generates observability configurations from deployment specs
+
+Each engine implements the `SpecVerseEngine` interface and registers with the `EngineRegistry`:
+
+```typescript
+import type { SpecVerseEngine, EngineInfo } from '@specverse/types';
+
+class MyEngine implements SpecVerseEngine {
+  name = 'my-engine';
+  version = '1.0.0';
+  capabilities = ['my-capability'];
+
+  async initialize(config?: any): Promise<void> { }
+  getInfo(): EngineInfo {
+    return { name: this.name, version: this.version, capabilities: this.capabilities };
+  }
+}
+```
+
+See [ADDING-AN-ENGINE.md](guides/ADDING-AN-ENGINE.md) for the full guide.
+
 ### Adding a New Instance Factory
 
-Instance factories generate code for specific technologies:
+Instance factories generate code for specific technologies.
 
 1. Create a YAML definition in `packages/realize/libs/instance-factories/{category}/`
 2. Write TypeScript generator functions in `templates/{technology}/`
@@ -781,6 +829,51 @@ constraints:
 | `@specverse/engine-realize` | Generate code from AST + manifest | npm |
 | `@specverse/engine-generators` | Diagrams, documentation, UML | npm |
 | `@specverse/engine-ai` | AI prompts, LLM providers, orchestration | npm |
+
+### Instance Factory Catalog
+
+The realize engine ships with factories for a complete stack. Each factory has a YAML definition and TypeScript generator templates:
+
+**Backend**
+
+| Factory | Technology | What it generates |
+|---------|-----------|-------------------|
+| controllers/fastify | Fastify | Route handlers per model, server bootstrap with auto-wired routes, health endpoint |
+| services/prisma | Prisma | CURVED controllers with lifecycle validation, business logic services, L3 behavior generation |
+| orms/prisma | Prisma | `schema.prisma` from models (relations, types, defaults, FK types, lifecycle status fields) |
+| validation/zod | Zod | Validation schemas per model, JSON Schema for Fastify |
+| communication/eventemitter | EventEmitter3 | Event bus, typed publishers, subscriber registration |
+
+**Frontend**
+
+| Factory | Technology | What it generates |
+|---------|-----------|-------------------|
+| views/react | React | List views (sortable columns, FK links), detail views, form views (typed inputs, FK dropdowns), dashboard |
+| applications/react | React + Vite | App shell, sidebar navigation, API client, routing, hooks |
+| views/shared | — | Adapter layer for shadcn, MUI, Ant Design component libraries |
+
+**CLI and Tools**
+
+| Factory | Technology | What it generates |
+|---------|-----------|-------------------|
+| cli/commander | Commander.js | CLI entry point, command files from spec `commands:` section |
+| tools/vscode | VS Code API | Extension with 14 commands, tmLanguage grammar, themes, schema validation |
+| tools/mcp | MCP SDK | MCP server with 9 services, spec-driven tool/resource registry |
+
+**Infrastructure**
+
+| Factory | Technology | What it generates |
+|---------|-----------|-------------------|
+| scaffolding/generic | — | package.json, tsconfig, .env, .gitignore, README |
+| infrastructure/docker-k8s | Docker, K8s | Dockerfiles, docker-compose, Kubernetes manifests |
+| storage/postgresql | PostgreSQL | Config, Docker setup |
+| storage/mongodb | MongoDB | Config, Docker setup |
+| storage/redis | Redis | Config, Docker setup |
+| testing/vitest | Vitest | Test suites (unit, integration, e2e) |
+| sdks/typescript | TypeScript | Type-safe API client SDK |
+| sdks/python | Python | aiohttp + Pydantic API client SDK |
+
+Swap factories by changing the manifest — the spec stays the same.
 
 ### Entity Module System
 
