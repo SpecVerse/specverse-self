@@ -83,8 +83,11 @@ $CLI cache --stats
 
 ## See Also
 
-- docs/CURRENT-STATE-AND-PLAN.md — phase tracker
-- docs/RELEASE-AUDIT-PLAN.md — v4.0.0 audit steps
-- docs/guides/ARCHITECTURE-GUIDE.md — system architecture
-- docs/guides/ADDING-AN-ENTITY-TYPE.md — entity creation (11 steps)
-- docs/guides/ADDING-AN-ENGINE.md — engine creation
+- docs/README.md — documentation index
+- docs/SPECVERSE-GUIDE.md — complete user guide (1,200 lines)
+- docs/GOLDEN-RULES.md — 27 guiding principles
+- docs/introduction/SPECVERSE-INTRODUCTION-V5.md — philosophy and ecosystem
+- docs/guides/ — architecture, entity types, engines
+- docs/plans/ — dated implementation plans
+- docs/landscape/ — external technology analysis
+- docs/proposals/ — design proposals

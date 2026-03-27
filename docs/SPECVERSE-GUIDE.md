@@ -2,7 +2,7 @@
 
 A complete guide to writing `.specly` specifications, using the toolchain, and extending the system.
 
-For the philosophy and motivation behind SpecVerse, see [SPECVERSE-INTRODUCTION-V5.md](Entity-Module-Intro/SPECVERSE-INTRODUCTION-V5.md).
+For the philosophy and motivation behind SpecVerse, see [SPECVERSE-INTRODUCTION-V5.md](introduction/SPECVERSE-INTRODUCTION-V5.md).
 
 ---
 
