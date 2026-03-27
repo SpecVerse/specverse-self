@@ -836,28 +836,28 @@ The specific technologies — which server framework, which ORM, which frontend 
 
 ```mermaid
 flowchart TD
-    Q{"What do you<br/>want to add?"}
+    Q{What do you want to add?}
 
-    Q -->|"A new kind of thing<br/>in .specly files<br/>(e.g. workflows, policies)"| ET["Add Entity Type"]
-    Q -->|"A new technology target<br/>(e.g. Express, MongoDB)"| IF["Add Instance Factory"]
-    Q -->|"A new pipeline stage<br/>(e.g. test runner, migrator)"| EN["Add Engine"]
-    Q -->|"A new AI provider<br/>(e.g. Gemini, Ollama)"| LP["Add LLM Provider"]
+    Q -->|New spec element| ET[Add Entity Type]
+    Q -->|New technology| IF[Add Instance Factory]
+    Q -->|New pipeline stage| EN[Add Engine]
+    Q -->|New AI provider| LP[Add LLM Provider]
 
-    ET --> ET1["1. Create module in<br/>engine-entities/src/"]
-    ET1 --> ET2["2. Implement 9 facets<br/>(schema, conventions,<br/>inference, generators,<br/>behaviour, docs, tests,<br/>examples)"]
-    ET2 --> ET3["3. Register in<br/>_bootstrap.ts"]
+    ET --> ET1[1. Create module in engine-entities]
+    ET1 --> ET2[2. Implement 9 facets]
+    ET2 --> ET3[3. Register in _bootstrap.ts]
 
-    IF --> IF1["1. Create YAML definition<br/>in realize/libs/<br/>instance-factories/"]
-    IF1 --> IF2["2. Write TypeScript<br/>generator templates"]
-    IF2 --> IF3["3. Map capabilities<br/>in manifest"]
+    IF --> IF1[1. Create YAML definition]
+    IF1 --> IF2[2. Write generator templates]
+    IF2 --> IF3[3. Map capabilities in manifest]
 
-    EN --> EN1["1. Create npm package<br/>@specverse/engine-*"]
-    EN1 --> EN2["2. Implement<br/>SpecVerseEngine interface"]
-    EN2 --> EN3["3. Register with<br/>EngineRegistry"]
+    EN --> EN1[1. Create npm package]
+    EN1 --> EN2[2. Implement SpecVerseEngine]
+    EN2 --> EN3[3. Register with EngineRegistry]
 
-    LP --> LP1["1. Extend LLMProvider<br/>in engine-ai/src/<br/>providers/"]
-    LP1 --> LP2["2. Implement<br/>complete() + stream()"]
-    LP2 --> LP3["3. Register in<br/>ProviderFactory"]
+    LP --> LP1[1. Extend LLMProvider class]
+    LP1 --> LP2[2. Implement complete and stream]
+    LP2 --> LP3[3. Register in ProviderFactory]
 
     style Q fill:#e8daef,stroke:#7d3c98
     style ET fill:#d5f5e3,stroke:#27ae60
@@ -865,6 +865,13 @@ flowchart TD
     style EN fill:#d6eaf8,stroke:#2980b9
     style LP fill:#fadbd8,stroke:#e74c3c
 ```
+
+| Path | When | Example |
+|------|------|---------|
+| **Entity Type** | New kind of thing in .specly files | workflows, policies, metrics |
+| **Instance Factory** | New technology target | Express, MongoDB, Vue |
+| **Engine** | New pipeline stage | test runner, migrator |
+| **LLM Provider** | New AI model integration | Gemini, Ollama |
 
 ### Adding a New Entity Type
 
