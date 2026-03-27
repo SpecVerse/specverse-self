@@ -122,3 +122,4 @@ Each item has a severity, source step, and status.
 | | — | Docs reorganised: plans/, landscape/, proposals/, introduction/, strategy/ | 27 Mar |
 | | — | Test recovery: 590 → 625 lang tests (widened vitest include, fixed schema) | 27 Mar |
 | | — | StandardLayout schema fix (oneOf → $ref, custom layouts work) | 27 Mar |
+| | — | specverse-app-demo updated to v4.0.0 + behavior interpreter + Quint guards | 27 Mar |
