@@ -804,29 +804,33 @@ Swap the manifest to change the entire technology stack — Express instead of F
 
 ### Generated Output
 
-A single `realize all` produces:
+A single `realize all` produces a complete project. The exact structure depends on your manifest, but the typical output is:
 
 ```
 generated/
 ├── backend/
 │   ├── src/
-│   │   ├── main.ts              # Fastify server with auto-wired routes
+│   │   ├── main.ts              # Server entry point with auto-wired routes
 │   │   ├── routes/              # Route handlers per model
 │   │   ├── services/            # Business logic with L3 behaviors
 │   │   ├── controllers/         # CURVED controllers
 │   │   └── guards.ts            # Runtime guards from Quint specs
-│   └── prisma/
+│   └── prisma/                  # (or other ORM, depending on manifest)
 │       └── schema.prisma        # Database schema from models
 ├── frontend/
 │   ├── src/
-│   │   ├── App.tsx              # React app with sidebar navigation
+│   │   ├── App.tsx              # App shell with navigation
 │   │   ├── components/          # List, detail, form views per model
 │   │   └── api/                 # Type-safe API client
 │   └── package.json
-└── tools/
-    ├── vscode-extension/        # Language support (14 commands)
+├── cli/                         # (if spec defines commands)
+│   └── src/                     # CLI entry point + command files
+└── tools/                       # (if manifest includes tools factories)
+    ├── vscode-extension/        # Language support extension
     └── specverse-mcp/           # MCP server for AI assistants
 ```
+
+The backend framework (Fastify, Express), ORM (Prisma, TypeORM), frontend framework (React, Vue), and infrastructure are all determined by the **manifest** — not hardcoded in the spec or the engines.
 
 ---
 
