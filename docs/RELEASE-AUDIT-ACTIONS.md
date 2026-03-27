@@ -113,3 +113,8 @@ Each item has a severity, source step, and status.
 | | — | Published 8 packages @ 3.5.3 (final 3.x release) | 26 Mar |
 | | — | Bumped engines to 4.0.0, published to npm | 26 Mar |
 | | — | specverse-self v4.0.0 released | 26 Mar |
+| | — | 44 READMEs (engines, entity modules, factories, AI layers) | 26-27 Mar |
+| | — | SPECVERSE-GUIDE.md (1,200 lines, complete user guide with diagrams) | 27 Mar |
+| | — | L3 behavior generation — all 3 phases complete (conventions, Quint actions, pipeline wiring) | 27 Mar |
+| | — | Stale docs removed from lang (guides, CURRENT-STATE, documentation scripts) | 27 Mar |
+| | — | ItsTimeToTrade repo created — first real-world SpecVerse project | 27 Mar |
