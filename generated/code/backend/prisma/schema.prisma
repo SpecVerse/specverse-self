@@ -7,8 +7,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model Specification {
@@ -58,11 +58,10 @@ model Export {
 
 model Model {
   id             String @id @default(uuid())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime
+  updatedAt      DateTime
   createdBy      String? @db.VarChar(255)
   updatedBy      String? @db.VarChar(255)
-  id             String @id @default(uuid())
   name           String @unique @db.VarChar(255)
   description    String? @db.VarChar(255)
   extends        String? @db.VarChar(255)
@@ -438,6 +437,51 @@ model CodeTemplate {
   basePath       String @db.VarChar(255)
   entity_module_id String
   entityModule   EntityModule @relation("CodeTemplate_entityModule", fields: [entity_module_id], references: [id])
+}
+
+model VSCodeExtension {
+  id             String @id @default(uuid())
+  name           String @unique @db.VarChar(255)
+  displayName    String @db.VarChar(255)
+  publisher      String @db.VarChar(255)
+  version        String @db.VarChar(255)
+  description    String? @db.VarChar(255)
+  categories     String? @db.VarChar(255)
+  activationEvents String? @db.VarChar(255)
+  languages      ExtensionLanguage[] @relation("VSCodeExtension_languages")
+  commands       ExtensionCommand[] @relation("VSCodeExtension_commands")
+  themes         ExtensionTheme[] @relation("VSCodeExtension_themes")
+}
+
+model ExtensionLanguage {
+  id             String @id @default(uuid())
+  languageId     String @db.VarChar(255)
+  extensions     String @db.VarChar(255)
+  configuration  String? @db.VarChar(255)
+  grammarScopeName String @db.VarChar(255)
+  grammarPath    String @db.VarChar(255)
+  v_s_code_extension_id String
+  extension      VSCodeExtension @relation("VSCodeExtension_languages", fields: [v_s_code_extension_id], references: [id])
+}
+
+model ExtensionCommand {
+  id             String @id @default(uuid())
+  command        String @unique @db.VarChar(255)
+  title          String @db.VarChar(255)
+  category       String? @db.VarChar(255)
+  enablement     String? @db.VarChar(255)
+  keybinding     String? @db.VarChar(255)
+  v_s_code_extension_id String
+  extension      VSCodeExtension @relation("VSCodeExtension_commands", fields: [v_s_code_extension_id], references: [id])
+}
+
+model ExtensionTheme {
+  id             String @id @default(uuid())
+  label          String @db.VarChar(255)
+  uiTheme        String @db.VarChar(255)
+  path           String @db.VarChar(255)
+  v_s_code_extension_id String
+  extension      VSCodeExtension @relation("VSCodeExtension_themes", fields: [v_s_code_extension_id], references: [id])
 }
 
 model MCPServer {

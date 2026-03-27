@@ -2,13 +2,13 @@
  * ReactPatternAdapter - Pattern-Based View Rendering
  *
  * AUTO-GENERATED: Copied from specverse-app-demo
- * Source: /Users/cainen/GitHub/SpecVerse/specverse-lang/libs/instance-factories/applications/templates/react/react-pattern-adapter.tsx
+ * Source: /Users/cainen/GitHub/SpecVerse/specverse-engines/packages/realize/libs/instance-factories/applications/templates/react/react-pattern-adapter.tsx
  *
  * This file provides pattern detection and React/Tailwind rendering for
  * tech-independent composite patterns. It is bundled with generated code
  * for standalone deployment.
  *
- * Imports COMPOSITE_VIEW_PATTERNS and types from @specverse/lang/browser
+ * Imports COMPOSITE_VIEW_PATTERNS and types from @specverse/engine-realize
  * which are exported from the published npm package.
  *
  * DO NOT EDIT: Changes will be overwritten on next generation.

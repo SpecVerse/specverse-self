@@ -9,6 +9,11 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/** Parse ID from string to the correct type for this model */
+function parseId(id: string): string {
+  return id;
+}
+
 /**
  * InstanceFactoryController class
  */
@@ -43,9 +48,16 @@ export class InstanceFactoryController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Transform FK fields to Prisma connect format
+    const prismaData = { ...data };
+    if (prismaData.manifestId) {
+      prismaData.manifest = { connect: { id: prismaData.manifestId } };
+      delete prismaData.manifestId;
+    }
+
     // Create record
     const instanceFactory = await prisma.instanceFactory.create({
-      data,
+      data: prismaData,
       include: {
         manifest: true
       }
@@ -62,7 +74,7 @@ export class InstanceFactoryController {
    */
   public async retrieve(id: string): Promise<any> {
     const instanceFactory = await prisma.instanceFactory.findUnique({
-      where: { id },
+      where: { id: parseId(id) },
       include: {
         manifest: true
       }
@@ -99,10 +111,25 @@ export class InstanceFactoryController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Strip nested relations and id — only send scalar fields to Prisma
+    const updateData: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (key === 'id') continue;
+      if (Array.isArray(value)) continue;
+      if (value !== null && typeof value === 'object' && !(value instanceof Date)) continue;
+      updateData[key] = value;
+    }
+
+    // Transform FK fields to Prisma connect format
+    if (updateData.manifestId) {
+      updateData.manifest = { connect: { id: updateData.manifestId } };
+      delete updateData.manifestId;
+    }
+
     // Update record
     const instanceFactory = await prisma.instanceFactory.update({
-      where: { id },
-      data,
+      where: { id: parseId(id) },
+      data: updateData,
       include: {
         manifest: true
       }
@@ -116,6 +143,7 @@ export class InstanceFactoryController {
   
   /**
    * Evolve InstanceFactory through lifecycle
+   * States: 
    */
   public async evolve(id: string, data: any): Promise<any> {
     // Validate input
@@ -124,11 +152,17 @@ export class InstanceFactoryController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Get current record to check lifecycle state
+    const current = await prisma.instanceFactory.findUnique({ where: { id: parseId(id) } });
+    if (!current) {
+      throw new Error('InstanceFactory not found');
+    }
+
     
 
     // Update record
     const instanceFactory = await prisma.instanceFactory.update({
-      where: { id },
+      where: { id: parseId(id) },
       data,
       include: {
         manifest: true
@@ -146,7 +180,7 @@ export class InstanceFactoryController {
     
 
     await prisma.instanceFactory.delete({
-      where: { id }
+      where: { id: parseId(id) }
     });
 
     

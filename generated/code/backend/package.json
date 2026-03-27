@@ -1,6 +1,6 @@
 {
   "name": "speclanguage-backend",
-  "version": "3.5.2",
+  "version": "4.0.0",
   "description": "Backend API for SpecLanguage",
   "private": true,
   "type": "module",

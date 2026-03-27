@@ -9,6 +9,11 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/** Parse ID from string to the correct type for this model */
+function parseId(id: string): string {
+  return id;
+}
+
 /**
  * DeploymentController class
  */
@@ -43,9 +48,16 @@ export class DeploymentController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Transform FK fields to Prisma connect format
+    const prismaData = { ...data };
+    if (prismaData.specificationId) {
+      prismaData.specification = { connect: { id: prismaData.specificationId } };
+      delete prismaData.specificationId;
+    }
+
     // Create record
     const deployment = await prisma.deployment.create({
-      data,
+      data: prismaData,
       include: {
         specification: true,
         instances: true,
@@ -64,7 +76,7 @@ export class DeploymentController {
    */
   public async retrieve(id: string): Promise<any> {
     const deployment = await prisma.deployment.findUnique({
-      where: { id },
+      where: { id: parseId(id) },
       include: {
         specification: true,
         instances: true,
@@ -105,10 +117,25 @@ export class DeploymentController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Strip nested relations and id — only send scalar fields to Prisma
+    const updateData: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (key === 'id') continue;
+      if (Array.isArray(value)) continue;
+      if (value !== null && typeof value === 'object' && !(value instanceof Date)) continue;
+      updateData[key] = value;
+    }
+
+    // Transform FK fields to Prisma connect format
+    if (updateData.specificationId) {
+      updateData.specification = { connect: { id: updateData.specificationId } };
+      delete updateData.specificationId;
+    }
+
     // Update record
     const deployment = await prisma.deployment.update({
-      where: { id },
-      data,
+      where: { id: parseId(id) },
+      data: updateData,
       include: {
         specification: true,
         instances: true,
@@ -124,6 +151,7 @@ export class DeploymentController {
   
   /**
    * Evolve Deployment through lifecycle
+   * States: 
    */
   public async evolve(id: string, data: any): Promise<any> {
     // Validate input
@@ -132,11 +160,17 @@ export class DeploymentController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Get current record to check lifecycle state
+    const current = await prisma.deployment.findUnique({ where: { id: parseId(id) } });
+    if (!current) {
+      throw new Error('Deployment not found');
+    }
+
     
 
     // Update record
     const deployment = await prisma.deployment.update({
-      where: { id },
+      where: { id: parseId(id) },
       data,
       include: {
         specification: true,
@@ -156,7 +190,7 @@ export class DeploymentController {
     
 
     await prisma.deployment.delete({
-      where: { id }
+      where: { id: parseId(id) }
     });
 
     

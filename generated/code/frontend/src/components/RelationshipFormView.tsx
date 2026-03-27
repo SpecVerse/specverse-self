@@ -1,143 +1,145 @@
-import { useNavigate, useParams } from 'react-router-dom';
-import type { Relationship } from '../types/Relationship';
-import { useRelationship } from '../hooks/useRelationship';
-import { RelationshipForm } from './forms/RelationshipForm';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 /**
  * RelationshipFormView
  * Form view for creating and editing Relationship
- *
- * Model: Relationship
- * Type: form
  */
 function RelationshipFormView() {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  
-  // Fetch single relationship if selected
-  const { relationship, create, update, delete: deleteRelationship, validate, isDeleting, isValidating } = useRelationship(
-    selectedId ? { id: selectedId } : {}
-  );
-  
-  // Fetch all relationships for the list
-  const { relationships, isLoading: listLoading } = useRelationship({ list: true });
-  
-  const handleSubmit = async (data: any) => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
+  const [form, setForm] = useState<any>({});
+  const [loading, setLoading] = useState(!!id);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [modelOptions, setModelOptions] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!id) return;
+    fetch(`/api/relationships/${id}`)
+      .then(r => r.json())
+      .then(data => { setForm(data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [id]);
+
+  useEffect(() => {
+    fetch('/api/models').then(r => r.json()).then(d => setModelOptions(d)).catch(() => {});
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
     try {
-      if (selectedId) {
-        await update({ id: selectedId, data });
-      } else {
-        await create(data);
+      // Convert datetime-local values to full ISO-8601 for Prisma
+      const submitData = { ...form };
+      for (const [key, val] of Object.entries(submitData)) {
+        if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(val)) {
+          submitData[key] = new Date(val).toISOString();
+        }
       }
-      setSelectedId(null); // Clear selection after save
-    } catch (error) {
-      console.error('Error saving relationship:', error);
-    }
+      const method = id ? 'PUT' : 'POST';
+      const url = id ? `/api/relationships/${id}` : '/api/relationships';
+      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(submitData) });
+      if (!res.ok) { const err = await res.json(); throw new Error(err.message || 'Save failed'); }
+      navigate('/relationshiplist');
+    } catch (e: any) { setError(e.message); }
+    finally { setSaving(false); }
   };
-  
-  const handleValidate = async (data: any) => {
-    try {
-      const result = await validate(data);
-      alert('Validation successful: ' + JSON.stringify(result, null, 2));
-    } catch (error: any) {
-      alert('Validation failed: ' + (error.message || JSON.stringify(error)));
-    }
-  };
-  
+
   const handleDelete = async () => {
-    if (!selectedId) return;
-    if (!confirm('Are you sure you want to delete this relationship?')) return;
-  
-    try {
-      await deleteRelationship(selectedId);
-      setSelectedId(null); // Clear selection after delete
-    } catch (error) {
-      console.error('Error deleting relationship:', error);
-      alert('Failed to delete relationship');
-    }
+    if (!id || !confirm('Delete this relationship?')) return;
+    await fetch(`/api/relationships/${id}`, { method: 'DELETE' });
+    navigate('/relationshiplist');
   };
-  
-  const handleSelectRelationship = (id: string) => {
-    setSelectedId(id);
-  };
-  
-  const handleCancel = () => {
-    setSelectedId(null);
-  };
-  
+
+  if (loading) return <div className="p-6">Loading...</div>;
+
   return (
-    <div className="view-relationshipformview min-h-screen bg-slate-900 text-gray-200">
-      {/* Content */}
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* CURVED Form Section */}
-        <div className="curved-form-section bg-slate-800 rounded-lg border border-slate-700 p-6">
-          <h2 className="text-xl font-semibold text-gray-200 mb-1">
-            {selectedId ? 'Edit Relationship' : 'Create Relationship'}
-          </h2>
-          <p className="text-sm text-gray-400 mb-6">
-            Form view for creating and editing Relationship
-          </p>
-          <RelationshipForm
-            relationship={relationship}
-            onSubmit={handleSubmit}
-            onValidate={handleValidate}
-            onDelete={selectedId ? handleDelete : undefined}
-            onCancel={handleCancel}
-            isDeleting={isDeleting}
-            isValidating={isValidating}
+    <div className="p-6 max-w-2xl">
+      <h1 className="text-2xl font-bold mb-6">{id ? 'Edit' : 'New'} Relationship</h1>
+
+      {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">{error}</div>}
+
+      <form onSubmit={handleSubmit} className="bg-white shadow rounded-lg p-6 space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Model</label>
+          <select
+            value={form.modelId ?? ''}
+            onChange={e => setForm({...form, modelId: e.target.value})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            required
+          >
+            <option value="">Select Model...</option>
+            {modelOptions.map((opt: any) => (
+              <option key={opt.id} value={opt.id}>{opt.name || opt.title || opt.guestName || opt.id}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">name</label>
+          <input
+            type="text"
+            value={form.name ?? ''}
+            onChange={e => setForm({...form, name: e.target.value})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            
           />
         </div>
-  
-        {/* CURVED List Section */}
-        <div className="curved-list-section bg-slate-800 rounded-lg border border-slate-700 p-6">
-          {listLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-center">
-                <svg className="animate-spin h-8 w-8 text-blue-500 mx-auto mb-2" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                <p className="text-gray-400">Loading relationships...</p>
-              </div>
-            </div>
-          ) : relationships?.length === 0 ? (
-            <div className="border-2 border-dashed border-slate-600 rounded-lg p-12 text-center">
-              <p className="text-gray-400 mb-1">No relationships yet</p>
-              <p className="text-sm text-gray-500">Create your first relationship using the form above</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full">
-                <thead>
-                  <tr className="border-b border-slate-700">
-                    {/* Table headers will be dynamically generated based on model attributes */}
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {relationships?.map((relationship: Relationship) => (
-                    <tr
-                      key={relationship.id}
-                      className={`border-b border-slate-700 transition-colors ${
-                        selectedId === relationship.id ? 'bg-slate-700/50' : 'hover:bg-slate-700/30'
-                      }`}
-                    >
-                      {/* Table cells will be dynamically generated based on model attributes */}
-                      <td className="px-4 py-3 text-right">
-                        <button
-                          onClick={() => handleSelectRelationship(relationship.id)}
-                          className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
-                        >
-                          Edit
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">relType</label>
+          <input
+            type="text"
+            value={form.relType ?? ''}
+            onChange={e => setForm({...form, relType: e.target.value})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            
+          />
         </div>
-      </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">target</label>
+          <input
+            type="text"
+            value={form.target ?? ''}
+            onChange={e => setForm({...form, target: e.target.value})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">eager</label>
+          <input
+            type="checkbox"
+            value={form.eager ?? ''}
+            onChange={e => setForm({...form, eager: e.target.checked})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">cascade</label>
+          <input
+            type="text"
+            value={form.cascade ?? ''}
+            onChange={e => setForm({...form, cascade: e.target.value})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            
+          />
+        </div>
+
+        <div className="flex justify-between pt-4">
+          <div>
+            {id && <button type="button" onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Delete</button>}
+          </div>
+          <div className="space-x-2">
+            <button type="button" onClick={() => navigate('/relationshiplist')} className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Cancel</button>
+            <button type="submit" disabled={saving} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
+              {saving ? 'Saving...' : id ? 'Update' : 'Create'}
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 }

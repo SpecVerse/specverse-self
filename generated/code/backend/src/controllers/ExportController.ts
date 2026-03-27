@@ -9,6 +9,11 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/** Parse ID from string to the correct type for this model */
+function parseId(id: string): string {
+  return id;
+}
+
 /**
  * ExportController class
  */
@@ -43,14 +48,18 @@ export class ExportController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Transform FK fields to Prisma connect format
+    const prismaData = { ...data };
+    
+
     // Create record
-    const exportRecord = await prisma.exportRecord.create({
-      data
+    const exportItem = await prisma.exportItem.create({
+      data: prismaData
     });
 
     
 
-    return exportRecord;
+    return exportItem;
   }
 
   
@@ -58,22 +67,22 @@ export class ExportController {
    * Retrieve Export by ID
    */
   public async retrieve(id: string): Promise<any> {
-    const exportRecord = await prisma.exportRecord.findUnique({
-      where: { id }
+    const exportItem = await prisma.exportItem.findUnique({
+      where: { id: parseId(id) }
     });
 
-    if (!exportRecord) {
+    if (!exportItem) {
       throw new Error('Export not found');
     }
 
-    return exportRecord;
+    return exportItem;
   }
 
   /**
    * Retrieve all Exports
    */
   public async retrieveAll(options: { skip?: number; take?: number } = {}): Promise<any[]> {
-    return await prisma.exportRecord.findMany({
+    return await prisma.exportItem.findMany({
       skip: options.skip,
       take: options.take
     });
@@ -90,20 +99,33 @@ export class ExportController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Strip nested relations and id — only send scalar fields to Prisma
+    const updateData: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (key === 'id') continue;
+      if (Array.isArray(value)) continue;
+      if (value !== null && typeof value === 'object' && !(value instanceof Date)) continue;
+      updateData[key] = value;
+    }
+
+    // Transform FK fields to Prisma connect format
+    
+
     // Update record
-    const exportRecord = await prisma.exportRecord.update({
-      where: { id },
-      data
+    const exportItem = await prisma.exportItem.update({
+      where: { id: parseId(id) },
+      data: updateData
     });
 
     
 
-    return exportRecord;
+    return exportItem;
   }
 
   
   /**
    * Evolve Export through lifecycle
+   * States: 
    */
   public async evolve(id: string, data: any): Promise<any> {
     // Validate input
@@ -112,15 +134,21 @@ export class ExportController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Get current record to check lifecycle state
+    const current = await prisma.exportItem.findUnique({ where: { id: parseId(id) } });
+    if (!current) {
+      throw new Error('Export not found');
+    }
+
     
 
     // Update record
-    const exportRecord = await prisma.exportRecord.update({
-      where: { id },
+    const exportItem = await prisma.exportItem.update({
+      where: { id: parseId(id) },
       data
     });
 
-    return exportRecord;
+    return exportItem;
   }
 
   
@@ -130,8 +158,8 @@ export class ExportController {
   public async delete(id: string): Promise<void> {
     
 
-    await prisma.exportRecord.delete({
-      where: { id }
+    await prisma.exportItem.delete({
+      where: { id: parseId(id) }
     });
 
     
@@ -141,5 +169,5 @@ export class ExportController {
 }
 
 // Export singleton instance
-export const exportRecordController = new ExportController();
-export default exportRecordController;
+export const exportItemController = new ExportController();
+export default exportItemController;

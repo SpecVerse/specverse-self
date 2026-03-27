@@ -20,7 +20,7 @@ const program = new Command();
 program
   .name('specverse')
   .description('SpecVerse specification language CLI')
-  .version('1.0.0');
+  .version('4.0.0');
 
 // Register all commands
   registerValidateCommand(program);

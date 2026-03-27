@@ -9,6 +9,11 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/** Parse ID from string to the correct type for this model */
+function parseId(id: string): string {
+  return id;
+}
+
 /**
  * AIOrchestratorController class
  */
@@ -43,9 +48,13 @@ export class AIOrchestratorController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Transform FK fields to Prisma connect format
+    const prismaData = { ...data };
+    
+
     // Create record
     const aIOrchestrator = await prisma.aIOrchestrator.create({
-      data,
+      data: prismaData,
       include: {
         workflows: true
       }
@@ -62,7 +71,7 @@ export class AIOrchestratorController {
    */
   public async retrieve(id: string): Promise<any> {
     const aIOrchestrator = await prisma.aIOrchestrator.findUnique({
-      where: { id },
+      where: { id: parseId(id) },
       include: {
         workflows: true
       }
@@ -99,10 +108,22 @@ export class AIOrchestratorController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Strip nested relations and id — only send scalar fields to Prisma
+    const updateData: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (key === 'id') continue;
+      if (Array.isArray(value)) continue;
+      if (value !== null && typeof value === 'object' && !(value instanceof Date)) continue;
+      updateData[key] = value;
+    }
+
+    // Transform FK fields to Prisma connect format
+    
+
     // Update record
     const aIOrchestrator = await prisma.aIOrchestrator.update({
-      where: { id },
-      data,
+      where: { id: parseId(id) },
+      data: updateData,
       include: {
         workflows: true
       }
@@ -116,6 +137,7 @@ export class AIOrchestratorController {
   
   /**
    * Evolve AIOrchestrator through lifecycle
+   * States: 
    */
   public async evolve(id: string, data: any): Promise<any> {
     // Validate input
@@ -124,11 +146,17 @@ export class AIOrchestratorController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Get current record to check lifecycle state
+    const current = await prisma.aIOrchestrator.findUnique({ where: { id: parseId(id) } });
+    if (!current) {
+      throw new Error('AIOrchestrator not found');
+    }
+
     
 
     // Update record
     const aIOrchestrator = await prisma.aIOrchestrator.update({
-      where: { id },
+      where: { id: parseId(id) },
       data,
       include: {
         workflows: true
@@ -146,7 +174,7 @@ export class AIOrchestratorController {
     
 
     await prisma.aIOrchestrator.delete({
-      where: { id }
+      where: { id: parseId(id) }
     });
 
     

@@ -2,7 +2,7 @@
  * Universal Tailwind Adapter Generator
  *
  * AUTO-GENERATED: Copied from @specverse/lang
- * Source: /Users/cainen/GitHub/SpecVerse/specverse-lang/libs/instance-factories/applications/templates/react/tailwind-adapter-generator.ts
+ * Source: /Users/cainen/GitHub/SpecVerse/specverse-engines/packages/realize/libs/instance-factories/applications/templates/react/tailwind-adapter-generator.ts
  *
  * This file provides Tailwind CSS rendering for all atomic component types.
  * It is imported by react-pattern-adapter.tsx.

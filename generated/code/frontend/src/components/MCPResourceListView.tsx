@@ -1,64 +1,83 @@
-import { useMemo } from 'react';
-import { usePatternAdapter, REACT_PROTOCOL_MAPPING } from '../lib/react-pattern-adapter';
-import { useEntitiesQuery, useModelSchemaQuery } from '../hooks/useApi';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 /**
  * MCPResourceListView
  * List view for MCPResources
- *
- * Model: MCPResource
- * Type: list
  */
+function formatCell(value: any): string {
+  if (value === null || value === undefined) return '—';
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
+    return new Date(value).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  return String(value);
+}
+
 function MCPResourceListView() {
-  const patternAdapter = usePatternAdapter();
-  
-  // Fetch data using generic hooks
-  const { data: entities = [], isLoading } = useEntitiesQuery('MCPResourceController', 'MCPResource');
-  const { data: schema } = useModelSchemaQuery('MCPResource');
-  
-  // Build model data and schemas
-  const modelData = useMemo(() => ({
-    MCPResource: entities
-  }), [entities]);
-  
-  const modelSchemas = useMemo(() =>
-    schema ? { MCPResource: schema } : {}
-  , [schema]);
-  
-  if (isLoading) {
-    return <div className="p-4">Loading...</div>;
-  }
-  
-  // Detect pattern
-  const pattern = patternAdapter.detectPattern({ type: 'list', model: 'MCPResource' });
-  
-  if (!pattern) {
-    return (
-      <div className="p-4 text-red-600">
-        Pattern not found for list view
-      </div>
-    );
-  }
-  
-  // Build render context
-  const context = {
-    pattern,
-    viewSpec: { type: 'list', model: 'MCPResource', name: 'MCPResourceListView' },
-    modelData,
-    modelSchemas,
-    primaryModel: 'MCPResource',
-    selectedEntity: null,
-    primaryEntities: modelData.MCPResource,
-    protocolMapping: REACT_PROTOCOL_MAPPING,
-    tailwindAdapter: patternAdapter['tailwindAdapter']
-  };
-  
-  // Render pattern
-  const html = patternAdapter.renderPattern(context);
-  
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/mCPResources')
+      .then(r => r.json())
+      .then(data => { setItems(data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div className="p-6">Loading...</div>;
+
   return (
-    <div className="runtime-view-container p-4 h-full overflow-auto">
-      <div dangerouslySetInnerHTML={{ __html: html }} />
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">MCPResources</h1>
+        <Link to="/mCPResourceform" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+          + New MCPResource
+        </Link>
+      </div>
+
+      {items.length === 0 ? (
+        <div className="text-center py-12 text-gray-500">
+          <p className="text-lg">No mCPResources yet</p>
+          <p className="text-sm mt-1">Create your first mCPResource to get started</p>
+        </div>
+      ) : (
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">uri</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">name</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">description</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">mimeType</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">MCPServer</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {items.map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">{formatCell(item.uri)}</td>
+                  <td className="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">{formatCell(item.name)}</td>
+                  <td className="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">{formatCell(item.description)}</td>
+                  <td className="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">{formatCell(item.mimeType)}</td>
+                  <td className="px-4 py-3 text-sm whitespace-nowrap">
+                    {item.server ? (
+                      <Link to={`/mCPServerdetail?id=${item.server.id}`} className="text-blue-600 hover:text-blue-800 hover:underline">
+                        {item.server.name || item.server.title || item.server.guestName || item.server.id}
+                      </Link>
+                    ) : '—'}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <Link to={`/mCPResourcedetail?id=${item.id}`} className="text-blue-600 hover:text-blue-800 mr-3">View</Link>
+                    <Link to={`/mCPResourceform?id=${item.id}`} className="text-green-600 hover:text-green-800">Edit</Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

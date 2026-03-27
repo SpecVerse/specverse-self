@@ -9,6 +9,11 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/** Parse ID from string to the correct type for this model */
+function parseId(id: string): string {
+  return id;
+}
+
 /**
  * CommunicationChannelController class
  */
@@ -43,9 +48,16 @@ export class CommunicationChannelController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Transform FK fields to Prisma connect format
+    const prismaData = { ...data };
+    if (prismaData.deploymentId) {
+      prismaData.deployment = { connect: { id: prismaData.deploymentId } };
+      delete prismaData.deploymentId;
+    }
+
     // Create record
     const communicationChannel = await prisma.communicationChannel.create({
-      data,
+      data: prismaData,
       include: {
         deployment: true
       }
@@ -62,7 +74,7 @@ export class CommunicationChannelController {
    */
   public async retrieve(id: string): Promise<any> {
     const communicationChannel = await prisma.communicationChannel.findUnique({
-      where: { id },
+      where: { id: parseId(id) },
       include: {
         deployment: true
       }
@@ -99,10 +111,25 @@ export class CommunicationChannelController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Strip nested relations and id — only send scalar fields to Prisma
+    const updateData: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (key === 'id') continue;
+      if (Array.isArray(value)) continue;
+      if (value !== null && typeof value === 'object' && !(value instanceof Date)) continue;
+      updateData[key] = value;
+    }
+
+    // Transform FK fields to Prisma connect format
+    if (updateData.deploymentId) {
+      updateData.deployment = { connect: { id: updateData.deploymentId } };
+      delete updateData.deploymentId;
+    }
+
     // Update record
     const communicationChannel = await prisma.communicationChannel.update({
-      where: { id },
-      data,
+      where: { id: parseId(id) },
+      data: updateData,
       include: {
         deployment: true
       }
@@ -116,6 +143,7 @@ export class CommunicationChannelController {
   
   /**
    * Evolve CommunicationChannel through lifecycle
+   * States: 
    */
   public async evolve(id: string, data: any): Promise<any> {
     // Validate input
@@ -124,11 +152,17 @@ export class CommunicationChannelController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Get current record to check lifecycle state
+    const current = await prisma.communicationChannel.findUnique({ where: { id: parseId(id) } });
+    if (!current) {
+      throw new Error('CommunicationChannel not found');
+    }
+
     
 
     // Update record
     const communicationChannel = await prisma.communicationChannel.update({
-      where: { id },
+      where: { id: parseId(id) },
       data,
       include: {
         deployment: true
@@ -146,7 +180,7 @@ export class CommunicationChannelController {
     
 
     await prisma.communicationChannel.delete({
-      where: { id }
+      where: { id: parseId(id) }
     });
 
     

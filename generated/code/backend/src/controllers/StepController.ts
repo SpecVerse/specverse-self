@@ -9,6 +9,11 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/** Parse ID from string to the correct type for this model */
+function parseId(id: string): string {
+  return id;
+}
+
 /**
  * StepController class
  */
@@ -43,9 +48,16 @@ export class StepController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Transform FK fields to Prisma connect format
+    const prismaData = { ...data };
+    if (prismaData.operationId) {
+      prismaData.operation = { connect: { id: prismaData.operationId } };
+      delete prismaData.operationId;
+    }
+
     // Create record
     const step = await prisma.step.create({
-      data,
+      data: prismaData,
       include: {
         operation: true,
         expandedOperation: true
@@ -63,7 +75,7 @@ export class StepController {
    */
   public async retrieve(id: string): Promise<any> {
     const step = await prisma.step.findUnique({
-      where: { id },
+      where: { id: parseId(id) },
       include: {
         operation: true,
         expandedOperation: true
@@ -102,10 +114,25 @@ export class StepController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Strip nested relations and id — only send scalar fields to Prisma
+    const updateData: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (key === 'id') continue;
+      if (Array.isArray(value)) continue;
+      if (value !== null && typeof value === 'object' && !(value instanceof Date)) continue;
+      updateData[key] = value;
+    }
+
+    // Transform FK fields to Prisma connect format
+    if (updateData.operationId) {
+      updateData.operation = { connect: { id: updateData.operationId } };
+      delete updateData.operationId;
+    }
+
     // Update record
     const step = await prisma.step.update({
-      where: { id },
-      data,
+      where: { id: parseId(id) },
+      data: updateData,
       include: {
         operation: true,
         expandedOperation: true
@@ -120,6 +147,7 @@ export class StepController {
   
   /**
    * Evolve Step through lifecycle
+   * States: 
    */
   public async evolve(id: string, data: any): Promise<any> {
     // Validate input
@@ -128,11 +156,17 @@ export class StepController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Get current record to check lifecycle state
+    const current = await prisma.step.findUnique({ where: { id: parseId(id) } });
+    if (!current) {
+      throw new Error('Step not found');
+    }
+
     
 
     // Update record
     const step = await prisma.step.update({
-      where: { id },
+      where: { id: parseId(id) },
       data,
       include: {
         operation: true,
@@ -151,7 +185,7 @@ export class StepController {
     
 
     await prisma.step.delete({
-      where: { id }
+      where: { id: parseId(id) }
     });
 
     

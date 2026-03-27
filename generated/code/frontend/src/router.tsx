@@ -118,6 +118,18 @@ import DiagramPluginFormView from './components/DiagramPluginFormView';
 import CodeTemplateListView from './components/CodeTemplateListView';
 import CodeTemplateDetailView from './components/CodeTemplateDetailView';
 import CodeTemplateFormView from './components/CodeTemplateFormView';
+import VSCodeExtensionListView from './components/VSCodeExtensionListView';
+import VSCodeExtensionDetailView from './components/VSCodeExtensionDetailView';
+import VSCodeExtensionFormView from './components/VSCodeExtensionFormView';
+import ExtensionLanguageListView from './components/ExtensionLanguageListView';
+import ExtensionLanguageDetailView from './components/ExtensionLanguageDetailView';
+import ExtensionLanguageFormView from './components/ExtensionLanguageFormView';
+import ExtensionCommandListView from './components/ExtensionCommandListView';
+import ExtensionCommandDetailView from './components/ExtensionCommandDetailView';
+import ExtensionCommandFormView from './components/ExtensionCommandFormView';
+import ExtensionThemeListView from './components/ExtensionThemeListView';
+import ExtensionThemeDetailView from './components/ExtensionThemeDetailView';
+import ExtensionThemeFormView from './components/ExtensionThemeFormView';
 import MCPServerListView from './components/MCPServerListView';
 import MCPServerDetailView from './components/MCPServerDetailView';
 import MCPServerFormView from './components/MCPServerFormView';
@@ -221,6 +233,14 @@ export const router = createBrowserRouter([
           <li><a href="/diagramplugins/new">Create DiagramPlugin</a></li>
           <li><a href="/codetemplates">Code Template List</a></li>
           <li><a href="/codetemplates/new">Create CodeTemplate</a></li>
+          <li><a href="/vscodeextensions">V S Code Extension List</a></li>
+          <li><a href="/vscodeextensions/new">Create VSCodeExtension</a></li>
+          <li><a href="/extensionlanguages">Extension Language List</a></li>
+          <li><a href="/extensionlanguages/new">Create ExtensionLanguage</a></li>
+          <li><a href="/extensioncommands">Extension Command List</a></li>
+          <li><a href="/extensioncommands/new">Create ExtensionCommand</a></li>
+          <li><a href="/extensionthemes">Extension Theme List</a></li>
+          <li><a href="/extensionthemes/new">Create ExtensionTheme</a></li>
           <li><a href="/mcpservers">M C P Server List</a></li>
           <li><a href="/mcpservers/new">Create MCPServer</a></li>
           <li><a href="/mcpresources">M C P Resource List</a></li>
@@ -843,6 +863,70 @@ export const router = createBrowserRouter([
   {
     path: '/codetemplates/:id/edit',
     element: <CodeTemplateFormView />
+  },
+  {
+    path: '/vscodeextensions',
+    element: <VSCodeExtensionListView />
+  },
+  {
+    path: '/vscodeextensions/:id',
+    element: <VSCodeExtensionDetailView />
+  },
+  {
+    path: '/vscodeextensions/new',
+    element: <VSCodeExtensionFormView />
+  },
+  {
+    path: '/vscodeextensions/:id/edit',
+    element: <VSCodeExtensionFormView />
+  },
+  {
+    path: '/extensionlanguages',
+    element: <ExtensionLanguageListView />
+  },
+  {
+    path: '/extensionlanguages/:id',
+    element: <ExtensionLanguageDetailView />
+  },
+  {
+    path: '/extensionlanguages/new',
+    element: <ExtensionLanguageFormView />
+  },
+  {
+    path: '/extensionlanguages/:id/edit',
+    element: <ExtensionLanguageFormView />
+  },
+  {
+    path: '/extensioncommands',
+    element: <ExtensionCommandListView />
+  },
+  {
+    path: '/extensioncommands/:id',
+    element: <ExtensionCommandDetailView />
+  },
+  {
+    path: '/extensioncommands/new',
+    element: <ExtensionCommandFormView />
+  },
+  {
+    path: '/extensioncommands/:id/edit',
+    element: <ExtensionCommandFormView />
+  },
+  {
+    path: '/extensionthemes',
+    element: <ExtensionThemeListView />
+  },
+  {
+    path: '/extensionthemes/:id',
+    element: <ExtensionThemeDetailView />
+  },
+  {
+    path: '/extensionthemes/new',
+    element: <ExtensionThemeFormView />
+  },
+  {
+    path: '/extensionthemes/:id/edit',
+    element: <ExtensionThemeFormView />
   },
   {
     path: '/mcpservers',

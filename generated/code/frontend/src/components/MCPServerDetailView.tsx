@@ -1,116 +1,47 @@
-import { useMemo, useState, useEffect } from 'react';
-import { usePatternAdapter, REACT_PROTOCOL_MAPPING } from '../lib/react-pattern-adapter';
-import { useEntitiesQuery, useModelSchemaQuery } from '../hooks/useApi';
+import { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 
 /**
  * MCPServerDetailView
  * Detail view for MCPServer
- *
- * Model: MCPServer
- * Type: detail
  */
 function MCPServerDetailView() {
-  const patternAdapter = usePatternAdapter();
-  
-  // Fetch all entities
-  const { mcpservers, isLoading: isLoadingMCPServer } = useMCPServer({ list: true });
-  const { mcpresources, isLoading: isLoadingMCPResource } = useMCPResource({ list: true });
-  const { mcptools, isLoading: isLoadingMCPTool } = useMCPTool({ list: true });
-  
-  // Track selected entity ID
-  const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null);
-  
-  // Build model data from fetched entities
-  // Wrap entities in expected format: { id, data: {...} }
-  const modelData = useMemo(() => ({
-    MCPServer: (mcpservers || []).map((item: any) => ({ id: item.id, data: item })),
-    MCPResource: (mcpresources || []).map((item: any) => ({ id: item.id, data: item })),
-    MCPTool: (mcptools || []).map((item: any) => ({ id: item.id, data: item }))
-  }), [mcpservers, mcpresources, mcptools]);
-  
-  // Entity selection
-  const entities = mcpservers || [];
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
+  const [item, setItem] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    if (entities.length > 0 && !selectedEntityId) {
-      setSelectedEntityId(entities[0].id);
-    }
-  }, [entities, selectedEntityId]);
-  
-  // Find selected entity in wrapped modelData
-  const selectedEntity = useMemo(
-    () => modelData.MCPServer?.find((e: any) => e.id === selectedEntityId) || null,
-    [modelData, selectedEntityId]
-  );
-  
-  // Note: In generated apps, we use runtime schema from the fetched data
-  const modelSchemas = useMemo(() => ({}), []);
-  
-  // Attach event handler for entity selector (MUST be before early returns)
-  useEffect(() => {
-    const selector = document.getElementById('entity-selector') as HTMLSelectElement;
-    if (selector) {
-      const handler = (e: Event) => {
-        const target = e.target as HTMLSelectElement;
-        setSelectedEntityId(target.value);
-      };
-      selector.addEventListener('change', handler);
-      return () => selector.removeEventListener('change', handler);
-    }
-  }, [selectedEntityId]);
-  
-  if (isLoadingMCPServer || isLoadingMCPResource || isLoadingMCPTool) {
-    return <div className="p-4">Loading...</div>;
-  }
-  
-  // Detect pattern
-  const pattern = patternAdapter.detectPattern({ type: 'detail', model: 'MCPServer' });
-  
-  if (!pattern) {
-    return (
-      <div className="p-4 text-red-600">
-        Pattern not found for detail view
-      </div>
-    );
-  }
-  
-  // Build render context
-  const context = {
-    pattern,
-    viewSpec: { type: 'detail', model: ["MCPServer","MCPResource","MCPTool"], name: 'MCPServerDetailView' },
-    modelData,
-    modelSchemas,
-    primaryModel: 'MCPServer',
-    selectedEntity,
-    primaryEntities: modelData.MCPServer,
-    protocolMapping: REACT_PROTOCOL_MAPPING,
-    tailwindAdapter: patternAdapter['tailwindAdapter']
-  };
-  
-  // Render pattern
-  let html = '';
-  
-  // Add entity selector if multiple entities
-  if (entities.length > 1) {
-    html += `
-      <div class="mb-4">
-        <select
-          id="entity-selector"
-          class="px-4 py-2 border rounded"
-          value="${selectedEntityId || ''}"
-        >
-          ${entities.map((e: any) =>
-            `<option value="${e.id}">${e.name || e.title || e.id}</option>`
-          ).join('')}
-        </select>
-      </div>
-    `;
-  }
-  
-  html += patternAdapter.renderPattern(context);
-  
+    if (!id) { setLoading(false); return; }
+    fetch(`/api/mCPServers/${id}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { setItem(data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return <div className="p-6">Loading...</div>;
+  if (!id) return <div className="p-6 text-gray-500">Select a mCPServer from the list to view details.</div>;
+  if (!item) return <div className="p-6 text-red-600">MCPServer not found.</div>;
+
   return (
-    <div className="runtime-view-container p-4 h-full overflow-auto">
-      <div dangerouslySetInnerHTML={{ __html: html }} />
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">{item.name || item.title || 'MCPServer ' + item.id}</h1>
+        <div className="space-x-2">
+          <Link to={`/mCPServerform?id=${item.id}`} className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Edit</Link>
+          <Link to="/mCPServerlist" className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Back</Link>
+        </div>
+      </div>
+
+      <div className="bg-white shadow rounded-lg p-6">
+        <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <dt className="text-sm font-medium text-gray-500">ID</dt>
+            <dd className="mt-1 text-sm text-gray-900">{item.id}</dd>
+          </div>
+
+        </dl>
+      </div>
     </div>
   );
 }

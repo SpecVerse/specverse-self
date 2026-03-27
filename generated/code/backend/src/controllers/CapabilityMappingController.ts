@@ -9,6 +9,11 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/** Parse ID from string to the correct type for this model */
+function parseId(id: string): string {
+  return id;
+}
+
 /**
  * CapabilityMappingController class
  */
@@ -43,9 +48,20 @@ export class CapabilityMappingController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Transform FK fields to Prisma connect format
+    const prismaData = { ...data };
+    if (prismaData.manifestId) {
+      prismaData.manifest = { connect: { id: prismaData.manifestId } };
+      delete prismaData.manifestId;
+    }
+    if (prismaData.instanceFactoryId) {
+      prismaData.instanceFactory = { connect: { id: prismaData.instanceFactoryId } };
+      delete prismaData.instanceFactoryId;
+    }
+
     // Create record
     const capabilityMapping = await prisma.capabilityMapping.create({
-      data,
+      data: prismaData,
       include: {
         manifest: true,
         instanceFactory: true
@@ -63,7 +79,7 @@ export class CapabilityMappingController {
    */
   public async retrieve(id: string): Promise<any> {
     const capabilityMapping = await prisma.capabilityMapping.findUnique({
-      where: { id },
+      where: { id: parseId(id) },
       include: {
         manifest: true,
         instanceFactory: true
@@ -102,10 +118,29 @@ export class CapabilityMappingController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Strip nested relations and id — only send scalar fields to Prisma
+    const updateData: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (key === 'id') continue;
+      if (Array.isArray(value)) continue;
+      if (value !== null && typeof value === 'object' && !(value instanceof Date)) continue;
+      updateData[key] = value;
+    }
+
+    // Transform FK fields to Prisma connect format
+    if (updateData.manifestId) {
+      updateData.manifest = { connect: { id: updateData.manifestId } };
+      delete updateData.manifestId;
+    }
+    if (updateData.instanceFactoryId) {
+      updateData.instanceFactory = { connect: { id: updateData.instanceFactoryId } };
+      delete updateData.instanceFactoryId;
+    }
+
     // Update record
     const capabilityMapping = await prisma.capabilityMapping.update({
-      where: { id },
-      data,
+      where: { id: parseId(id) },
+      data: updateData,
       include: {
         manifest: true,
         instanceFactory: true
@@ -120,6 +155,7 @@ export class CapabilityMappingController {
   
   /**
    * Evolve CapabilityMapping through lifecycle
+   * States: 
    */
   public async evolve(id: string, data: any): Promise<any> {
     // Validate input
@@ -128,11 +164,17 @@ export class CapabilityMappingController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Get current record to check lifecycle state
+    const current = await prisma.capabilityMapping.findUnique({ where: { id: parseId(id) } });
+    if (!current) {
+      throw new Error('CapabilityMapping not found');
+    }
+
     
 
     // Update record
     const capabilityMapping = await prisma.capabilityMapping.update({
-      where: { id },
+      where: { id: parseId(id) },
       data,
       include: {
         manifest: true,
@@ -151,7 +193,7 @@ export class CapabilityMappingController {
     
 
     await prisma.capabilityMapping.delete({
-      where: { id }
+      where: { id: parseId(id) }
     });
 
     

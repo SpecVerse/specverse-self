@@ -19,7 +19,7 @@ components:
   # ═══════════════════════════════════════════════════════════════════
 
   SpecLanguage:
-    version: "3.5.2"
+    version: "4.0.0"
     description: "The core specification language: components, models, controllers, services, events, views, deployments"
 
     models:
@@ -369,7 +369,7 @@ components:
   # ═══════════════════════════════════════════════════════════════════
 
   BuildSystem:
-    version: "3.5.2"
+    version: "4.0.0"
     description: "The entity module system, convention engine, inference pipeline, and schema composition"
 
     models:
@@ -529,7 +529,7 @@ components:
   # ═══════════════════════════════════════════════════════════════════
 
   ToolsSupport:
-    version: "3.5.2"
+    version: "4.0.0"
     description: "Developer tools: VSCode extension for editing .specly files, MCP server for AI assistant integration"
 
     models:
@@ -624,7 +624,7 @@ components:
   # ═══════════════════════════════════════════════════════════════════
 
   AISupport:
-    version: "3.5.2"
+    version: "4.0.0"
     description: "AI orchestrator for multi-step workflows and prompt management"
 
     models:
@@ -659,7 +659,7 @@ components:
   # ═══════════════════════════════════════════════════════════════════
 
   CLI:
-    version: "3.5.2"
+    version: "4.0.0"
     description: "The SpecVerse command-line interface"
 
     commands:

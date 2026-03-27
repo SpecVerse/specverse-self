@@ -9,6 +9,11 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/** Parse ID from string to the correct type for this model */
+function parseId(id: string): string {
+  return id;
+}
+
 /**
  * RuleTemplateController class
  */
@@ -43,9 +48,16 @@ export class RuleTemplateController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Transform FK fields to Prisma connect format
+    const prismaData = { ...data };
+    if (prismaData.ruleId) {
+      prismaData.rule = { connect: { id: prismaData.ruleId } };
+      delete prismaData.ruleId;
+    }
+
     // Create record
     const ruleTemplate = await prisma.ruleTemplate.create({
-      data,
+      data: prismaData,
       include: {
         rule: true
       }
@@ -62,7 +74,7 @@ export class RuleTemplateController {
    */
   public async retrieve(id: string): Promise<any> {
     const ruleTemplate = await prisma.ruleTemplate.findUnique({
-      where: { id },
+      where: { id: parseId(id) },
       include: {
         rule: true
       }
@@ -99,10 +111,25 @@ export class RuleTemplateController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Strip nested relations and id — only send scalar fields to Prisma
+    const updateData: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (key === 'id') continue;
+      if (Array.isArray(value)) continue;
+      if (value !== null && typeof value === 'object' && !(value instanceof Date)) continue;
+      updateData[key] = value;
+    }
+
+    // Transform FK fields to Prisma connect format
+    if (updateData.ruleId) {
+      updateData.rule = { connect: { id: updateData.ruleId } };
+      delete updateData.ruleId;
+    }
+
     // Update record
     const ruleTemplate = await prisma.ruleTemplate.update({
-      where: { id },
-      data,
+      where: { id: parseId(id) },
+      data: updateData,
       include: {
         rule: true
       }
@@ -116,6 +143,7 @@ export class RuleTemplateController {
   
   /**
    * Evolve RuleTemplate through lifecycle
+   * States: 
    */
   public async evolve(id: string, data: any): Promise<any> {
     // Validate input
@@ -124,11 +152,17 @@ export class RuleTemplateController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Get current record to check lifecycle state
+    const current = await prisma.ruleTemplate.findUnique({ where: { id: parseId(id) } });
+    if (!current) {
+      throw new Error('RuleTemplate not found');
+    }
+
     
 
     // Update record
     const ruleTemplate = await prisma.ruleTemplate.update({
-      where: { id },
+      where: { id: parseId(id) },
       data,
       include: {
         rule: true
@@ -146,7 +180,7 @@ export class RuleTemplateController {
     
 
     await prisma.ruleTemplate.delete({
-      where: { id }
+      where: { id: parseId(id) }
     });
 
     

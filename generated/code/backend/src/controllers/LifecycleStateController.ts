@@ -9,6 +9,11 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/** Parse ID from string to the correct type for this model */
+function parseId(id: string): string {
+  return id;
+}
+
 /**
  * LifecycleStateController class
  */
@@ -43,9 +48,16 @@ export class LifecycleStateController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Transform FK fields to Prisma connect format
+    const prismaData = { ...data };
+    if (prismaData.lifecycleId) {
+      prismaData.lifecycle = { connect: { id: prismaData.lifecycleId } };
+      delete prismaData.lifecycleId;
+    }
+
     // Create record
     const lifecycleState = await prisma.lifecycleState.create({
-      data,
+      data: prismaData,
       include: {
         lifecycle: true
       }
@@ -62,7 +74,7 @@ export class LifecycleStateController {
    */
   public async retrieve(id: string): Promise<any> {
     const lifecycleState = await prisma.lifecycleState.findUnique({
-      where: { id },
+      where: { id: parseId(id) },
       include: {
         lifecycle: true
       }
@@ -99,10 +111,25 @@ export class LifecycleStateController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Strip nested relations and id — only send scalar fields to Prisma
+    const updateData: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (key === 'id') continue;
+      if (Array.isArray(value)) continue;
+      if (value !== null && typeof value === 'object' && !(value instanceof Date)) continue;
+      updateData[key] = value;
+    }
+
+    // Transform FK fields to Prisma connect format
+    if (updateData.lifecycleId) {
+      updateData.lifecycle = { connect: { id: updateData.lifecycleId } };
+      delete updateData.lifecycleId;
+    }
+
     // Update record
     const lifecycleState = await prisma.lifecycleState.update({
-      where: { id },
-      data,
+      where: { id: parseId(id) },
+      data: updateData,
       include: {
         lifecycle: true
       }
@@ -116,6 +143,7 @@ export class LifecycleStateController {
   
   /**
    * Evolve LifecycleState through lifecycle
+   * States: 
    */
   public async evolve(id: string, data: any): Promise<any> {
     // Validate input
@@ -124,11 +152,17 @@ export class LifecycleStateController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Get current record to check lifecycle state
+    const current = await prisma.lifecycleState.findUnique({ where: { id: parseId(id) } });
+    if (!current) {
+      throw new Error('LifecycleState not found');
+    }
+
     
 
     // Update record
     const lifecycleState = await prisma.lifecycleState.update({
-      where: { id },
+      where: { id: parseId(id) },
       data,
       include: {
         lifecycle: true
@@ -146,7 +180,7 @@ export class LifecycleStateController {
     
 
     await prisma.lifecycleState.delete({
-      where: { id }
+      where: { id: parseId(id) }
     });
 
     

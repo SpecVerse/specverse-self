@@ -9,6 +9,11 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/** Parse ID from string to the correct type for this model */
+function parseId(id: string): string {
+  return id;
+}
+
 /**
  * MCPToolController class
  */
@@ -43,9 +48,16 @@ export class MCPToolController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Transform FK fields to Prisma connect format
+    const prismaData = { ...data };
+    if (prismaData.serverId) {
+      prismaData.server = { connect: { id: prismaData.serverId } };
+      delete prismaData.serverId;
+    }
+
     // Create record
     const mCPTool = await prisma.mCPTool.create({
-      data,
+      data: prismaData,
       include: {
         server: true
       }
@@ -62,7 +74,7 @@ export class MCPToolController {
    */
   public async retrieve(id: string): Promise<any> {
     const mCPTool = await prisma.mCPTool.findUnique({
-      where: { id },
+      where: { id: parseId(id) },
       include: {
         server: true
       }
@@ -99,10 +111,25 @@ export class MCPToolController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Strip nested relations and id — only send scalar fields to Prisma
+    const updateData: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (key === 'id') continue;
+      if (Array.isArray(value)) continue;
+      if (value !== null && typeof value === 'object' && !(value instanceof Date)) continue;
+      updateData[key] = value;
+    }
+
+    // Transform FK fields to Prisma connect format
+    if (updateData.serverId) {
+      updateData.server = { connect: { id: updateData.serverId } };
+      delete updateData.serverId;
+    }
+
     // Update record
     const mCPTool = await prisma.mCPTool.update({
-      where: { id },
-      data,
+      where: { id: parseId(id) },
+      data: updateData,
       include: {
         server: true
       }
@@ -116,6 +143,7 @@ export class MCPToolController {
   
   /**
    * Evolve MCPTool through lifecycle
+   * States: 
    */
   public async evolve(id: string, data: any): Promise<any> {
     // Validate input
@@ -124,11 +152,17 @@ export class MCPToolController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Get current record to check lifecycle state
+    const current = await prisma.mCPTool.findUnique({ where: { id: parseId(id) } });
+    if (!current) {
+      throw new Error('MCPTool not found');
+    }
+
     
 
     // Update record
     const mCPTool = await prisma.mCPTool.update({
-      where: { id },
+      where: { id: parseId(id) },
       data,
       include: {
         server: true
@@ -146,7 +180,7 @@ export class MCPToolController {
     
 
     await prisma.mCPTool.delete({
-      where: { id }
+      where: { id: parseId(id) }
     });
 
     

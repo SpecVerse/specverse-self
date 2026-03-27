@@ -9,6 +9,11 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/** Parse ID from string to the correct type for this model */
+function parseId(id: string): string {
+  return id;
+}
+
 /**
  * CodeTemplateController class
  */
@@ -43,9 +48,16 @@ export class CodeTemplateController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Transform FK fields to Prisma connect format
+    const prismaData = { ...data };
+    if (prismaData.entityModuleId) {
+      prismaData.entityModule = { connect: { id: prismaData.entityModuleId } };
+      delete prismaData.entityModuleId;
+    }
+
     // Create record
     const codeTemplate = await prisma.codeTemplate.create({
-      data,
+      data: prismaData,
       include: {
         entityModule: true
       }
@@ -62,7 +74,7 @@ export class CodeTemplateController {
    */
   public async retrieve(id: string): Promise<any> {
     const codeTemplate = await prisma.codeTemplate.findUnique({
-      where: { id },
+      where: { id: parseId(id) },
       include: {
         entityModule: true
       }
@@ -99,10 +111,25 @@ export class CodeTemplateController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Strip nested relations and id — only send scalar fields to Prisma
+    const updateData: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (key === 'id') continue;
+      if (Array.isArray(value)) continue;
+      if (value !== null && typeof value === 'object' && !(value instanceof Date)) continue;
+      updateData[key] = value;
+    }
+
+    // Transform FK fields to Prisma connect format
+    if (updateData.entityModuleId) {
+      updateData.entityModule = { connect: { id: updateData.entityModuleId } };
+      delete updateData.entityModuleId;
+    }
+
     // Update record
     const codeTemplate = await prisma.codeTemplate.update({
-      where: { id },
-      data,
+      where: { id: parseId(id) },
+      data: updateData,
       include: {
         entityModule: true
       }
@@ -116,6 +143,7 @@ export class CodeTemplateController {
   
   /**
    * Evolve CodeTemplate through lifecycle
+   * States: 
    */
   public async evolve(id: string, data: any): Promise<any> {
     // Validate input
@@ -124,11 +152,17 @@ export class CodeTemplateController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Get current record to check lifecycle state
+    const current = await prisma.codeTemplate.findUnique({ where: { id: parseId(id) } });
+    if (!current) {
+      throw new Error('CodeTemplate not found');
+    }
+
     
 
     // Update record
     const codeTemplate = await prisma.codeTemplate.update({
-      where: { id },
+      where: { id: parseId(id) },
       data,
       include: {
         entityModule: true
@@ -146,7 +180,7 @@ export class CodeTemplateController {
     
 
     await prisma.codeTemplate.delete({
-      where: { id }
+      where: { id: parseId(id) }
     });
 
     

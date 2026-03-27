@@ -1,143 +1,192 @@
-import { useNavigate, useParams } from 'react-router-dom';
-import type { EntityModule } from '../types/EntityModule';
-import { useEntityModule } from '../hooks/useEntityModule';
-import { EntityModuleForm } from './forms/EntityModuleForm';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 /**
  * EntityModuleFormView
  * Form view for creating and editing EntityModule
- *
- * Model: EntityModule
- * Type: form
  */
 function EntityModuleFormView() {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
+  const [form, setForm] = useState<any>({});
+  const [loading, setLoading] = useState(!!id);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
-  // Fetch single entitymodule if selected
-  const { entitymodule, create, update, delete: deleteEntityModule, validate, isDeleting, isValidating } = useEntityModule(
-    selectedId ? { id: selectedId } : {}
-  );
-  
-  // Fetch all entitymodules for the list
-  const { entitymodules, isLoading: listLoading } = useEntityModule({ list: true });
-  
-  const handleSubmit = async (data: any) => {
+
+  useEffect(() => {
+    if (!id) return;
+    fetch(`/api/entityModules/${id}`)
+      .then(r => r.json())
+      .then(data => { setForm(data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [id]);
+
+  useEffect(() => {
+    
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
     try {
-      if (selectedId) {
-        await update({ id: selectedId, data });
-      } else {
-        await create(data);
+      // Convert datetime-local values to full ISO-8601 for Prisma
+      const submitData = { ...form };
+      for (const [key, val] of Object.entries(submitData)) {
+        if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(val)) {
+          submitData[key] = new Date(val).toISOString();
+        }
       }
-      setSelectedId(null); // Clear selection after save
-    } catch (error) {
-      console.error('Error saving entitymodule:', error);
-    }
+      const method = id ? 'PUT' : 'POST';
+      const url = id ? `/api/entityModules/${id}` : '/api/entityModules';
+      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(submitData) });
+      if (!res.ok) { const err = await res.json(); throw new Error(err.message || 'Save failed'); }
+      navigate('/entityModulelist');
+    } catch (e: any) { setError(e.message); }
+    finally { setSaving(false); }
   };
-  
-  const handleValidate = async (data: any) => {
-    try {
-      const result = await validate(data);
-      alert('Validation successful: ' + JSON.stringify(result, null, 2));
-    } catch (error: any) {
-      alert('Validation failed: ' + (error.message || JSON.stringify(error)));
-    }
-  };
-  
+
   const handleDelete = async () => {
-    if (!selectedId) return;
-    if (!confirm('Are you sure you want to delete this entitymodule?')) return;
-  
-    try {
-      await deleteEntityModule(selectedId);
-      setSelectedId(null); // Clear selection after delete
-    } catch (error) {
-      console.error('Error deleting entitymodule:', error);
-      alert('Failed to delete entitymodule');
-    }
+    if (!id || !confirm('Delete this entityModule?')) return;
+    await fetch(`/api/entityModules/${id}`, { method: 'DELETE' });
+    navigate('/entityModulelist');
   };
-  
-  const handleSelectEntityModule = (id: string) => {
-    setSelectedId(id);
-  };
-  
-  const handleCancel = () => {
-    setSelectedId(null);
-  };
-  
+
+  if (loading) return <div className="p-6">Loading...</div>;
+
   return (
-    <div className="view-entitymoduleformview min-h-screen bg-slate-900 text-gray-200">
-      {/* Content */}
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* CURVED Form Section */}
-        <div className="curved-form-section bg-slate-800 rounded-lg border border-slate-700 p-6">
-          <h2 className="text-xl font-semibold text-gray-200 mb-1">
-            {selectedId ? 'Edit EntityModule' : 'Create EntityModule'}
-          </h2>
-          <p className="text-sm text-gray-400 mb-6">
-            Form view for creating and editing EntityModule
-          </p>
-          <EntityModuleForm
-            entitymodule={entitymodule}
-            onSubmit={handleSubmit}
-            onValidate={handleValidate}
-            onDelete={selectedId ? handleDelete : undefined}
-            onCancel={handleCancel}
-            isDeleting={isDeleting}
-            isValidating={isValidating}
+    <div className="p-6 max-w-2xl">
+      <h1 className="text-2xl font-bold mb-6">{id ? 'Edit' : 'New'} EntityModule</h1>
+
+      {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">{error}</div>}
+
+      <form onSubmit={handleSubmit} className="bg-white shadow rounded-lg p-6 space-y-4">
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">name</label>
+          <input
+            type="text"
+            value={form.name ?? ''}
+            onChange={e => setForm({...form, name: e.target.value})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            
           />
         </div>
-  
-        {/* CURVED List Section */}
-        <div className="curved-list-section bg-slate-800 rounded-lg border border-slate-700 p-6">
-          {listLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-center">
-                <svg className="animate-spin h-8 w-8 text-blue-500 mx-auto mb-2" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                <p className="text-gray-400">Loading entitymodules...</p>
-              </div>
-            </div>
-          ) : entitymodules?.length === 0 ? (
-            <div className="border-2 border-dashed border-slate-600 rounded-lg p-12 text-center">
-              <p className="text-gray-400 mb-1">No entitymodules yet</p>
-              <p className="text-sm text-gray-500">Create your first entitymodule using the form above</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full">
-                <thead>
-                  <tr className="border-b border-slate-700">
-                    {/* Table headers will be dynamically generated based on model attributes */}
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {entitymodules?.map((entitymodule: EntityModule) => (
-                    <tr
-                      key={entitymodule.id}
-                      className={`border-b border-slate-700 transition-colors ${
-                        selectedId === entitymodule.id ? 'bg-slate-700/50' : 'hover:bg-slate-700/30'
-                      }`}
-                    >
-                      {/* Table cells will be dynamically generated based on model attributes */}
-                      <td className="px-4 py-3 text-right">
-                        <button
-                          onClick={() => handleSelectEntityModule(entitymodule.id)}
-                          className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
-                        >
-                          Edit
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">moduleType</label>
+          <input
+            type="text"
+            value={form.moduleType ?? ''}
+            onChange={e => setForm({...form, moduleType: e.target.value})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            
+          />
         </div>
-      </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">version</label>
+          <input
+            type="text"
+            value={form.version ?? ''}
+            onChange={e => setForm({...form, version: e.target.value})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">hasFacetSchema</label>
+          <input
+            type="checkbox"
+            value={form.hasFacetSchema ?? ''}
+            onChange={e => setForm({...form, hasFacetSchema: e.target.checked})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">hasFacetConventions</label>
+          <input
+            type="checkbox"
+            value={form.hasFacetConventions ?? ''}
+            onChange={e => setForm({...form, hasFacetConventions: e.target.checked})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">hasFacetInference</label>
+          <input
+            type="checkbox"
+            value={form.hasFacetInference ?? ''}
+            onChange={e => setForm({...form, hasFacetInference: e.target.checked})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">hasFacetBehaviour</label>
+          <input
+            type="checkbox"
+            value={form.hasFacetBehaviour ?? ''}
+            onChange={e => setForm({...form, hasFacetBehaviour: e.target.checked})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">hasFacetGenerators</label>
+          <input
+            type="checkbox"
+            value={form.hasFacetGenerators ?? ''}
+            onChange={e => setForm({...form, hasFacetGenerators: e.target.checked})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">hasFacetDiagrams</label>
+          <input
+            type="checkbox"
+            value={form.hasFacetDiagrams ?? ''}
+            onChange={e => setForm({...form, hasFacetDiagrams: e.target.checked})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">hasFacetDocs</label>
+          <input
+            type="checkbox"
+            value={form.hasFacetDocs ?? ''}
+            onChange={e => setForm({...form, hasFacetDocs: e.target.checked})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">hasFacetTests</label>
+          <input
+            type="checkbox"
+            value={form.hasFacetTests ?? ''}
+            onChange={e => setForm({...form, hasFacetTests: e.target.checked})}
+            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            
+          />
+        </div>
+
+        <div className="flex justify-between pt-4">
+          <div>
+            {id && <button type="button" onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Delete</button>}
+          </div>
+          <div className="space-x-2">
+            <button type="button" onClick={() => navigate('/entityModulelist')} className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Cancel</button>
+            <button type="submit" disabled={saving} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
+              {saving ? 'Saving...' : id ? 'Update' : 'Create'}
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 }

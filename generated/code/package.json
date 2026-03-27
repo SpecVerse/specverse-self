@@ -1,6 +1,6 @@
 {
   "name": "speclanguage",
-  "version": "3.5.2",
+  "version": "4.0.0",
   "description": "The core specification language: components, models, controllers, services, events, views, deployments",
   "private": true,
   "type": "module",

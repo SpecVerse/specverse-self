@@ -9,6 +9,11 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/** Parse ID from string to the correct type for this model */
+function parseId(id: string): string {
+  return id;
+}
+
 /**
  * EntityRegistryController class
  */
@@ -43,9 +48,13 @@ export class EntityRegistryController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Transform FK fields to Prisma connect format
+    const prismaData = { ...data };
+    
+
     // Create record
     const entityRegistry = await prisma.entityRegistry.create({
-      data
+      data: prismaData
     });
 
     
@@ -59,7 +68,7 @@ export class EntityRegistryController {
    */
   public async retrieve(id: string): Promise<any> {
     const entityRegistry = await prisma.entityRegistry.findUnique({
-      where: { id }
+      where: { id: parseId(id) }
     });
 
     if (!entityRegistry) {
@@ -90,10 +99,22 @@ export class EntityRegistryController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Strip nested relations and id — only send scalar fields to Prisma
+    const updateData: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (key === 'id') continue;
+      if (Array.isArray(value)) continue;
+      if (value !== null && typeof value === 'object' && !(value instanceof Date)) continue;
+      updateData[key] = value;
+    }
+
+    // Transform FK fields to Prisma connect format
+    
+
     // Update record
     const entityRegistry = await prisma.entityRegistry.update({
-      where: { id },
-      data
+      where: { id: parseId(id) },
+      data: updateData
     });
 
     
@@ -104,6 +125,7 @@ export class EntityRegistryController {
   
   /**
    * Evolve EntityRegistry through lifecycle
+   * States: 
    */
   public async evolve(id: string, data: any): Promise<any> {
     // Validate input
@@ -112,11 +134,17 @@ export class EntityRegistryController {
       throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
     }
 
+    // Get current record to check lifecycle state
+    const current = await prisma.entityRegistry.findUnique({ where: { id: parseId(id) } });
+    if (!current) {
+      throw new Error('EntityRegistry not found');
+    }
+
     
 
     // Update record
     const entityRegistry = await prisma.entityRegistry.update({
-      where: { id },
+      where: { id: parseId(id) },
       data
     });
 
@@ -131,7 +159,7 @@ export class EntityRegistryController {
     
 
     await prisma.entityRegistry.delete({
-      where: { id }
+      where: { id: parseId(id) }
     });
 
     
