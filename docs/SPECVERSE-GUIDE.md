@@ -826,8 +826,6 @@ generated/
 ├── cli/                         # If spec defines commands
 │   └── src/
 └── tools/                       # If manifest includes tools factories
-    ├── vscode-extension/
-    └── specverse-mcp/
 ```
 
 The specific technologies — which server framework, which ORM, which frontend library — are determined by the **manifest**, not the spec or the engines. Change the manifest, get a different stack from the same spec.
