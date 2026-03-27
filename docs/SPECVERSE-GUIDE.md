@@ -79,6 +79,18 @@ components:
 
 That's a complete, valid spec. The inference engine generates the rest — controllers, services, events, views — from this minimal definition.
 
+```mermaid
+flowchart LR
+    spec[".specly file<br/>5 models"] -->|parse| ast["AST<br/>(validated, conventions expanded)"]
+    ast -->|infer| full["Full Architecture<br/>5 controllers<br/>5 services<br/>15+ events<br/>10+ views<br/>deployment"]
+    full -->|realize| code["Generated Code<br/>Fastify + Prisma + React<br/>CLI + VSCode + MCP<br/>465+ files"]
+
+    style spec fill:#e8daef,stroke:#7d3c98
+    style ast fill:#d5f5e3,stroke:#27ae60
+    style full fill:#d6eaf8,stroke:#2980b9
+    style code fill:#fdebd0,stroke:#e67e22
+```
+
 ### Models
 
 Models are the foundation. Everything else is derived from them.
@@ -674,13 +686,51 @@ components:
 
 ### Pipeline
 
+```mermaid
+flowchart TB
+    subgraph WHAT ["WHAT (Specification)"]
+        spec[".specly file<br/>Models, relationships,<br/>lifecycles, behaviors"]
+    end
+
+    subgraph WHERE ["WHERE (Deployment)"]
+        deploy["deployments: section<br/>Instances, scaling,<br/>namespaces, policies"]
+    end
+
+    subgraph HOW ["HOW (Manifest)"]
+        manifest["manifest.yaml<br/>Capability mappings,<br/>instance factories"]
+    end
+
+    subgraph PIPELINE ["Engine Pipeline"]
+        parse["engine-parser<br/>Validate + expand conventions"]
+        infer["engine-inference<br/>Generate architecture"]
+        realize["engine-realize<br/>Generate code"]
+    end
+
+    subgraph OUTPUT ["Generated Output"]
+        backend["Backend<br/>Fastify + Prisma"]
+        frontend["Frontend<br/>React"]
+        tools["Tools<br/>CLI + VSCode + MCP"]
+    end
+
+    spec --> parse --> infer --> realize
+    deploy --> realize
+    manifest --> realize
+    realize --> backend & frontend & tools
+
+    style WHAT fill:#e8daef,stroke:#7d3c98
+    style WHERE fill:#d6eaf8,stroke:#2980b9
+    style HOW fill:#fdebd0,stroke:#e67e22
+    style PIPELINE fill:#d5f5e3,stroke:#27ae60
+    style OUTPUT fill:#f9e79f,stroke:#f39c12
 ```
-.specly file → [parse] → AST → [infer] → Full Architecture → [realize] → Generated Code
-```
+
+Three inputs, one pipeline, multiple outputs:
 
 1. **Parse** — validates syntax, expands conventions (shorthand → full form)
 2. **Infer** — generates controllers, services, events, views from models
-3. **Realize** — generates production code using instance factories and manifests
+3. **Realize** — combines spec + deployment + manifest to generate code
+
+Change the **manifest** → change the technology stack. Change the **deployment** → change the infrastructure. The **spec** stays the same.
 
 ### CLI Commands
 
@@ -781,6 +831,38 @@ generated/
 ---
 
 ## Part 3: Extending SpecVerse
+
+```mermaid
+flowchart TD
+    Q{"What do you<br/>want to add?"}
+
+    Q -->|"A new kind of thing<br/>in .specly files<br/>(e.g. workflows, policies)"| ET["Add Entity Type"]
+    Q -->|"A new technology target<br/>(e.g. Express, MongoDB)"| IF["Add Instance Factory"]
+    Q -->|"A new pipeline stage<br/>(e.g. test runner, migrator)"| EN["Add Engine"]
+    Q -->|"A new AI provider<br/>(e.g. Gemini, Ollama)"| LP["Add LLM Provider"]
+
+    ET --> ET1["1. Create module in<br/>engine-entities/src/"]
+    ET1 --> ET2["2. Implement 9 facets<br/>(schema, conventions,<br/>inference, generators,<br/>behaviour, docs, tests,<br/>examples)"]
+    ET2 --> ET3["3. Register in<br/>_bootstrap.ts"]
+
+    IF --> IF1["1. Create YAML definition<br/>in realize/libs/<br/>instance-factories/"]
+    IF1 --> IF2["2. Write TypeScript<br/>generator templates"]
+    IF2 --> IF3["3. Map capabilities<br/>in manifest"]
+
+    EN --> EN1["1. Create npm package<br/>@specverse/engine-*"]
+    EN1 --> EN2["2. Implement<br/>SpecVerseEngine interface"]
+    EN2 --> EN3["3. Register with<br/>EngineRegistry"]
+
+    LP --> LP1["1. Extend LLMProvider<br/>in engine-ai/src/<br/>providers/"]
+    LP1 --> LP2["2. Implement<br/>complete() + stream()"]
+    LP2 --> LP3["3. Register in<br/>ProviderFactory"]
+
+    style Q fill:#e8daef,stroke:#7d3c98
+    style ET fill:#d5f5e3,stroke:#27ae60
+    style IF fill:#fdebd0,stroke:#e67e22
+    style EN fill:#d6eaf8,stroke:#2980b9
+    style LP fill:#fadbd8,stroke:#e74c3c
+```
 
 ### Adding a New Entity Type
 
