@@ -118,3 +118,7 @@ Each item has a severity, source step, and status.
 | | — | L3 behavior generation — all 3 phases complete (conventions, Quint actions, pipeline wiring) | 27 Mar |
 | | — | Stale docs removed from lang (guides, CURRENT-STATE, documentation scripts) | 27 Mar |
 | | — | ItsTimeToTrade repo created — first real-world SpecVerse project | 27 Mar |
+| | — | SPECVERSE-INTRODUCTION-V5.md (944 lines, updated for v4.0.0) | 27 Mar |
+| | — | Docs reorganised: plans/, landscape/, proposals/, introduction/, strategy/ | 27 Mar |
+| | — | Test recovery: 590 → 625 lang tests (widened vitest include, fixed schema) | 27 Mar |
+| | — | StandardLayout schema fix (oneOf → $ref, custom layouts work) | 27 Mar |
