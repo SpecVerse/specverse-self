@@ -2,6 +2,51 @@
 
 A complete guide to writing `.specly` specifications, using the toolchain, and extending the system.
 
+For the philosophy and motivation behind SpecVerse, see [SPECVERSE-INTRODUCTION-V4.md](Entity-Module-Intro/SPECVERSE-INTRODUCTION-V4.md).
+
+---
+
+## Contents
+
+### Part 1: Writing Specifications
+- [Your First Spec](#your-first-spec) — a minimal working example
+- [Models](#models) — attributes, metadata, convention shorthand
+- [Relationships](#relationships) — hasMany, belongsTo, hasOne, manyToMany
+- [Lifecycles](#lifecycles) — state machines on models
+- [Behaviors](#behaviors) — declarative business logic with contracts
+- [Controllers](#controllers) — API endpoints and CURVED operations
+- [Services](#services) — cross-model business logic
+- [Events](#events) — domain events with typed payloads
+- [The Event System](#the-event-system) — publish, subscribe, and event-driven architecture
+- [Views](#views) — UI specifications
+- [Deployments](#deployments) — runtime topology
+- [Commands](#commands-extension-entity) — CLI generation from spec
+- [Measures](#measures-extension-entity) — aggregation metrics
+- [Conventions](#conventions-extension-entity) — meta-circular shorthand definitions
+- [Promotions](#promotions-extension-entity) — domain extension example
+- [How Behaviors Become Code](#how-behaviors-become-code) — L1/L2/L3 generation
+- [How Inference Works](#how-inference-works) — what rules generate what
+- [Imports and Exports](#imports-and-exports) — sharing between specs
+
+### Part 2: The Toolchain
+- [Pipeline](#pipeline) — parse → infer → realize
+- [CLI Commands](#cli-commands) — the full command reference
+- [Manifests](#manifests) — mapping WHAT to HOW
+- [Generated Output](#generated-output) — what you get
+
+### Part 3: Extending SpecVerse
+- [Adding a New Entity Type](#adding-a-new-entity-type) — the 9-facet module system
+- [Adding a New Instance Factory](#adding-a-new-instance-factory) — code generation templates
+- [Adding a New LLM Provider](#adding-a-new-llm-provider) — pluggable AI execution
+- [Formal Verification with Quint](#formal-verification-with-quint) — invariants and rules
+- [Behavioural Conventions](#behavioural-conventions) — human-readable patterns
+
+### Part 4: Architecture
+- [Engine Packages](#engine-packages) — the 7 npm packages
+- [Entity Module System](#entity-module-system) — composable 9-facet modules
+- [Separation of Concerns](#separation-of-concerns) — WHAT / WHERE / HOW
+- [Quick Reference](#quick-reference) — cheat sheets
+
 ---
 
 ## Part 1: Writing Specifications
@@ -185,6 +230,68 @@ events:
 ```
 
 Events are usually inferred from model behaviors and controller actions. Define them explicitly when you need custom payload shapes.
+
+### The Event System
+
+Events connect the components of your system. The pattern is **publish/subscribe** — behaviors and controllers publish events, services subscribe to handle them.
+
+**Publishing** — declare what events an operation emits:
+
+```yaml
+# In a controller action or service operation:
+behaviors:
+  confirmOrder:
+    requires: ["Order is pending", "Payment verified"]
+    ensures: ["Order confirmed"]
+    publishes: [OrderConfirmed, InventoryReservationRequested]
+```
+
+**Subscribing** — services declare which events they handle:
+
+```yaml
+services:
+  InventoryService:
+    description: "Manages stock levels"
+    subscribes:
+      - event: InventoryReservationRequested
+        handler: reserveStock
+      - event: OrderCancelled
+        handler: releaseStock
+    operations:
+      reserveStock:
+        parameters:
+          orderId: UUID required
+          items: Array required
+        ensures: ["Stock reserved for all items"]
+        publishes: [StockReserved]
+      releaseStock:
+        parameters:
+          orderId: UUID required
+        ensures: ["Reserved stock released"]
+        publishes: [StockReleased]
+```
+
+**Event chains** — events triggering further events creates reactive workflows:
+
+```
+Customer places order
+  → OrderPlaced event
+    → PaymentService.processPayment subscribes
+      → PaymentProcessed event
+        → OrderService.confirmOrder subscribes
+          → OrderConfirmed event
+            → InventoryService.reserveStock subscribes
+              → StockReserved event
+                → NotificationService.sendConfirmation subscribes
+```
+
+The inference engine generates this event wiring automatically from your model relationships and behaviors. The realize engine produces the EventEmitter bus (development) or can target RabbitMQ (production) via different instance factories.
+
+**What gets generated:**
+- Event type definitions with typed payloads
+- Publisher methods on controllers and services
+- Subscriber registration on service initialization
+- Event bus infrastructure (EventEmitter or message queue)
 
 ### Views
 
