@@ -589,22 +589,31 @@ The generator produces:
 ```typescript
 async processPayment(paymentMethod: string, amount: number): Promise<void> {
     // === PRECONDITIONS ===
-    const order = await this.prisma.order.findUnique({ where: { id: orderId } });
+    const order = await prisma.order.findUnique({ where: { id: params.id } });
     if (!order) throw new Error('Precondition failed: Order exists');
-    if (order.total !== amount) throw new Error('Precondition failed: Amount matches order total');
+    if (params.amount !== params.orderTotal) {
+      throw new Error('Precondition failed: Amount matches order total');
+    }
 
     // === EXECUTE ===
     // Step 1: Validate payment details
-    await this.validatePaymentDetails(paymentMethod, amount);
+    const validationResult = this.validate(params, { operation: 'processPayment' });
+    if (!validationResult.valid) {
+      throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
+    }
 
     // Step 2: Charge payment provider
-    await this.chargePaymentProvider(paymentMethod, amount);
+    // (No convention match — stub generated)
+    await this.chargePaymentProvider(params);
 
-    // Step 3: Record transaction
-    await this.recordTransaction(orderId, paymentMethod, amount);
+    // Step 3: Create transaction record
+    const transaction = await this.prisma.transaction.create({ data: params });
 
-    // Step 4: Update order status
-    await this.prisma.order.update({ where: { id: orderId }, data: { status: 'paid' } });
+    // Step 4: Update order status to paid
+    await this.prisma.order.update({
+      where: { id: params.id },
+      data: { status: 'paid' },
+    });
 
     // === POSTCONDITIONS (dev-mode) ===
     if (process.env.NODE_ENV === 'development') {
@@ -613,16 +622,40 @@ async processPayment(paymentMethod: string, amount: number): Promise<void> {
     }
 
     // === EVENTS ===
-    this.emit('PaymentProcessed', { orderId, paymentMethod, amount });
+    this.emit('PaymentProcessed', { operation: 'processPayment', timestamp: new Date().toISOString() });
+}
+
+// Generated stub — compiles, throws at runtime
+private async chargePaymentProvider(params: any): Promise<void> {
+    throw new Error('Not implemented: chargePaymentProvider');
 }
 ```
 
+Steps 1, 3, and 4 are convention-matched (real code). Step 2 has no matching pattern, so it gets a stub method that compiles but throws — the developer implements only the genuinely novel logic.
+
 The three levels of code generation:
-- **L1 (Structure)** — Prisma schema, project scaffolding, package.json
+- **L1 (Structure)** — ORM schema, project scaffolding, package.json
 - **L2 (CURVED)** — CRUD controllers, route handlers, basic services
 - **L3 (Behavior)** — precondition guards, step logic, postcondition verification, event publishing
 
-Each `requires` becomes a runtime guard that throws on failure. Each `step` becomes a method call (pattern-matched to common operations or generated as a stub). Each `ensures` becomes a dev-mode assertion. Each `publishes` becomes an event emission.
+Step resolution uses **convention-based pattern matching** — 15 common patterns generate real code:
+
+| Step text | Generated code |
+|-----------|---------------|
+| "Validate payment details" | Validation call with error throwing |
+| "Find order by id" | ORM lookup with not-found guard |
+| "Update order status to paid" | ORM update with field assignment |
+| "Create transaction record" | ORM create from params |
+| "Transition order to shipped" | Lifecycle-aware status update |
+| "Increment stock by quantity" | Atomic increment with underflow guard |
+| "Send PaymentProcessed event" | Event emission with context |
+| "Call InventoryService.reserve" | Service method delegation |
+| "Check sufficient stock" | Guard method with lookup |
+| "Calculate total from items" | Calculator helper method |
+
+Steps that don't match any pattern generate **stub methods** — they compile, but throw `Not implemented` at runtime so you know exactly what to fill in.
+
+Each `requires` becomes a runtime guard that throws on failure. Each `ensures` becomes a dev-mode assertion. Each `publishes` becomes an event emission.
 
 ### How Inference Works
 
@@ -843,21 +876,21 @@ flowchart TD
     Q -->|New pipeline stage| EN[Add Engine]
     Q -->|New AI provider| LP[Add LLM Provider]
 
-    ET --> ET1[1. Create module in engine-entities]
-    ET1 --> ET2[2. Implement 9 facets]
-    ET2 --> ET3[3. Register in _bootstrap.ts]
+    ET --> ET1[Create module in engine-entities]
+    ET1 --> ET2[Implement 9 facets]
+    ET2 --> ET3[Register in _bootstrap.ts]
 
-    IF --> IF1[1. Create YAML definition]
-    IF1 --> IF2[2. Write generator templates]
-    IF2 --> IF3[3. Map capabilities in manifest]
+    IF --> IF1[Create YAML definition]
+    IF1 --> IF2[Write generator templates]
+    IF2 --> IF3[Map capabilities in manifest]
 
-    EN --> EN1[1. Create npm package]
-    EN1 --> EN2[2. Implement SpecVerseEngine]
-    EN2 --> EN3[3. Register with EngineRegistry]
+    EN --> EN1[Create npm package]
+    EN1 --> EN2[Implement SpecVerseEngine]
+    EN2 --> EN3[Register with EngineRegistry]
 
-    LP --> LP1[1. Extend LLMProvider class]
-    LP1 --> LP2[2. Implement complete and stream]
-    LP2 --> LP3[3. Register in ProviderFactory]
+    LP --> LP1[Extend LLMProvider class]
+    LP1 --> LP2[Implement complete and stream]
+    LP2 --> LP3[Register in ProviderFactory]
 
     style Q fill:#e8daef,stroke:#7d3c98
     style ET fill:#d5f5e3,stroke:#27ae60
